@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -13,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.arnoagape.locavelo"
+        applicationId = "com.arnoagape.lokavelo"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -57,6 +58,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.ui.auth)
+    implementation(libs.firebase.auth)
     implementation (libs.firebase.firestore)
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.ui.storage)
