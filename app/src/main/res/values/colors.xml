@@ -7,4 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="lokavelo_blue_dark">#1F4F91</color>
+    <color name="lokavelo_blue_medium">#2F80C1</color>
+    <color name="lokavelo_blue_light">#56B4E9</color>
+
 </resources>

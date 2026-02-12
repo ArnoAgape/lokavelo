@@ -14,9 +14,9 @@
     <string name="error_no_account_profile">Un compte est nécessaire pour modifier tes infos</string>
 
     // SIGN IN
-    <string name="sign_in_google">Continuer avec Google</string>
-    <string name="sign_in_email">Continuer avec un email</string>
-    <string name="sign_in_phone">Continuer avec un numéro de téléphone</string>
+    <string name="sign_in_google">Continue avec Google</string>
+    <string name="sign_in_email">Continue avec ton adresse email</string>
+    <string name="sign_in_phone">Continue avec ton numéro de téléphone</string>
     <string name="sign_in_title">Bienvenue ! Connecte-toi pour continuer à utiliser Lokavélo.</string>
 
     // DIALOG

@@ -43,7 +43,7 @@ fun rememberEmailSignUpLauncher(
     val signUpIntent = remember {
         AuthUI.getInstance()
             .createSignInIntentBuilder()
-            //.setLogo(R.drawable.ic_lokavelo_logo)
+            .setLogo(R.drawable.ic_lokavelo_logo)
             .setTheme(R.style.Theme_Lokavelo)
             .setAvailableProviders(listOf(AuthUI.IdpConfig.EmailBuilder().build()))
             .build()

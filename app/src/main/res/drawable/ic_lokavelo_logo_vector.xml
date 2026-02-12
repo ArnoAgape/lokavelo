@@ -1,0 +1,49 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Fond circulaire -->
+    <path
+        android:fillColor="#0F1C2E"
+        android:pathData="M54,4
+                          A50,50 0 1,1 53.9,4 Z"/>
+
+    <!-- Roue gauche -->
+    <path
+        android:fillColor="#56B4E9"
+        android:pathData="M30,65
+                          A12,12 0 1,1 29.9,65 Z"/>
+
+    <!-- Roue droite -->
+    <path
+        android:fillColor="#2F80C1"
+        android:pathData="M78,65
+                          A12,12 0 1,1 77.9,65 Z"/>
+
+    <!-- Cadre simplifié -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M30,65 L50,50 L65,65
+                          M50,50 L58,65
+                          M50,50 L45,40"/>
+
+    <!-- Pin localisation -->
+    <path
+        android:fillColor="#56B4E9"
+        android:pathData="M54,25
+                          C47,25 43,30 43,35
+                          C43,42 54,55 54,55
+                          C54,55 65,42 65,35
+                          C65,30 61,25 54,25 Z"/>
+
+    <!-- Centre pin -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,31
+                          A4,4 0 1,1 53.9,31 Z"/>
+
+</vector>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.Lokavelo" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimary">@color/lokavelo_blue_light</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondary">@color/lokavelo_blue_medium</item>
 
         <item name="android:statusBarColor">?attr/colorSurface</item>
         <item name="android:windowLightStatusBar">false</item>

@@ -22,7 +22,7 @@ import com.arnoagape.lokavelo.ui.screen.login.launchers.rememberGoogleSignUpLaun
 @Composable
 fun LokaveloApp() {
 
-    var backStack by remember { mutableStateOf(listOf<Screen>(Home)) }
+    var backStack by remember { mutableStateOf(listOf<Screen>(Login)) }
 
     val currentScreen = backStack.last()
 

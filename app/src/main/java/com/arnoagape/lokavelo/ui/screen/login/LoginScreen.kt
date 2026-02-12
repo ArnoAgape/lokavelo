@@ -16,13 +16,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -101,103 +101,95 @@ fun LoginContent(
 ) {
     val scrollState = rememberScrollState()
 
-    Surface(
-        modifier = Modifier.fillMaxSize()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 12.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 12.dp),
-            contentAlignment = Alignment.Center
+                .verticalScroll(scrollState),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+            /** ---------- LOGO LOKAVELO ---------- **/
+            Image(
+                painter = painterResource(id = R.drawable.ic_lokavelo_logo),
+                contentDescription = "Logo Lokavelo",
                 modifier = Modifier
-                    .verticalScroll(scrollState),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .size(200.dp)
+                    .padding(bottom = 16.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                stringResource(R.string.sign_in_title),
+                style = MaterialTheme.typography.labelLarge,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            /** ---------- EMAIL BUTTON ---------- **/
+            Button(
+                onClick = { onEmailSignInClick() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
             ) {
-                /** ---------- LOGO LOKAVELO ---------- **/
-                Image(
-                    painter = painterResource(id = R.drawable.ic_lokavelo_logo),
-                    contentDescription = "Logo Lokavelo",
-                    modifier = Modifier
-                        .size(160.dp)
-                        .padding(bottom = 16.dp)
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
                 )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(stringResource(R.string.sign_in_email))
+            }
 
-                Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    stringResource(R.string.sign_in_title),
-                    style = MaterialTheme.typography.labelLarge,
-                    textAlign = TextAlign.Center
+            /** ---------- PHONE BUTTON ---------- **/
+            OutlinedButton(
+                onClick = onGoogleSignInClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                border = ButtonDefaults.outlinedButtonBorder(enabled = true)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Phone,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
                 )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(stringResource(R.string.sign_in_phone))
+            }
 
-                Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-                /** ---------- EMAIL BUTTON ---------- **/
-                Button(
-                    onClick = { onEmailSignInClick() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .testTag(stringResource(R.string.sign_in_email)),
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primaryContainer)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Email,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(stringResource(R.string.sign_in_email))
-                }
+            /** ---------- SEPARATOR ---------- **/
+            OrSeparator()
 
-                Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-                /** ---------- GOOGLE BUTTON ---------- **/
-                OutlinedButton(
-                    onClick = onGoogleSignInClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .testTag(stringResource(R.string.sign_in_google)),
-                    border = ButtonDefaults.outlinedButtonBorder(enabled = true)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_google_logo),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.Unspecified
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(stringResource(R.string.sign_in_google))
-                }
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                /** ---------- SEPARATOR ---------- **/
-                OrSeparator()
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                /** ---------- PHONE BUTTON ---------- **/
-                OutlinedButton(
-                    onClick = onGoogleSignInClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .testTag(stringResource(R.string.sign_in_google)),
-                    border = ButtonDefaults.outlinedButtonBorder(enabled = true)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_google_logo),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = Color.Unspecified
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(stringResource(R.string.sign_in_google))
-                }
+            /** ---------- GOOGLE BUTTON ---------- **/
+            OutlinedButton(
+                onClick = onGoogleSignInClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .testTag(stringResource(R.string.sign_in_google)),
+                border = ButtonDefaults.outlinedButtonBorder(enabled = true)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_google_logo),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.Unspecified
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(stringResource(R.string.sign_in_google))
             }
         }
     }
