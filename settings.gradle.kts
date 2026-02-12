@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "LocaVelo"
+rootProject.name = "Lokavelo"
 include(":app")
  

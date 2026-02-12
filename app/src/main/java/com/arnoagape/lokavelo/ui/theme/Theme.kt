@@ -1,6 +1,5 @@
-package com.arnoagape.locavelo.ui.theme
+package com.arnoagape.lokavelo.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

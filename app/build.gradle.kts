@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.arnoagape.locavelo"
+    namespace = "com.arnoagape.lokavelo"
     compileSdk {
         version = release(36)
     }

@@ -1,4 +1,4 @@
-package com.arnoagape.locavelo
+package com.arnoagape.lokavelo
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import com.arnoagape.locavelo.ui.theme.LocaVeloTheme
+import com.arnoagape.lokavelo.ui.theme.LocaVeloTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             LocaVeloTheme {
-                LocaVeloApp()
+                LokaveloApp()
             }
         }
     }
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
 
 @PreviewScreenSizes
 @Composable
-fun LocaVeloApp() {
+fun LokaveloApp() {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
 
     NavigationSuiteScaffold(

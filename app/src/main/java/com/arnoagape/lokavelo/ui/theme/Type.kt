@@ -1,4 +1,4 @@
-package com.arnoagape.locavelo.ui.theme
+package com.arnoagape.lokavelo.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

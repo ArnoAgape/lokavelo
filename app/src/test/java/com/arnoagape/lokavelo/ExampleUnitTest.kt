@@ -1,4 +1,4 @@
-package com.arnoagape.locavelo
+package com.arnoagape.lokavelo
 
 import org.junit.Test
 
