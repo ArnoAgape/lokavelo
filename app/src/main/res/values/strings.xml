@@ -1,3 +1,22 @@
 <resources>
-    <string name="app_name">Lokavelo</string>
+    <string name="app_name" translatable="false">Lokavelo</string>
+
+    // SUCCESS
+    <string name="success_user_updated">Details updated successfully</string>
+    <string name="success_sign_up">Successfully logged in</string>
+    <string name="success_sign_out">Successfully logged out</string>
+    <string name="success_deleted_account">Account deleted successfully</string>
+
+    // ERROR
+    <string name="error_no_network">Please connect to network</string>
+    <string name="error_generic">An issue occurred</string>
+    <string name="error_sign_up">Sign up canceled or failed</string>
+    <string name="error_no_account_bike">An account is mandatory in order to add a bike</string>
+    <string name="error_no_account_profile">An account is mandatory in order to update your profile</string>
+
+    // SIGN IN
+    <string name="sign_in_google">Sign in with Google</string>
+    <string name="sign_in_email">Sign in with email</string>
+    <string name="sign_in_phone">Sign in with your phone</string>
+    <string name="sign_in_title">Welcome! Log in or sign up to use Lokavelo.</string>
 </resources>
