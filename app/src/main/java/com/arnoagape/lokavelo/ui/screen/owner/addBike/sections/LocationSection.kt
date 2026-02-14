@@ -85,7 +85,7 @@ fun AddressLineField(
         },
         singleLine = true,
         keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Words
+            capitalization = KeyboardCapitalization.Sentences
         ),
         leadingIcon = {
             Icon(

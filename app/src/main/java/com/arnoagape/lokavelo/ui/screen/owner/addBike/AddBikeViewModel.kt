@@ -1,6 +1,7 @@
 package com.arnoagape.lokavelo.ui.screen.owner.addBike
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arnoagape.lokavelo.R
@@ -61,7 +62,12 @@ class AddBikeViewModel @Inject constructor(
                 uiState = ui,
                 form = form,
                 localUris = uris,
-                isValid = form.title.isNotBlank() && uris.isNotEmpty(),
+                isValid = form.title.isNotBlank() &&
+                        form.priceText.isNotBlank() &&
+                        form.location.street.isNotBlank() &&
+                        form.location.city.isNotBlank() &&
+                        form.location.postalCode.isNotBlank() &&
+                        uris.isNotEmpty(),
                 isSignedIn = signedIn
             )
         }.stateIn(
@@ -153,14 +159,16 @@ class AddBikeViewModel @Inject constructor(
             runCatching {
                 bikeRepository.addBike(
                     localUris = uris,
-                    bike = bike   // ← Bike non nullable
+                    bike = bike
                 )
             }.onSuccess {
                 _uiState.value = AddBikeUiState.Success
                 _localUris.value = emptyList()
                 _formState.value = AddFormState()
                 _events.trySend(Event.ShowSuccessMessage(R.string.success_bike_added))
-            }.onFailure {
+            }.onFailure { throwable ->
+                Log.e("AddBike", "Error while adding bike", throwable)
+
                 _uiState.value = AddBikeUiState.Error.Generic()
                 _events.trySend(Event.ShowMessage(R.string.error_generic))
             }

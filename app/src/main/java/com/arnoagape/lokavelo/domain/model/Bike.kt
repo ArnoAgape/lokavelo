@@ -1,10 +1,11 @@
 package com.arnoagape.lokavelo.domain.model
 
 import com.arnoagape.lokavelo.data.dto.BikeDto
+import com.google.firebase.Timestamp
 
 data class Bike(
     val id: String = "",
-    val createdAt: Long = System.currentTimeMillis(),
+    val createdAt: Timestamp = Timestamp.now(),
     val ownerId: String = "",
 
     val photoUrl: List<String> = emptyList(),
