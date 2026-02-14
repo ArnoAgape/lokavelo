@@ -13,7 +13,7 @@
     <string name="subtitle_characteristics">Fill in the details of your bike</string>
     <string name="subtitle_title_description">Add a title and a description that define well
         your post</string>
-    <string name="subtitle_location">Put the exact address where your bike is</string>
+    <string name="subtitle_location">The address won’t be visible publicly</string>
     <string name="subtitle_pricing">You can also add a half-day, weekly, or monthly rate</string>
     <string name="subtitle_deposit">This amount will be blocked on the renter’s credit card
         for the entire duration of the rental</string>
@@ -41,6 +41,8 @@
     <string name="address_line">Address</string>
     <string name="address_line_2_optional">Address line 2 (optional)</string>
     <string name="city">City</string>
+    <string name="take_picture">Take a picture</string>
+    <string name="browse_gallery">Browse gallery</string>
 
     // SUCCESS
     <string name="success_user_updated">Details updated successfully</string>

@@ -13,7 +13,7 @@
     <string name="subtitle_characteristics">Ajoute les détails de ton vélo</string>
     <string name="subtitle_title_description">Ajoute un titre et une description qui définissent
         bien ton annonce</string>
-    <string name="subtitle_location">Ajoute l’adresse exacte de ton vélo</string>
+    <string name="subtitle_location">L’adresse ne sera pas visible publiquement</string>
     <string name="subtitle_pricing">Tu peux aussi ajouter un tarif à la demi-journée,
         à la semaine ou au mois</string>
     <string name="subtitle_deposit">Ce montant sera bloqué sur la carte bancaire du locataire
@@ -42,6 +42,8 @@
     <string name="address_line">Adresse</string>
     <string name="address_line_2_optional">Adresse ligne 2 (facultatif)</string>
     <string name="city">Ville</string>
+    <string name="take_picture">Prends une photo</string>
+    <string name="browse_gallery">Choisis dans la galerie</string>
 
     // SUCCESS
     <string name="success_user_updated">Tes données ont bien été mises à jour</string>

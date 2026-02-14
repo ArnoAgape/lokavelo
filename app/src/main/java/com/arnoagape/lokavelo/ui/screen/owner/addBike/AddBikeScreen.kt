@@ -271,7 +271,7 @@ private fun AddBikeContent(
         ) {
 
             ListItem(
-                headlineContent = { Text("Prendre une photo") },
+                headlineContent = { Text(stringResource(R.string.take_picture)) },
                 leadingContent = { Icon(Icons.Default.CameraAlt, null) },
                 modifier = Modifier.clickable {
                     launchCamera()
@@ -280,7 +280,7 @@ private fun AddBikeContent(
             )
 
             ListItem(
-                headlineContent = { Text("Choisir dans la galerie") },
+                headlineContent = { Text(stringResource(R.string.browse_gallery)) },
                 leadingContent = { Icon(Icons.Default.Photo, null) },
                 modifier = Modifier.clickable {
                     launchGallery()
