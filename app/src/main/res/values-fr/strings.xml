@@ -59,6 +59,7 @@
     <string name="sign_in_email">Continue avec ton adresse email</string>
     <string name="sign_in_phone">Continue avec ton numéro</string>
     <string name="sign_in_title">Bienvenue !\n Connecte-toi pour utiliser LokaVélo.</string>
+    <string name="sign_in_continue">Continuer</string>
 
     // ACTIONS
     <string name="cancel">Annuler</string>

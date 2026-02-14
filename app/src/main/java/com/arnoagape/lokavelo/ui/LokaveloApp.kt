@@ -11,21 +11,23 @@ import com.arnoagape.lokavelo.ui.screen.account.profile.ProfileScreen
 import com.arnoagape.lokavelo.ui.screen.home.home.HomeScreen
 import com.arnoagape.lokavelo.ui.screen.login.LoginScreen
 import com.arnoagape.lokavelo.ui.screen.login.LoginViewModel
-import com.arnoagape.lokavelo.ui.screen.login.launchers.rememberEmailSignUpLauncher
+import com.arnoagape.lokavelo.ui.screen.login.launchers.emailSignUpLauncher
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeScreen
-import com.arnoagape.lokavelo.ui.screen.login.launchers.rememberGoogleSignUpLauncher
+import com.arnoagape.lokavelo.ui.screen.login.launchers.googleSignUpLauncher
+import com.arnoagape.lokavelo.ui.screen.login.launchers.phoneSignUpLauncher
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeViewModel
 
 @Composable
 fun LokaveloApp() {
 
-    var backStack by remember { mutableStateOf(listOf<Screen>(Screen.Owner.AddBike)) }
+    var backStack by remember { mutableStateOf(listOf<Screen>(Screen.Login)) }
 
     val currentScreen = backStack.last()
 
     // Sign-in launchers
-    val emailSignUpLauncher = rememberEmailSignUpLauncher(hiltViewModel<LoginViewModel>())
-    val googleSignUpLauncher = rememberGoogleSignUpLauncher(hiltViewModel<LoginViewModel>())
+    val emailSignUpLauncher = emailSignUpLauncher(hiltViewModel<LoginViewModel>())
+    val googleSignUpLauncher = googleSignUpLauncher(hiltViewModel<LoginViewModel>())
+    val phoneSignUpLauncher = phoneSignUpLauncher(hiltViewModel<LoginViewModel>())
 
     // navigate to
     fun navigate(screen: Screen) {
@@ -62,7 +64,8 @@ fun LokaveloApp() {
         is Screen.Login -> LoginScreen(
             onGoogleSignInClick = { googleSignUpLauncher() },
             onEmailSignInClick = { emailSignUpLauncher() },
-            onLoginSuccess = { }
+            onPhoneSignInClick = { phoneSignUpLauncher() },
+            onLoginSuccess = { navigate(Screen.Owner.AddBike)}
         )
 
         // MESSAGING

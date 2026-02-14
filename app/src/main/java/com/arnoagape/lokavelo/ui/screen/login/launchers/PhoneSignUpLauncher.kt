@@ -12,16 +12,16 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 
 /**
- * Creates and remembers a Google sign-up launcher using FirebaseUI Auth.
+ * Creates and remembers an email sign-up launcher using FirebaseUI Auth.
  * On success, the user is synced with Firestore and a success message is sent.
  * On failure, an error event is emitted.
  *
- * @param loginViewModel ViewModel used to sync the user and emit events.
- * @return A lambda that launches the Google sign-up flow.
+ * @param viewModel ViewModel used to sync the user and send UI events.
+ * @return A lambda that launches the email sign-up flow.
  */
 @Composable
-fun rememberGoogleSignUpLauncher(
-    loginViewModel: LoginViewModel
+fun phoneSignUpLauncher(
+    viewModel: LoginViewModel
 ): () -> Unit {
 
     val launcher = rememberLauncherForActivityResult(
@@ -30,12 +30,12 @@ fun rememberGoogleSignUpLauncher(
         val response = IdpResponse.fromResultIntent(result.data)
 
         if (result.resultCode == Activity.RESULT_OK) {
-            loginViewModel.syncUserWithFirestore()
-            loginViewModel.sendEvent(Event.ShowMessage(R.string.success_sign_up))
+            viewModel.syncUserWithFirestore()
+            viewModel.sendEvent(Event.ShowSuccessMessage(R.string.success_sign_up))
 
         } else {
             if (response == null) {
-                loginViewModel.sendEvent(Event.ShowMessage(R.string.error_sign_up))
+                viewModel.sendEvent(Event.ShowMessage(R.string.error_sign_up))
             }
         }
     }
@@ -45,7 +45,7 @@ fun rememberGoogleSignUpLauncher(
             .createSignInIntentBuilder()
             .setLogo(R.drawable.ic_lokavelo_logo)
             .setTheme(R.style.Theme_Lokavelo)
-            .setAvailableProviders(listOf(AuthUI.IdpConfig.GoogleBuilder().build()))
+            .setAvailableProviders(listOf(AuthUI.IdpConfig.PhoneBuilder().build()))
             .build()
     }
 

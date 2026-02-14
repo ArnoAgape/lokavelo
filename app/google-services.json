@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "449958394166-kjnnfejka0lo9t82jkgd68928glci617.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.arnoagape.lokavelo",
+            "certificate_hash": "9d9edcd8f640fa4fb5670a6ce6f4c021fda9c134"
+          }
+        },
+        {
           "client_id": "449958394166-ts1loe5sruds6scs214uhjkvsl32jvv1.apps.googleusercontent.com",
           "client_type": 3
         }
