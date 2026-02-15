@@ -47,9 +47,13 @@ class FirebaseUserApi : UserApi {
      * Emits the current user or null when signed out.
      */
     override fun observeCurrentUser(): Flow<User?> = callbackFlow {
+
+        trySend(auth.currentUser?.toDomain())
+
         val listener = FirebaseAuth.AuthStateListener { auth ->
             trySend(auth.currentUser?.toDomain())
         }
+
         auth.addAuthStateListener(listener)
         awaitClose { auth.removeAuthStateListener(listener) }
     }

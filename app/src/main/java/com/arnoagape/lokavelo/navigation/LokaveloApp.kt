@@ -176,7 +176,7 @@ fun LokaveloApp() {
                     onGoogleSignInClick = { googleSignUpLauncher() },
                     onEmailSignInClick = { emailSignUpLauncher() },
                     onPhoneSignInClick = { phoneSignUpLauncher() },
-                    onLoginSuccess = { navigate(Screen.Owner.AddBike) }
+                    onLoginSuccess = { navigate(Screen.Owner.HomeBike) }
                 )
 
                 // MESSAGING
