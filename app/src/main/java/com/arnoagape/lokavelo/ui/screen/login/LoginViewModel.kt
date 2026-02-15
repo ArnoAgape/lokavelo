@@ -9,6 +9,8 @@ import com.arnoagape.lokavelo.ui.utils.NetworkUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -29,29 +31,13 @@ class LoginViewModel @Inject constructor(
     private val _events = Channel<Event>(Channel.BUFFERED)
     val eventsFlow = _events.receiveAsFlow()
 
-    private val _isSignedIn =
+    val isSignedIn =
         userRepository.isUserSignedIn()
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000),
                 null
             )
-
-    /*val state: StateFlow<LoginScreenState> =
-        combine(_session, _isSignedIn) { session, isSignedIn ->
-            LoginScreenState(
-                session = when {
-                    isSignedIn == true -> SessionType.Authenticated
-                    session == SessionType.Guest -> SessionType.Guest
-                    else -> null
-                },
-                isSignedIn = isSignedIn
-            )
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            LoginScreenState()
-        )*/
 
     fun onSignInRequested(onAllowed: () -> Unit) {
         viewModelScope.launch {

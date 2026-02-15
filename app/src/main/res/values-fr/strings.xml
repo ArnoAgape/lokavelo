@@ -2,8 +2,12 @@
 <resources>
 
     // TOP BAR
-    <string name="add_bike">Ajouter un vélo</string>
+    <string name="add_bike">Publier une annonce</string>
     <string name="detail_bike">Descriptif</string>
+    <string name="rent">Louer</string>
+    <string name="rentals">Locations</string>
+    <string name="messaging">Messagerie</string>
+    <string name="account">Compte</string>
 
     // BOTTOM BAR
     <string name="publish_bike">Publier le vélo</string>
@@ -45,10 +49,6 @@
     <string name="city">Ville</string>
     <string name="take_picture">Prends une photo</string>
     <string name="browse_gallery">Choisis dans la galerie</string>
-    <string name="rent">Louer</string>
-    <string name="rentals">Locations</string>
-    <string name="messaging">Messagerie</string>
-    <string name="account">Compte</string>
 
     // SUCCESS
     <string name="success_user_updated">Tes données ont bien été mises à jour</string>
@@ -104,6 +104,7 @@
     <string name="cd_remove">Clique ici pour effacer</string>
     <string name="cd_bike_preview">Aperçu du vélo</string>
     <string name="cd_go_back">Retour arrière</string>
+    <string name="cd_close">Fermer</string>
     <string name="cd_expand_accessories">Clique ici pour ouvrir le menu des accessoires</string>
     <string name="cd_button_add_bike">Clique ici pour ajouter un vélo à louer</string>
     <string name="cd_button_delete">Supprimer les annonces sélectionnées</string>

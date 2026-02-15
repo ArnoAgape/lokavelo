@@ -2,8 +2,12 @@
     <string name="app_name" translatable="false">LokaVélo</string>
 
     // TOP BAR
-    <string name="add_bike">Add a bike</string>
+    <string name="add_bike">Post an ad</string>
     <string name="detail_bike">Bike info</string>
+    <string name="rent">Rent</string>
+    <string name="rentals">Rentals</string>
+    <string name="messaging">Messaging</string>
+    <string name="account">Account</string>
 
     // BOTTOM BAR
     <string name="publish_bike">Publish bike</string>
@@ -44,10 +48,6 @@
     <string name="city">City</string>
     <string name="take_picture">Take a picture</string>
     <string name="browse_gallery">Browse gallery</string>
-    <string name="rent">Rent</string>
-    <string name="rentals">Rentals</string>
-    <string name="messaging">Messaging</string>
-    <string name="account">Account</string>
 
     // SUCCESS
     <string name="success_user_updated">Details updated successfully</string>
@@ -100,6 +100,7 @@
     <string name="cd_remove">Click here to erase</string>
     <string name="cd_bike_preview">Bike preview</string>
     <string name="cd_go_back">Go back</string>
+    <string name="cd_close">Close</string>
     <string name="cd_expand_accessories">Click here to expand the accessories section</string>
     <string name="cd_button_add_bike">Add a new bike</string>
     <string name="cd_button_delete">Delete the selected elements</string>
