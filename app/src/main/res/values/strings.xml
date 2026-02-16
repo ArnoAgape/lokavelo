@@ -52,6 +52,8 @@
     <string name="renting">Renting</string>
     <string name="available">Available</string>
     <string name="finished">Finished</string>
+    <string name="search">Search</string>
+    <string name="delete">Delete</string>
 
     // SUCCESS
     <string name="success_user_updated">Details updated successfully</string>

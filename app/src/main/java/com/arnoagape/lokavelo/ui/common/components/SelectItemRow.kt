@@ -1,7 +1,7 @@
 package com.arnoagape.lokavelo.ui.common.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material3.ElevatedCard
@@ -30,16 +30,20 @@ fun SelectItemRow(
     isSelected: Boolean,
     onSelectToggle: () -> Unit,
     onClick: () -> Unit,
+    onLongClick: () -> Unit,
     content: @Composable RowScope.() -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .clickable {
-                if (isSelectionMode) onSelectToggle()
-                else onClick()
-            },
+            .combinedClickable(
+                onClick = {
+                    if (isSelectionMode) onSelectToggle()
+                    else onClick()
+                },
+                onLongClick = { onLongClick() }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
@@ -58,7 +62,7 @@ fun SelectItemRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(16.dp),
+                    .padding(10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
                 content = content

@@ -1,6 +1,6 @@
 package com.arnoagape.lokavelo.ui.screen.owner.home
 
-import androidx.lifecycle.ViewModel
+import  androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.data.repository.BikeOwnerRepository
@@ -8,6 +8,7 @@ import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.SelectionState
 import com.arnoagape.lokavelo.ui.utils.NetworkUtils
+import com.arnoagape.lokavelo.ui.utils.normalizeForSearch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -43,14 +43,30 @@ class HomeBikeViewModel @Inject constructor(
 
     private val bikesFlow: Flow<List<Bike>> = bikeRepository.observeBikes()
 
+    private val _searchQuery = MutableStateFlow("")
+    private val _isSearchActive = MutableStateFlow(false)
+    private val _showDeleteDialog = MutableStateFlow(false)
+    val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog
+
     private val uiState: Flow<HomeBikeUiState> =
-        bikesFlow
-            .map { bikes ->
-                if (bikes.isEmpty())
-                    HomeBikeUiState.Empty()
-                else
-                    HomeBikeUiState.Success(bikes)
+        combine(bikesFlow, _searchQuery) { bikes, query ->
+
+            val normalizedQuery = query.normalizeForSearch()
+
+            val filtered = if (query.isBlank()) {
+                bikes
+            } else {
+                bikes.filter {
+                    it.title.normalizeForSearch()
+                        .contains(normalizedQuery)
+                }
             }
+            if (filtered.isEmpty()) {
+                HomeBikeUiState.Empty()
+            } else {
+                HomeBikeUiState.Success(filtered)
+            }
+        }
             .onStart {
                 emit(HomeBikeUiState.Loading)
             }
@@ -62,12 +78,16 @@ class HomeBikeViewModel @Inject constructor(
         combine(
             uiState,
             _isRefreshing,
-            _selection
-        ) { ui, refreshing, selection ->
+            _selection,
+            _searchQuery,
+            _isSearchActive
+        ) { ui, refreshing, selection, query, active ->
             HomeBikeScreenState(
                 uiState = ui,
                 isRefreshing = refreshing,
-                selection = selection
+                selection = selection,
+                searchQuery = query,
+                isSearchActive = active
             )
         }.stateIn(
             viewModelScope,
@@ -75,12 +95,36 @@ class HomeBikeViewModel @Inject constructor(
             HomeBikeScreenState()
         )
 
+    // 🔍 Search
+
+    fun onSearchQueryChange(query: String) {
+        _searchQuery.value = query
+    }
+
+    fun toggleSearch() {
+        _isSearchActive.update { !it }
+
+        if (!_isSearchActive.value) {
+            _searchQuery.value = ""
+        }
+    }
+
+    // 🗑 Selection
+
+    fun requestDeleteConfirmation() {
+        _showDeleteDialog.value = true
+    }
+
+    fun dismissDeleteDialog() {
+        _showDeleteDialog.value = false
+    }
+
     fun enterSelectionMode() {
         _selection.update { it.copy(isSelectionMode = true) }
     }
 
     fun exitSelectionMode() {
-        _selection.value = SelectionState() // reset
+        _selection.value = SelectionState()
     }
 
     fun toggleSelection(id: String) {
@@ -91,7 +135,7 @@ class HomeBikeViewModel @Inject constructor(
         }
     }
 
-    fun deleteSelectedMedicines() {
+    fun deleteSelectedBikes() {
         viewModelScope.launch {
             val result = bikeRepository.deleteBikes(_selection.value.selectedIds)
 
@@ -101,10 +145,14 @@ class HomeBikeViewModel @Inject constructor(
             } else {
                 _events.trySend(Event.ShowMessage(R.string.error_delete_bike))
             }
+
+            _showDeleteDialog.value = false
         }
     }
 
-    fun refreshMedicines() {
+    // 🔄 Refresh
+
+    fun refreshBikes() {
         if (!networkUtils.isNetworkAvailable()) {
             _events.trySend(Event.ShowMessage(R.string.error_no_network))
             return
@@ -122,5 +170,7 @@ class HomeBikeViewModel @Inject constructor(
 data class HomeBikeScreenState(
     val uiState: HomeBikeUiState = HomeBikeUiState.Loading,
     val isRefreshing: Boolean = false,
-    val selection: SelectionState = SelectionState()
+    val selection: SelectionState = SelectionState(),
+    val isSearchActive: Boolean = false,
+    val searchQuery: String = ""
 )

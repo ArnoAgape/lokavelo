@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -21,7 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
@@ -73,6 +79,9 @@ fun LokaveloApp() {
     // States
     val isSignedIn by loginViewModel.isSignedIn.collectAsStateWithLifecycle()
     val addBikeState by addBikeViewModel.state.collectAsStateWithLifecycle()
+    val homeBikeScreenState by homeBikeViewModel.state.collectAsStateWithLifecycle()
+
+    val focusRequester = remember { FocusRequester() }
 
     // Navigation helpers
     fun navigate(screen: Screen) {
@@ -96,7 +105,6 @@ fun LokaveloApp() {
     }
 
     Scaffold(
-
         topBar = {
             when (currentScreen) {
 
@@ -105,16 +113,75 @@ fun LokaveloApp() {
                         title = { Text(stringResource(R.string.add_bike)) },
                         navigationIcon = {
                             IconButton(onClick = { popBack() }) {
-                                Icon(Icons.Default.Close, null)
+                                Icon(
+                                    Icons.Default.Close,
+                                    stringResource(R.string.close)
+                                )
                             }
                         }
                     )
                 }
 
                 is Screen.Owner.HomeBike -> {
-                    TopAppBar(
-                        title = { Text(stringResource(R.string.rentals)) }
-                    )
+                    if (homeBikeScreenState.isSearchActive) {
+                        EmbeddedSearchBar(
+                            query = homeBikeScreenState.searchQuery,
+                            onQueryChange = homeBikeViewModel::onSearchQueryChange,
+                            onClose = homeBikeViewModel::toggleSearch,
+                            modifier = Modifier
+                                .padding(
+                                    top = 42.dp,
+                                    start = 16.dp,
+                                    end = 16.dp
+                                )
+                                .focusRequester(focusRequester)
+                        )
+                    } else {
+                        TopAppBar(
+                            title = { Text(stringResource(R.string.rentals)) },
+                            actions = {
+
+                                // 🔍 Search
+                                if (!homeBikeScreenState.selection.isSelectionMode) {
+                                    IconButton(onClick = homeBikeViewModel::toggleSearch) {
+                                        Icon(
+                                            imageVector = Icons.Default.Search,
+                                            contentDescription = stringResource(R.string.search)
+                                        )
+                                    }
+                                }
+
+                                // 🗑 Delete
+                                if (homeBikeScreenState.selection.isSelectionMode) {
+                                    IconButton(
+                                        onClick = {
+                                            if (homeBikeScreenState.selection.selectedIds.isEmpty()) {
+                                                homeBikeViewModel.exitSelectionMode()
+                                            } else {
+                                                homeBikeViewModel.requestDeleteConfirmation()
+                                            }
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector =
+                                                if (homeBikeScreenState.selection.selectedIds.isEmpty())
+                                                    Icons.Default.Close
+                                                else
+                                                    Icons.Default.DeleteForever,
+                                            contentDescription = stringResource(R.string.close)
+                                        )
+                                    }
+                                } else {
+                                    IconButton(onClick = homeBikeViewModel::enterSelectionMode) {
+                                        Icon(
+                                            imageVector = Icons.Default.Delete,
+                                            contentDescription = stringResource(R.string.delete)
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    }
                 }
 
                 else -> {}

@@ -2,7 +2,6 @@ package com.arnoagape.lokavelo.ui.screen.owner.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,7 +46,8 @@ fun BikeItem(
     bikes: List<Bike>,
     onBikeClick: (Bike) -> Unit,
     selectionState: SelectionState,
-    onToggleSelection: (String) -> Unit
+    onToggleSelection: (String) -> Unit,
+    onEnterSelectionMode: () -> Unit
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -62,11 +62,14 @@ fun BikeItem(
                 isSelectionMode = selectionState.isSelectionMode,
                 isSelected = selectionState.selectedIds.contains(bike.id),
                 onSelectToggle = { onToggleSelection(bike.id) },
-                onClick = { onBikeClick(bike) }
+                onClick = { onBikeClick(bike) },
+                onLongClick = {
+                    onEnterSelectionMode()
+                    onToggleSelection(bike.id)
+                }
             ) {
                 BikeItemRow(
-                    bike = bike,
-                    onClick = { onBikeClick(bike) }
+                    bike = bike
                 )
             }
         }
@@ -76,7 +79,6 @@ fun BikeItem(
 @Composable
 fun BikeItemRow(
     bike: Bike,
-    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isRented = bike.rentalStart != null && bike.rentalEnd != null
@@ -84,8 +86,7 @@ fun BikeItemRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .clickable { onClick() },
+            .clip(RoundedCornerShape(16.dp)),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
 
@@ -207,8 +208,7 @@ fun BikeItemRowPreview() {
                 photoUrls = emptyList(),
                 rentalStart = Instant.parse("2026-02-21T16:30:00Z"),
                 rentalEnd = Instant.parse("2026-02-28T11:30:00Z")
-            ),
-            onClick = {}
+            )
         )
     }
 }
@@ -238,7 +238,8 @@ private fun BikeItemPreview() {
             ),
             onBikeClick = {},
             selectionState = SelectionState(),
-            onToggleSelection = {}
+            onToggleSelection = {},
+            onEnterSelectionMode = {}
         )
     }
 }

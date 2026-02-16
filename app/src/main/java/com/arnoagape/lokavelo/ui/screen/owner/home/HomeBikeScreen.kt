@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -22,11 +23,13 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.EventsEffect
+import com.arnoagape.lokavelo.ui.common.components.ConfirmDeleteDialog
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 
 @Composable
@@ -35,6 +38,7 @@ fun HomeBikeScreen(
     onBikeClick: (Bike) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val showDeleteDialog by viewModel.showDeleteDialog.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val resources = LocalResources.current
     val context = LocalContext.current
@@ -57,8 +61,17 @@ fun HomeBikeScreen(
     HomeBikeContent(
         state = state,
         onBikeClick = onBikeClick,
-        onRefresh = { viewModel.refreshMedicines() },
-        onToggleSelection = { viewModel.toggleSelection(it) }
+        onRefresh = { viewModel.refreshBikes() },
+        onToggleSelection = { viewModel.toggleSelection(it) },
+        onEnterSelectionMode = { viewModel.enterSelectionMode() }
+    )
+
+    ConfirmDeleteDialog(
+        show = showDeleteDialog,
+        onConfirm = { viewModel.deleteSelectedBikes() },
+        onDismiss = { viewModel.dismissDeleteDialog() },
+        confirmButtonTitle = stringResource(R.string.confirm_delete_bike),
+        confirmButtonMessage = stringResource(R.string.confirm_delete_message_bikes)
     )
 }
 
@@ -68,6 +81,7 @@ fun HomeBikeContent(
     state: HomeBikeScreenState,
     onBikeClick: (Bike) -> Unit,
     onRefresh: () -> Unit,
+    onEnterSelectionMode: () -> Unit,
     onToggleSelection: (String) -> Unit
 ) {
     val refreshState = rememberPullToRefreshState()
@@ -85,7 +99,8 @@ fun HomeBikeContent(
                     bikes = ui.bikes,
                     onBikeClick = onBikeClick,
                     selectionState = state.selection,
-                    onToggleSelection = onToggleSelection
+                    onToggleSelection = onToggleSelection,
+                    onEnterSelectionMode = onEnterSelectionMode
                 )
             }
         }
@@ -106,7 +121,9 @@ fun HomeBikeContent(
             ) {
                 Text(
                     text = stringResource(R.string.no_bike),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
                     textAlign = TextAlign.Center
                 )
             }
@@ -136,7 +153,7 @@ fun HomeBikeScreenPreview() {
         val sampleBikes = listOf(
             Bike(id = "1", title = "Vélo gravel Origine", priceInCents = 2500),
             Bike(id = "2", title = "Vélo VTT Rockrider", priceInCents = 1000),
-            Bike(id = "3", title = "Vélo randonneuse Riverside", priceInCents = 2000)
+            Bike(id = "3    ", title = "Vélo randonneuse Riverside", priceInCents = 2000)
         )
 
         val previewState = HomeBikeScreenState(
@@ -148,7 +165,8 @@ fun HomeBikeScreenPreview() {
             state = previewState,
             onBikeClick = {},
             onRefresh = {},
-            onToggleSelection = {}
+            onToggleSelection = {},
+            onEnterSelectionMode = {}
         )
     }
 }
