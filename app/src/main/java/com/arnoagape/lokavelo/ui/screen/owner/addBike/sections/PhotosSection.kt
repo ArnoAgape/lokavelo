@@ -45,44 +45,65 @@ import com.arnoagape.lokavelo.ui.theme.LocalSpacing
 @Composable
 fun PhotosSection(
     uris: List<Uri>,
-    onAddPhotoClick: () -> Unit,
-    onRemovePhoto: (Uri) -> Unit
+    onAddPhotoClick: () -> Unit = {},
+    onRemovePhoto: (Uri) -> Unit = {},
+    isEditable: Boolean = true
 ) {
-    val spacing = LocalSpacing.current
-    var selectedUri by remember { mutableStateOf<Uri?>(null) }
-    var viewerIndex by remember { mutableStateOf<Int?>(null) }
-
     SectionCard(
         title = stringResource(R.string.pictures),
         subtitle = stringResource(R.string.subtitle_add_3_pictures)
     ) {
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(spacing.medium),
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        PhotosContent(
+            uris = uris,
+            onAddPhotoClick = onAddPhotoClick,
+            onRemovePhoto = onRemovePhoto,
+            isEditable = isEditable
+        )
 
-            uris.forEachIndexed { index, uri ->
-                PhotoPreview(
-                    uri = uri,
-                    onRemoveClick = { onRemovePhoto(uri) },
-                    onClick = { viewerIndex = index }
-                )
-            }
+    }
+}
 
-            viewerIndex?.let { index ->
-                ZoomableImageViewer(
-                    uris = uris,
-                    startIndex = index,
-                    onDismiss = { viewerIndex = null }
-                )
-            }
+@Composable
+fun PhotosContent(
+    uris: List<Uri>,
+    onAddPhotoClick: () -> Unit = {},
+    onRemovePhoto: (Uri) -> Unit = {},
+    isEditable: Boolean = true
+) {
+    var selectedUri by remember { mutableStateOf<Uri?>(null) }
+    val spacing = LocalSpacing.current
+    var viewerIndex by remember { mutableStateOf<Int?>(null) }
 
-            if (uris.size < 3) {
-                AddPhotoButton(
-                    onClick = onAddPhotoClick
-                )
-            }
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(spacing.medium),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+
+        uris.forEachIndexed { index, uri ->
+            PhotoPreview(
+                uri = uri,
+                onRemoveClick = if (isEditable) {
+                    { onRemovePhoto(uri) }
+                } else {
+                    null
+                },
+                onClick = { viewerIndex = index }
+            )
+        }
+
+        viewerIndex?.let { index ->
+            ZoomableImageViewer(
+                uris = uris,
+                startIndex = index,
+                onDismiss = { viewerIndex = null }
+            )
+        }
+
+        if (isEditable && uris.size < 3) {
+            AddPhotoButton(
+                onClick = onAddPhotoClick
+            )
         }
     }
     selectedUri?.let {
@@ -96,7 +117,7 @@ fun PhotosSection(
 @Composable
 fun PhotoPreview(
     uri: Uri,
-    onRemoveClick: () -> Unit,
+    onRemoveClick: (() -> Unit)?,
     onClick: () -> Unit
 ) {
     Box(
@@ -113,21 +134,23 @@ fun PhotoPreview(
             contentScale = ContentScale.Crop
         )
 
-        IconButton(
-            onClick = onRemoveClick,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(28.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                    shape = CircleShape
+        if (onRemoveClick != null) {
+            IconButton(
+                onClick = onRemoveClick,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(28.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                        shape = CircleShape
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(R.string.remove_picture),
+                    tint = MaterialTheme.colorScheme.error
                 )
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = stringResource(R.string.remove_picture),
-                tint = MaterialTheme.colorScheme.error
-            )
+            }
         }
     }
 }

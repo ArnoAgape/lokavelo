@@ -56,6 +56,9 @@
     <string name="finished">Finished</string>
     <string name="search">Search</string>
     <string name="delete">Delete</string>
+    <string name="no_accessories">No accessories</string>
+    <string name="no_deposit">No deposit</string>
+    <string name="no_brand">No brand</string>
 
     // SUCCESS
     <string name="success_user_updated">Details updated successfully</string>
@@ -93,6 +96,7 @@
     <string name="publishing">Publishing…</string>
     <string name="add_picture">Add picture</string>
     <string name="remove_picture">Remove picture</string>
+    <string name="press_again_exit">Press again to exit the app</string>
 
     // CONFIRM ACTIONS
     <string name="action_delete_account">Delete account</string>

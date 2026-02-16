@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.ui.screen.owner.detail
+package com.arnoagape.lokavelo.ui.screen.owner.detail.sections
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

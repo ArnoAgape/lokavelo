@@ -57,6 +57,9 @@
     <string name="finished">Terminé</string>
     <string name="search">Rechercher</string>
     <string name="delete">Supprimer</string>
+    <string name="no_accessories">Aucun accessoire</string>
+    <string name="no_deposit">Aucune caution</string>
+    <string name="no_brand">Aucune marque</string>
 
     // SUCCESS
     <string name="success_user_updated">Tes données ont bien été mises à jour</string>
@@ -94,6 +97,7 @@
     <string name="publishing">Publication en cours…</string>
     <string name="add_picture">Ajouter une photo</string>
     <string name="remove_picture">Supprimer</string>
+    <string name="press_again_exit">Appuie à nouveau pour quitter</string>
 
     // CONFIRM ACTIONS
     <string name="action_delete_account">Supprimer le compte</string>

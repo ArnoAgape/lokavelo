@@ -1,5 +1,8 @@
 package com.arnoagape.lokavelo.navigation
 
+import android.app.Activity
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
@@ -22,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -75,6 +81,11 @@ fun LokaveloApp() {
         screenFromRoute(currentRoute)
     }
 
+    val isOnRootScreen = currentScreen is Screen.Owner.HomeBike
+            || currentScreen is Screen.Rent
+            || currentScreen is Screen.Account
+            || currentScreen is Screen.Messaging
+
     // ViewModels
     val loginViewModel: LoginViewModel = hiltViewModel()
     val addBikeViewModel: AddBikeViewModel = hiltViewModel()
@@ -88,6 +99,9 @@ fun LokaveloApp() {
 
     val focusRequester = remember { FocusRequester() }
     val snackbarHostState = remember { SnackbarHostState() }
+    var lastBackPressedTime by remember { mutableLongStateOf(0L) }
+    val context = LocalContext.current
+    val resources = LocalResources.current
 
     // Navigation helpers
     fun navigate(screen: Screen) {
@@ -107,6 +121,25 @@ fun LokaveloApp() {
     fun popBack() {
         if (backStack.size > 1) {
             backStack = backStack.dropLast(1)
+        }
+    }
+
+    BackHandler {
+        if (!isOnRootScreen) {
+            popBack()
+        } else {
+            val currentTime = System.currentTimeMillis()
+
+            if (currentTime - lastBackPressedTime < 2000) {
+                (context as? Activity)?.finish()
+            } else {
+                lastBackPressedTime = currentTime
+                Toast.makeText(
+                    context,
+                    resources.getString(R.string.press_again_exit),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 

@@ -241,7 +241,8 @@ private fun AddBikeContent(
                 onAddPhotoClick = { showSheet = true },
                 onRemovePhoto = { uri ->
                     onAction(AddBikeEvent.RemovePhoto(uri))
-                }
+                },
+                isEditable = true
             )
         }
 

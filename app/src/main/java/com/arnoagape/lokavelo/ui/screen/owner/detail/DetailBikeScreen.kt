@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
@@ -29,9 +30,14 @@ import com.arnoagape.lokavelo.domain.model.BikeCategory
 import com.arnoagape.lokavelo.domain.model.BikeCondition
 import com.arnoagape.lokavelo.domain.model.BikeEquipment
 import com.arnoagape.lokavelo.domain.model.BikeLocation
+import com.arnoagape.lokavelo.domain.model.labelRes
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.EventsEffect
-import com.arnoagape.lokavelo.ui.screen.owner.home.BikeImage
+import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PhotosContent
+import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PhotosSection
+import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.AccessoriesRow
+import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.DetailCard
+import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.DetailRow
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import java.text.NumberFormat
@@ -121,10 +127,12 @@ fun DetailItem(bike: Bike) {
 
     // Caution
     val formattedDeposit = remember(bike.depositInCents) {
-        val depositInEuros = bike.depositInCents?.div(100.0)
-        NumberFormat
-            .getCurrencyInstance(Locale.FRANCE)
-            .format(depositInEuros)
+        bike.depositInCents?.let { cents ->
+            val depositInEuros = cents / 100.0
+            NumberFormat
+                .getCurrencyInstance(Locale.FRANCE)
+                .format(depositInEuros)
+        }
     }
 
     LazyColumn(
@@ -139,12 +147,17 @@ fun DetailItem(bike: Bike) {
     ) {
         item { Spacer(modifier = Modifier.height(spacing.extraSmall)) }
 
+        // Pictures
         item {
             DetailCard(title = stringResource(R.string.pictures)) {
-                BikeImage(bike)
+                PhotosContent(
+                    uris = bike.photoUrls.map { it.toUri() },
+                    isEditable = false
+                )
             }
         }
 
+        // Title & Description
         item {
             DetailCard(title = stringResource(R.string.title_description)) {
                 Text(bike.title)
@@ -152,23 +165,48 @@ fun DetailItem(bike: Bike) {
             }
         }
 
+        // Characteristics
         item {
             DetailCard(title = stringResource(R.string.characteristics)) {
-                DetailRow(stringResource(R.string.category), bike.category.toString())
+
+                // Category
+                DetailRow(
+                    stringResource(R.string.category),
+                    bike.category?.let {
+                        stringResource(it.labelRes())
+                    } ?: ""
+                )
+                // Brand
                 DetailRow(stringResource(R.string.brand), bike.brand)
-                DetailRow(stringResource(R.string.condition), bike.condition.toString())
-                DetailRow(stringResource(R.string.accessories), bike.accessories.toString())
+
+                // Condition
+                DetailRow(
+                    stringResource(R.string.condition),
+                    bike.condition?.let {
+                        stringResource(it.labelRes())
+                    } ?: ""
+                )
+
+                // Accessories
+                AccessoriesRow(
+                    label = stringResource(R.string.accessories),
+                    accessories = bike.accessories
+                )
             }
         }
 
-
+        // Pricing
         item {
             DetailCard(title = stringResource(R.string.pricing)) {
                 DetailRow(stringResource(R.string.pricing_day), formattedPrice)
-                DetailRow(stringResource(R.string.deposit), formattedDeposit)
+                DetailRow(
+                    stringResource(R.string.deposit),
+                    formattedDeposit ?: stringResource(R.string.no_deposit)
+                )
             }
         }
 
+        // Address
         item {
             DetailCard(title = stringResource(R.string.location)) {
                 DetailRow(stringResource(R.string.address_line), bike.location.street)
@@ -200,7 +238,8 @@ private fun DetailBikeScreenPreview() {
                 brand = "Origine",
                 condition = BikeCondition.LIKE_NEW,
                 accessories = listOf(
-                    BikeEquipment.HANDLEBAR_BAG, BikeEquipment.MUDGUARD, BikeEquipment.BELL
+                    BikeEquipment.HANDLEBAR_BAG, BikeEquipment.MUDGUARD, BikeEquipment.BELL,
+                    BikeEquipment.REFLECTIVE_VEST
                 ),
                 priceInCents = 2500,
                 depositInCents = 50000,
