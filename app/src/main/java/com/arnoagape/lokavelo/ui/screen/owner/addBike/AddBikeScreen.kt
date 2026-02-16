@@ -311,6 +311,8 @@ private fun AddBikeContent(
                 }
             )
         }
+
+        item { Spacer(modifier = Modifier.height(spacing.extraSmall)) }
     }
 }
 

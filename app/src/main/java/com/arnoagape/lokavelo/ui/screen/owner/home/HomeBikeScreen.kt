@@ -153,7 +153,7 @@ fun HomeBikeScreenPreview() {
         val sampleBikes = listOf(
             Bike(id = "1", title = "Vélo gravel Origine", priceInCents = 2500),
             Bike(id = "2", title = "Vélo VTT Rockrider", priceInCents = 1000),
-            Bike(id = "3    ", title = "Vélo randonneuse Riverside", priceInCents = 2000)
+            Bike(id = "3", title = "Vélo randonneuse Riverside", priceInCents = 2000)
         )
 
         val previewState = HomeBikeScreenState(

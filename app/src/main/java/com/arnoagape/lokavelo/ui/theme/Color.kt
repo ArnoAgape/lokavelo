@@ -9,7 +9,7 @@ val Blue40 = Color(0xFF63A4D9)        // primary
 val Blue = Color(0xFF1F4F91)    // secondary dark
 val Cyan40 = Color(0xFF1767A3)        // tertiary dark
 
-val DarkBlue = Color(0xFF0F1E2E)
+val DarkBlue = Color(0xFF060e17)
 
 // RENT BACKGROUND AND TEXT
 val lightBlue = Color(0xFFE0F2FF) // renting

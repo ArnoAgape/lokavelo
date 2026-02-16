@@ -23,6 +23,8 @@
         for the entire duration of the rental</string>
 
     // MISC WORDS
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="bikes">Bikes</string>
     <string name="pictures">Pictures</string>
     <string name="characteristics">Characteristics</string>

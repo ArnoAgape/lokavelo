@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -15,6 +16,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -52,6 +55,7 @@ import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeEvent
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeViewModel
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PublishButton
 import com.arnoagape.lokavelo.ui.screen.owner.detail.DetailBikeScreen
+import com.arnoagape.lokavelo.ui.screen.owner.detail.DetailBikeViewModel
 import com.arnoagape.lokavelo.ui.screen.owner.editBike.EditBikeScreen
 import com.arnoagape.lokavelo.ui.screen.owner.home.HomeBikeScreen
 import com.arnoagape.lokavelo.ui.screen.owner.home.HomeBikeViewModel
@@ -75,6 +79,7 @@ fun LokaveloApp() {
     val loginViewModel: LoginViewModel = hiltViewModel()
     val addBikeViewModel: AddBikeViewModel = hiltViewModel()
     val homeBikeViewModel: HomeBikeViewModel = hiltViewModel()
+    val detailBikeViewModel: DetailBikeViewModel = hiltViewModel()
 
     // States
     val isSignedIn by loginViewModel.isSignedIn.collectAsStateWithLifecycle()
@@ -82,6 +87,7 @@ fun LokaveloApp() {
     val homeBikeScreenState by homeBikeViewModel.state.collectAsStateWithLifecycle()
 
     val focusRequester = remember { FocusRequester() }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     // Navigation helpers
     fun navigate(screen: Screen) {
@@ -105,6 +111,11 @@ fun LokaveloApp() {
     }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState
+            )
+        },
         topBar = {
             when (currentScreen) {
 
@@ -182,6 +193,20 @@ fun LokaveloApp() {
                             }
                         )
                     }
+                }
+
+                is Screen.Owner.DetailBike -> {
+                    TopAppBar(
+                        title = { Text(stringResource(R.string.detail_bike)) },
+                        navigationIcon = {
+                            IconButton(onClick = { popBack() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    stringResource(R.string.cd_go_back)
+                                )
+                            }
+                        }
+                    )
                 }
 
                 else -> {}
@@ -266,11 +291,16 @@ fun LokaveloApp() {
                 // OWNER
                 is Screen.Owner.AddBike ->
                     AddBikeScreen(
-                        viewModel = hiltViewModel<AddBikeViewModel>(),
+                        viewModel = addBikeViewModel,
                         onSaveClick = { navigate(Screen.Owner.HomeBike) }
                     )
 
-                is Screen.Owner.DetailBike -> DetailBikeScreen()
+                is Screen.Owner.DetailBike ->
+                    DetailBikeScreen(
+                        bikeId = currentScreen.bikeId,
+                        viewModel = detailBikeViewModel
+                    )
+
                 is Screen.Owner.EditBike -> EditBikeScreen()
                 is Screen.Owner.HomeBike ->
                     HomeBikeScreen(

@@ -10,11 +10,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.dataObjects
+import com.google.firebase.firestore.snapshots
 import com.google.firebase.storage.FirebaseStorage
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
@@ -27,20 +27,18 @@ class FirebaseBikeApi @Inject constructor(
 
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
-    private val bikesCollection = firestore.collection("bikes")
+    private fun bikesCollectionForUser(userId: String) =
+        firestore.collection("users")
+            .document(userId)
+            .collection("bikes")
 
     override fun observeBikesForOwner(ownerId: String): Flow<List<Bike>> {
 
-        return bikesCollection
-            .whereEqualTo("ownerId", ownerId)
+        return bikesCollectionForUser(ownerId)
             .orderBy("createdAt", Query.Direction.DESCENDING)
             .dataObjects<BikeDto>()
             .map { it.map(Bike::fromDto) }
             .flowOn(Dispatchers.IO)
-            .catch { e ->
-                Log.e("FIRESTORE", "Flow error", e)
-                throw e
-            }
     }
 
     override suspend fun addBike(localUris: List<Uri>, bike: Bike): List<String> {
@@ -50,8 +48,7 @@ class FirebaseBikeApi @Inject constructor(
         }
 
         val ownerId = requireUserId()
-
-        val bikeRef = bikesCollection.document()
+        val bikeRef = bikesCollectionForUser(ownerId).document()
         val bikeId = bikeRef.id
 
         val uploadedUrls = uploadBikePictures(
@@ -77,7 +74,7 @@ class FirebaseBikeApi @Inject constructor(
             try {
                 val dto = bike.toDto()
 
-                bikesCollection
+                bikesCollectionForUser(bike.ownerId)
                     .document(bike.id)
                     .set(dto)
 
@@ -95,11 +92,14 @@ class FirebaseBikeApi @Inject constructor(
      * Data collection and mapping are executed on an IO thread.
      */
     override fun getBikeById(bikeId: String, userId: String): Flow<Bike> {
-        return bikesCollection
-            .whereEqualTo("id", bikeId)
-            .limit(1)
-            .dataObjects<BikeDto>()
-            .map { Bike.fromDto(it.first()) }
+        return bikesCollectionForUser(userId)
+            .document(bikeId)
+            .snapshots()
+            .map { snapshot ->
+                snapshot.toObject(BikeDto::class.java)
+                    ?.let { Bike.fromDto(it) }
+                    ?: throw NoSuchElementException("Bike $bikeId not found")
+            }
             .flowOn(Dispatchers.IO)
     }
 
@@ -127,9 +127,10 @@ class FirebaseBikeApi @Inject constructor(
     override suspend fun deleteBikes(ids: Set<String>): Result<Unit> =
         withContext(Dispatchers.IO) {
             try {
+                val ownerId = requireUserId()
                 ids.forEach { id ->
                     if (id.isBlank()) error("Bike ID empty")
-                    bikesCollection.document(id).delete()
+                    bikesCollectionForUser(ownerId).document(id).delete()
                 }
                 Result.success(Unit)
             } catch (e: Exception) {

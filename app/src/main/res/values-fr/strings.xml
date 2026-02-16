@@ -24,6 +24,8 @@
         pendant toute la durée de la location</string>
 
     // MISC WORDS
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
     <string name="bikes">Vélos</string>
     <string name="pictures">Photos</string>
     <string name="characteristics">Caractéristiques</string>
