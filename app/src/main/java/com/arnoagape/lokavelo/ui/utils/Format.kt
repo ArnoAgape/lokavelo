@@ -63,4 +63,15 @@ object Format {
         day % 10 == 3 -> "rd"
         else -> "th"
     }
+
+    /**
+     * Returns the French ordinal suffix for a given day (e.g., sam. 21 fév. à 10:30).
+     */
+    fun formatDate(date: Instant): String {
+        val formatter = DateTimeFormatter
+            .ofPattern("EEE dd MMM 'à' HH:mm", Locale.FRANCE)
+            .withZone(ZoneId.systemDefault())
+
+        return formatter.format(date)
+    }
 }

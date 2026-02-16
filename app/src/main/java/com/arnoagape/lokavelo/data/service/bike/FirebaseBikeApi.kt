@@ -63,7 +63,7 @@ class FirebaseBikeApi @Inject constructor(
         val finalBike = bike.copy(
             id = bikeId,
             ownerId = ownerId,
-            photoUrl = uploadedUrls
+            photoUrls = uploadedUrls
         )
         Log.d("SAVE", "Full DTO = $finalBike")
 

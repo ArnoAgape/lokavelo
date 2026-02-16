@@ -6,12 +6,13 @@ import com.arnoagape.lokavelo.domain.model.BikeCondition
 import com.arnoagape.lokavelo.domain.model.BikeLocation
 import com.google.firebase.Timestamp
 import java.io.Serializable
+import java.time.Instant
 
 data class BikeDto(
     val id: String = "",
     val createdAt: Timestamp = Timestamp.now(),
     val ownerId: String = "",
-    val photoUrl: List<String> = emptyList(),
+    val photoUrls: List<String> = emptyList(),
     val title: String = "",
     val description: String = "",
     val category: BikeCategory? = null,
@@ -22,5 +23,7 @@ data class BikeDto(
     val priceInCents: Long = 0L,
     val depositInCents: Long? = null,
     val location: BikeLocation = BikeLocation(),
-    val isAvailable: Boolean = true
+    val isAvailable: Boolean = true,
+    val rentalStart: Instant? = null,
+    val rentalEnd: Instant? = null
 ) : Serializable

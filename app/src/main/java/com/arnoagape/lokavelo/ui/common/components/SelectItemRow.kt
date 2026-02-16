@@ -1,5 +1,6 @@
 package com.arnoagape.lokavelo.ui.common.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
@@ -33,7 +35,7 @@ fun SelectItemRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(4.dp)
+            .padding(10.dp)
             .clickable {
                 if (isSelectionMode) onSelectToggle()
                 else onClick()
@@ -55,6 +57,7 @@ fun SelectItemRow(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,

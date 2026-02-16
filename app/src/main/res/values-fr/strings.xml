@@ -50,6 +50,9 @@
     <string name="take_picture">Prends une photo</string>
     <string name="browse_gallery">Choisis dans la galerie</string>
     <string name="no_bike">Pour publier une nouvelle annonce, appuyez sur le bouton "+"</string>
+    <string name="renting">En cours</string>
+    <string name="available">Disponible</string>
+    <string name="finished">Terminé</string>
 
     // SUCCESS
     <string name="success_user_updated">Tes données ont bien été mises à jour</string>
@@ -116,7 +119,7 @@
     <string name="bike_category_city">Vélo de ville</string>
     <string name="bike_category_gravel">Gravel</string>
     <string name="bike_category_bmx">BMX</string>
-    <string name="bike_category_trekking">Trekking</string>
+    <string name="bike_category_trekking">Randonneuse</string>
     <string name="bike_category_tandem">Tandem</string>
     <string name="bike_category_cargo">Cargo</string>
     <string name="bike_category_longtail">Longtail</string>

@@ -49,6 +49,9 @@
     <string name="take_picture">Take a picture</string>
     <string name="browse_gallery">Browse gallery</string>
     <string name="no_bike">To post a new ad, please press the button "+"</string>
+    <string name="renting">Renting</string>
+    <string name="available">Available</string>
+    <string name="finished">Finished</string>
 
     // SUCCESS
     <string name="success_user_updated">Details updated successfully</string>
