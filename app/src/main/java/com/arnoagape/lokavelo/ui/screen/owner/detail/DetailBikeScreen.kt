@@ -34,7 +34,6 @@ import com.arnoagape.lokavelo.domain.model.labelRes
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PhotosContent
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PhotosSection
 import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.AccessoriesRow
 import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.DetailCard
 import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.DetailRow

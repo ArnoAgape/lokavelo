@@ -53,14 +53,12 @@ fun PhotosSection(
         title = stringResource(R.string.pictures),
         subtitle = stringResource(R.string.subtitle_add_3_pictures)
     ) {
-
         PhotosContent(
             uris = uris,
             onAddPhotoClick = onAddPhotoClick,
             onRemovePhoto = onRemovePhoto,
             isEditable = isEditable
         )
-
     }
 }
 
