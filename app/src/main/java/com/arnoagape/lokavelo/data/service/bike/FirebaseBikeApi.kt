@@ -75,40 +75,55 @@ class FirebaseBikeApi @Inject constructor(
     ): Result<Unit> = withContext(Dispatchers.IO) {
 
         try {
-            require(localUris.size + bike.photoUrls.size <= 3) {
-                "Maximum 3 photos allowed"
-            }
-
             val ownerId = requireUserId()
             val bikeId = bike.id
 
-            // 1️⃣ Upload nouvelles photos
-            val uploadedUrls =
-                if (localUris.isNotEmpty()) {
-                    uploadBikePictures(
-                        ownerId = ownerId,
-                        bikeId = bikeId,
-                        uris = localUris
-                    )
-                } else {
-                    emptyList()
-                }
+            val docRef = bikesCollectionForUser(ownerId).document(bikeId)
 
-            // 2️⃣ Fusion anciennes + nouvelles
-            val finalBike = bike.copy(
-                photoUrls = bike.photoUrls + uploadedUrls
-            )
+            // 1️⃣ Récupérer état actuel Firestore
+            val snapshot = docRef.get().await()
+            val existingBike = snapshot.toObject(BikeDto::class.java)
+                ?.let { Bike.fromDto(it) }
+                ?: return@withContext Result.failure(
+                    IllegalStateException("Bike not found")
+                )
 
-            // 3️⃣ Mise à jour Firestore
-            bikesCollectionForUser(ownerId)
-                .document(bikeId)
-                .set(finalBike.toDto())
-                .await()
+            val oldUrls = existingBike.photoUrls
+
+            // 2️⃣ URLs à supprimer
+            val deletedUrls = oldUrls - bike.photoUrls.toSet()
+
+            deleteBikePicturesByUrls(deletedUrls)
+
+            // 3️⃣ Upload nouvelles photos
+            val uploadedUrls = if (localUris.isNotEmpty()) {
+                uploadBikePictures(ownerId, bikeId, localUris)
+            } else emptyList()
+
+            // 4️⃣ Liste finale propre
+            val finalUrls = bike.photoUrls + uploadedUrls
+
+            // 5️⃣ Mise à jour Firestore
+            docRef.update(
+                mapOf(
+                    "title" to bike.title,
+                    "description" to bike.description,
+                    "location" to bike.location,
+                    "priceInCents" to bike.priceInCents,
+                    "depositInCents" to bike.depositInCents,
+                    "isElectric" to bike.isElectric,
+                    "category" to bike.category,
+                    "brand" to bike.brand,
+                    "condition" to bike.condition,
+                    "accessories" to bike.accessories,
+                    "photoUrls" to finalUrls
+                )
+            ).await()
 
             Result.success(Unit)
 
         } catch (e: Exception) {
-            Log.e("FirebaseBikeApi", "Error while editing bike", e)
+            Log.e("FirebaseBikeApi", "Edit failed", e)
             Result.failure(e)
         }
     }
@@ -159,7 +174,10 @@ class FirebaseBikeApi @Inject constructor(
                     if (id.isBlank()) error("Bike ID empty")
                     bikesCollectionForUser(ownerId).document(id).delete()
                 }
-                deleteBikeFolder(ownerId, ids)
+                ids.forEach { id ->
+                    deleteBikeFolder(ownerId, id)
+                }
+
                 Result.success(Unit)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -205,7 +223,8 @@ class FirebaseBikeApi @Inject constructor(
      * Deletes a photo from Firebase Storage.
      * Validates MIME type and returns the public download URL.
      */
-    private suspend fun deleteBikeFolder(ownerId: String, bikeId: Set<String>) {
+    private suspend fun deleteBikeFolder(ownerId: String, bikeId: String) {
+
         val folderRef = FirebaseStorage.getInstance()
             .reference
             .child("bikePictures")
@@ -215,6 +234,19 @@ class FirebaseBikeApi @Inject constructor(
         val list = folderRef.listAll().await()
 
         list.items.forEach { it.delete().await() }
+    }
+
+    private suspend fun deleteBikePicturesByUrls(urls: List<String>) {
+        urls.forEach { url ->
+            try {
+                val ref = FirebaseStorage.getInstance()
+                    .getReferenceFromUrl(url)
+
+                ref.delete().await()
+            } catch (e: Exception) {
+                Log.e("FirebaseDelete", "Error deleting photo: $url", e)
+            }
+        }
     }
 
     private fun requireUserId(): String =

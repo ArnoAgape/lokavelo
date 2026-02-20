@@ -1,6 +1,5 @@
 [versions]
 agp = "9.0.1"
-compressor = "3.0.1"
 coreKtx = "1.17.0"
 kotlin = "2.3.10"
 kotlin-serialization = "2.3.10"
@@ -14,7 +13,7 @@ assertk = "0.28.1"
 desugar_jdk_libs = "2.1.5"
 ksp = "2.3.5"
 navigationCompose = "2.9.7"
-playServicesAuth = "21.5.0"
+playServicesAuth = "21.5.1"
 turbine = "1.2.1"
 kotlinxCoroutinesTest = "1.10.2"
 mockk = "1.14.9"
@@ -25,12 +24,12 @@ firebaseBom = "34.9.0"
 firebaseUiAuth = "9.1.1"
 firebaseUiStorage = "9.1.1"
 accompanistPermissions = "0.37.3"
+foundationLayout = "1.10.3"
 
 [libraries]
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
-compressor = { module = "id.zelory:compressor", version.ref = "compressor" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -66,6 +65,7 @@ play-services-auth = { module = "com.google.android.gms:play-services-auth", ver
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

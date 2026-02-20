@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.material.icons.extended)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
+    implementation(libs.androidx.compose.foundation.layout)
 
     // Allows API < 26
     coreLibraryDesugaring(libs.desugar.jdk.libs)

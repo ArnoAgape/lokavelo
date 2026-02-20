@@ -7,60 +7,67 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.EventsEffect
+import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
+import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.CharacteristicsSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.DepositSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.LocationSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PhotosSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PricingSection
+import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PublishButton
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.TitleDescriptionSection
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import com.arnoagape.lokavelo.ui.utils.createImageUri
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddBikeScreen(
     viewModel: AddBikeViewModel,
-    onSaveClick: () -> Unit
+    onSaveClick: () -> Unit,
+    onClose: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -71,8 +78,7 @@ fun AddBikeScreen(
         when (event) {
             is Event.ShowMessage -> {
                 snackbarHostState.showSnackbar(
-                    message = resources.getString(event.message),
-                    actionLabel = resources.getString(R.string.try_again)
+                    message = resources.getString(event.message)
                 )
             }
 
@@ -87,66 +93,64 @@ fun AddBikeScreen(
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
 
-        when (state.uiState) {
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.add_bike)) },
+                navigationIcon = {
+                    IconButton(onClick = onClose) {
+                        Icon(Icons.Default.Close, null)
+                    }
+                }
+            )
+        },
 
-            is AddBikeUiState.Idle,
-            is AddBikeUiState.Success -> {
-                AddBikeContent(
-                    state = state,
-                    onAction = viewModel::onAction
+        bottomBar = {
+            PublishButton(
+                enabled = state.isValid,
+                onClick = {
+                    viewModel.onAction(AddBikeEvent.Submit)
+                },
+                isSubmitting = state.uiState is AddBikeUiState.Submitting
+            )
+        }
+
+    ) { padding ->
+
+        Box(
+            modifier = Modifier
+                .padding(padding)
+                .consumeWindowInsets(padding)
+                .fillMaxSize()
+        ) {
+
+            // 🎯 CONTENU PRINCIPAL
+            AddBikeContent(
+                modifier = Modifier.fillMaxSize(),
+                state = state,
+                onAction = viewModel::onAction
+            )
+
+            // 🎯 OVERLAY LOADING / SUBMIT
+            if (
+                state.uiState is AddBikeUiState.Loading ||
+                state.uiState is AddBikeUiState.Submitting
+            ) {
+                LoadingOverlay(
+                    text = if (state.uiState is AddBikeUiState.Submitting)
+                        stringResource(R.string.publishing)
+                    else
+                        stringResource(R.string.loading)
                 )
             }
 
-            is AddBikeUiState.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        CircularProgressIndicator()
-                        Spacer(Modifier.height(16.dp))
-                        Text(
-                            text = stringResource(R.string.loading),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-            }
-
-            is AddBikeUiState.Error -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.error_generic),
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
-
-            is AddBikeUiState.Submitting -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        CircularProgressIndicator()
-                        Spacer(Modifier.height(16.dp))
-                        Text(
-                            text = stringResource(R.string.publishing),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
+            // 🎯 ERREUR PLEIN ÉCRAN
+            if (state.uiState is AddBikeUiState.Error) {
+                ErrorOverlay(
+                    message = stringResource(R.string.error_generic)
+                )
             }
         }
     }
@@ -155,6 +159,7 @@ fun AddBikeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddBikeContent(
+    modifier: Modifier = Modifier,
     state: AddBikeScreenState,
     onAction: (AddBikeEvent) -> Unit
 ) {
@@ -253,7 +258,7 @@ private fun AddBikeContent(
     // ---------------- SCREEN CONTENT ----------------
 
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .imePadding(),
         contentPadding = PaddingValues(
@@ -263,7 +268,7 @@ private fun AddBikeContent(
         verticalArrangement = Arrangement.spacedBy(spacing.large)
     ) {
 
-        item { Spacer(modifier = Modifier.height(spacing.extraSmall)) }
+        item { Spacer(modifier = modifier.height(spacing.extraSmall)) }
 
         item {
             PhotosSection(

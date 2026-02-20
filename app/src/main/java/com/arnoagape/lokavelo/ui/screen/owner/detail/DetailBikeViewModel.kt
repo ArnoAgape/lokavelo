@@ -1,5 +1,6 @@
 package com.arnoagape.lokavelo.ui.screen.owner.detail
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arnoagape.lokavelo.R
@@ -77,6 +78,7 @@ class DetailBikeViewModel @Inject constructor(
             }
             .onStart { emit(DetailBikeUiState.Loading) }
             .catch { e ->
+                Log.e("DETAIL_FLOW", "Flow error", e)
                 emit(
                     DetailBikeUiState.Error.Generic(
                         e.message ?: "Unknown error"
@@ -117,6 +119,7 @@ class DetailBikeViewModel @Inject constructor(
         if (result.isSuccess) {
             _events.trySend(Event.ShowSuccessMessage(R.string.success_bike_deleted))
         } else {
+            Log.e("DELETE_DEBUG", "Delete failed", result.exceptionOrNull())
             _events.trySend(Event.ShowMessage(R.string.error_delete_bike))
         }
     }

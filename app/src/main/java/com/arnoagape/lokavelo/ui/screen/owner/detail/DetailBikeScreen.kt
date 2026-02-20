@@ -1,24 +1,35 @@
 package com.arnoagape.lokavelo.ui.screen.owner.detail
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -34,6 +45,8 @@ import com.arnoagape.lokavelo.domain.model.labelRes
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.common.components.ConfirmDeleteDialog
+import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
+import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PhotosContent
 import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.AccessoriesRow
 import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.DetailCard
@@ -48,16 +61,21 @@ import java.util.Locale
  *
  * @param viewModel The ViewModel providing file data and state.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailBikeScreen(
     bikeId: String,
     viewModel: DetailBikeViewModel,
-    onBikeDeleted: () -> Unit
+    onEditClick: (String) -> Unit,
+    onBikeDeleted: () -> Unit,
+    onBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val resources = LocalResources.current
-    val snackbarHostState = remember { SnackbarHostState() }
     val showDeleteDialog by viewModel.showDeleteDialog.collectAsStateWithLifecycle()
+
+    val resources = LocalResources.current
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(bikeId) {
         viewModel.setBikeId(bikeId)
@@ -65,6 +83,7 @@ fun DetailBikeScreen(
 
     EventsEffect(viewModel.eventsFlow) { event ->
         when (event) {
+
             is Event.ShowMessage -> {
                 snackbarHostState.showSnackbar(
                     message = resources.getString(event.message),
@@ -73,20 +92,81 @@ fun DetailBikeScreen(
             }
 
             is Event.ShowSuccessMessage -> {
-                snackbarHostState.showSnackbar(
-                    message = resources.getString(event.message),
-                    duration = SnackbarDuration.Short
-                )
-
-                if (event.message == R.string.success_bike_deleted) {
-                    onBikeDeleted()
-                }
+                Toast.makeText(
+                    context,
+                    event.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+                onBikeDeleted()
             }
         }
     }
 
-    DetailBikeContent(state = state)
+    val bike = (state.bikeState as? DetailBikeUiState.Success)?.bike
 
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.detail_bike)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                    }
+                },
+                actions = {
+                    bike?.let {
+                        IconButton(
+                            onClick = { onEditClick(it.id) }
+                        ) {
+                            Icon(Icons.Default.Edit, null)
+                        }
+
+                        IconButton(
+                            onClick = {
+                                viewModel.requestDeleteConfirmation()
+                            }
+                        ) {
+                            Icon(Icons.Default.Delete, null)
+                        }
+                    }
+                }
+            )
+        }
+
+    ) { padding ->
+
+        Box(
+            modifier = Modifier
+                .padding(padding)
+                .consumeWindowInsets(padding)
+                .fillMaxSize()
+        ) {
+
+            // 🎯 CONTENU PRINCIPAL
+            DetailBikeContent(
+                modifier = Modifier.fillMaxSize(),
+                state = state
+            )
+
+            // 🎯 OVERLAY LOADING
+            if (state.bikeState is DetailBikeUiState.Loading) {
+                LoadingOverlay(
+                    text = stringResource(R.string.loading)
+                )
+            }
+
+            // 🎯 ERREUR OVERLAY
+            if (state.bikeState is DetailBikeUiState.Error) {
+                ErrorOverlay(
+                    message = stringResource(R.string.error_generic)
+                )
+            }
+        }
+    }
+
+    // 🎯 DIALOG SUPPRESSION
     if (showDeleteDialog) {
         ConfirmDeleteDialog(
             show = true,
@@ -101,45 +181,28 @@ fun DetailBikeScreen(
             confirmButtonMessage = stringResource(R.string.confirm_delete_message_current_bike)
         )
     }
-
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailBikeContent(
+    modifier: Modifier = Modifier,
     state: DetailScreenState
 ) {
+    val ui = state.bikeState
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        when (val ui = state.bikeState) {
-
-            is DetailBikeUiState.Success -> {
-                DetailItem(bike = ui.bike)
-            }
-
-            is DetailBikeUiState.Loading -> {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            is DetailBikeUiState.Error -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(stringResource(R.string.error_generic))
-                }
-            }
-        }
+    if (ui is DetailBikeUiState.Success) {
+        DetailItem(
+            modifier = modifier,
+            bike = ui.bike
+        )
     }
 }
 
 @Composable
-fun DetailItem(bike: Bike) {
+fun DetailItem(
+    modifier: Modifier = Modifier,
+    bike: Bike
+) {
 
     val spacing = LocalSpacing.current
 
@@ -162,7 +225,7 @@ fun DetailItem(bike: Bike) {
     }
 
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .imePadding(),
         contentPadding = PaddingValues(
@@ -280,6 +343,8 @@ private fun DetailBikeScreenPreview() {
             bikeState = DetailBikeUiState.Success(fakeBike)
         )
 
-        DetailBikeContent(state = previewState)
+        DetailBikeContent(
+            state = previewState
+        )
     }
 }

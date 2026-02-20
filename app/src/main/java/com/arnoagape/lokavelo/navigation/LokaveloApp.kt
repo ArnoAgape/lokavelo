@@ -1,46 +1,20 @@
 package com.arnoagape.lokavelo.navigation
 
-import android.app.Activity
-import android.widget.Toast
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.arnoagape.lokavelo.R
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.arnoagape.lokavelo.ui.screen.account.home.AccountHomeScreen
 import com.arnoagape.lokavelo.ui.screen.account.profile.ProfileScreen
 import com.arnoagape.lokavelo.ui.screen.account.settings.help.HelpSettingsScreen
@@ -49,25 +23,19 @@ import com.arnoagape.lokavelo.ui.screen.account.settings.info.InfoSettingsScreen
 import com.arnoagape.lokavelo.ui.screen.account.settings.notifications.NotificationsSettingsScreen
 import com.arnoagape.lokavelo.ui.screen.account.settings.payment.PaymentSettingsScreen
 import com.arnoagape.lokavelo.ui.screen.account.settings.version.VersionSettingsScreen
-import com.arnoagape.lokavelo.ui.screen.main.home.HomeScreen
 import com.arnoagape.lokavelo.ui.screen.login.LoginScreen
 import com.arnoagape.lokavelo.ui.screen.login.LoginViewModel
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeScreen
 import com.arnoagape.lokavelo.ui.screen.main.contact.ContactScreen
 import com.arnoagape.lokavelo.ui.screen.main.detail.DetailPublicBikeScreen
+import com.arnoagape.lokavelo.ui.screen.main.home.HomeScreen
 import com.arnoagape.lokavelo.ui.screen.main.profile.PublicProfileScreen
 import com.arnoagape.lokavelo.ui.screen.messaging.detail.MessagingDetailScreen
 import com.arnoagape.lokavelo.ui.screen.messaging.home.MessagingHomeScreen
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeEvent
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeUiState
+import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeScreen
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeViewModel
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PublishButton
 import com.arnoagape.lokavelo.ui.screen.owner.detail.DetailBikeScreen
-import com.arnoagape.lokavelo.ui.screen.owner.detail.DetailBikeUiState
 import com.arnoagape.lokavelo.ui.screen.owner.detail.DetailBikeViewModel
-import com.arnoagape.lokavelo.ui.screen.owner.editBike.EditBikeEvent
 import com.arnoagape.lokavelo.ui.screen.owner.editBike.EditBikeScreen
-import com.arnoagape.lokavelo.ui.screen.owner.editBike.EditBikeUiState
 import com.arnoagape.lokavelo.ui.screen.owner.editBike.EditBikeViewModel
 import com.arnoagape.lokavelo.ui.screen.owner.home.HomeBikeScreen
 import com.arnoagape.lokavelo.ui.screen.owner.home.HomeBikeViewModel
@@ -77,370 +45,244 @@ import com.arnoagape.lokavelo.ui.screen.rent.RentScreen
 @Composable
 fun LokaveloApp() {
 
-    // BackStack sauvegardé en String
-    var backStack by rememberSaveable {
-        mutableStateOf(listOf(Screen.Login.route))
-    }
+    val navController = rememberNavController()
 
-    val currentRoute = backStack.last()
-    val currentScreen = remember(currentRoute) {
-        screenFromRoute(currentRoute)
-    }
-
-    val isOnRootScreen = currentScreen is Screen.Owner.HomeBike
-            || currentScreen is Screen.Rent
-            || currentScreen is Screen.Account
-            || currentScreen is Screen.Messaging
-
-    // ViewModels
     val loginViewModel: LoginViewModel = hiltViewModel()
-    val addBikeViewModel: AddBikeViewModel = hiltViewModel()
-    val homeBikeViewModel: HomeBikeViewModel = hiltViewModel()
-    val detailBikeViewModel: DetailBikeViewModel = hiltViewModel()
-    val editBikeViewModel: EditBikeViewModel = hiltViewModel()
-
-    // States
     val isSignedIn by loginViewModel.isSignedIn.collectAsStateWithLifecycle()
-    val addBikeState by addBikeViewModel.state.collectAsStateWithLifecycle()
-    val homeBikeScreenState by homeBikeViewModel.state.collectAsStateWithLifecycle()
-    val detailBikeScreenState by detailBikeViewModel.state.collectAsStateWithLifecycle()
-    val editBikeState by editBikeViewModel.state.collectAsStateWithLifecycle()
 
-    val focusRequester = remember { FocusRequester() }
-    val snackbarHostState = remember { SnackbarHostState() }
-    var lastBackPressedTime by remember { mutableLongStateOf(0L) }
-    val context = LocalContext.current
-    val resources = LocalResources.current
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
-    // Navigation helpers
-    fun navigate(screen: Screen) {
-        if (backStack.last() != screen.route) {
-            backStack = backStack + screen.route
-        }
-    }
-
-    fun navigateProtected(screen: Screen) {
+    fun navigateProtected(route: String) {
         if (isSignedIn) {
-            navigate(screen)
+            navController.navigate(route)
         } else {
-            backStack = listOf(Screen.Login.route)
-        }
-    }
-
-    fun popBack() {
-        if (backStack.size > 1) {
-            backStack = backStack.dropLast(1)
-        }
-    }
-
-    BackHandler {
-        if (!isOnRootScreen) {
-            popBack()
-        } else {
-            val currentTime = System.currentTimeMillis()
-
-            if (currentTime - lastBackPressedTime < 2000) {
-                (context as? Activity)?.finish()
-            } else {
-                lastBackPressedTime = currentTime
-                Toast.makeText(
-                    context,
-                    resources.getString(R.string.press_again_exit),
-                    Toast.LENGTH_SHORT
-                ).show()
+            navController.navigate(Screen.Login.route) {
+                popUpTo(0)
             }
         }
     }
 
     Scaffold(
-        snackbarHost = {
-            SnackbarHost(
-                hostState = snackbarHostState
-            )
-        },
-        topBar = {
-            when (currentScreen) {
-
-                is Screen.Owner.AddBike -> {
-                    TopAppBar(
-                        title = { Text(stringResource(R.string.add_bike)) },
-                        navigationIcon = {
-                            IconButton(onClick = { popBack() }) {
-                                Icon(
-                                    Icons.Default.Close,
-                                    stringResource(R.string.close)
-                                )
-                            }
-                        }
-                    )
-                }
-
-                is Screen.Owner.HomeBike -> {
-                    if (homeBikeScreenState.isSearchActive) {
-                        EmbeddedSearchBar(
-                            query = homeBikeScreenState.searchQuery,
-                            onQueryChange = homeBikeViewModel::onSearchQueryChange,
-                            onClose = homeBikeViewModel::toggleSearch,
-                            modifier = Modifier
-                                .padding(
-                                    top = 42.dp,
-                                    start = 16.dp,
-                                    end = 16.dp
-                                )
-                                .focusRequester(focusRequester)
-                        )
-                    } else {
-                        TopAppBar(
-                            title = { Text(stringResource(R.string.rentals)) },
-                            actions = {
-
-                                // 🔍 Search
-                                if (!homeBikeScreenState.selection.isSelectionMode) {
-                                    IconButton(onClick = homeBikeViewModel::toggleSearch) {
-                                        Icon(
-                                            imageVector = Icons.Default.Search,
-                                            contentDescription = stringResource(R.string.search)
-                                        )
-                                    }
-                                }
-
-                                // 🗑 Delete
-                                if (homeBikeScreenState.selection.isSelectionMode) {
-                                    IconButton(
-                                        onClick = {
-                                            if (homeBikeScreenState.selection.selectedIds.isEmpty()) {
-                                                homeBikeViewModel.exitSelectionMode()
-                                            } else {
-                                                homeBikeViewModel.requestDeleteConfirmation()
-                                            }
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector =
-                                                if (homeBikeScreenState.selection.selectedIds.isEmpty())
-                                                    Icons.Default.Close
-                                                else
-                                                    Icons.Default.DeleteForever,
-                                            contentDescription = stringResource(R.string.close)
-                                        )
-                                    }
-                                } else {
-                                    IconButton(onClick = homeBikeViewModel::enterSelectionMode) {
-                                        Icon(
-                                            imageVector = Icons.Default.Delete,
-                                            contentDescription = stringResource(R.string.delete)
-                                        )
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
-
-                is Screen.Owner.DetailBike -> {
-                    TopAppBar(
-                        title = { Text(stringResource(R.string.detail_bike)) },
-                        navigationIcon = {
-                            IconButton(onClick = { popBack() }) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.ArrowBack,
-                                    stringResource(R.string.cd_go_back)
-                                )
-                            }
-                        },
-                        actions = {
-                            if (detailBikeScreenState.bikeState is DetailBikeUiState.Success) {
-                                val bike =
-                                    (detailBikeScreenState.bikeState as DetailBikeUiState.Success).bike
-                                IconButton(
-                                    onClick = {
-                                        navigateProtected(Screen.Owner.EditBike(bike.id))
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Edit,
-                                        contentDescription = stringResource(R.string.edit)
-                                    )
-                                }
-                                IconButton(
-                                    onClick = {
-                                        detailBikeViewModel.requestDeleteConfirmation()
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Delete,
-                                        contentDescription = stringResource(R.string.delete)
-                                    )
-                                }
-                            }
-                        }
-                    )
-                }
-
-                is Screen.Owner.EditBike -> {
-                    TopAppBar(
-                        title = { Text(stringResource(R.string.edit)) },
-                        navigationIcon = {
-                            IconButton(onClick = { popBack() }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = stringResource(id = R.string.cd_go_back)
-                                )
-                            }
-                        }
-                    )
-                }
-
-                else -> {}
-            }
-        },
-
-        floatingActionButton = {
-            if (currentScreen is Screen.Owner.HomeBike) {
-                FloatingActionButton(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    onClick = {
-                        navigateProtected(Screen.Owner.AddBike)
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.Add,
-                        stringResource(R.string.add_bike)
-                    )
-                }
-            }
-        },
 
         bottomBar = {
-            when (currentScreen) {
-                is Screen.Owner.AddBike -> {
-                    PublishButton(
-                        enabled = addBikeState.isValid,
-                        onClick = {
-                            addBikeViewModel.onAction(AddBikeEvent.Submit)
-                        },
-                        isSubmitting = addBikeState.uiState is AddBikeUiState.Submitting
-                    )
-                }
 
-                is Screen.Owner.EditBike -> {
-                    PublishButton(
-                        enabled = editBikeState.isValid,
-                        onClick = {
-                            editBikeViewModel.onAction(EditBikeEvent.Submit)
-                        },
-                        isSubmitting = editBikeState.uiState is EditBikeUiState.Submitting
-                    )
-                }
+            val currentRoute = currentBackStackEntry?.destination?.route
+            val currentScreen = screenFromRoute(currentRoute)
 
-                else -> {
-                    BottomBar(
-                        currentScreen = currentScreen,
-                        onItemSelected = { screen ->
-                            backStack = listOf(screen.route)
+            val hideBottomBar =
+                currentScreen is Screen.Owner.DetailBike ||
+                        currentScreen is Screen.Owner.EditBike ||
+                        currentScreen is Screen.Owner.AddBike ||
+                        currentScreen is Screen.Login
+
+            if (!hideBottomBar && currentScreen != null) {
+
+                BottomBar(
+                    currentScreen = currentScreen,
+                    onItemSelected = { screen ->
+
+                        navController.navigate(screen.route) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                    )
-                }
+                    }
+                )
             }
         }
 
     ) { padding ->
 
-        Box(
-            Modifier
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Login.route,
+            modifier = Modifier
                 .padding(padding)
                 .consumeWindowInsets(padding)
         ) {
 
-            when (currentScreen) {
-                // ACCOUNT
-                is Screen.Account.AccountHome -> AccountHomeScreen()
-                is Screen.Account.Profile -> ProfileScreen()
+            // ---------------- LOGIN ----------------
 
-                // ACCOUNT - SETTINGS
-                is Screen.Account.Settings.HelpSettings -> HelpSettingsScreen()
-                is Screen.Account.Settings.HomeSettings -> HomeSettingsScreen()
-                is Screen.Account.Settings.InfoSettings -> InfoSettingsScreen()
-                is Screen.Account.Settings.NotificationsSettings -> NotificationsSettingsScreen()
-                is Screen.Account.Settings.PaymentSettings -> PaymentSettingsScreen()
-                is Screen.Account.Settings.VersionSettings -> VersionSettingsScreen()
-
-                // HOME
-                is Screen.Main.Home -> HomeScreen()
-                is Screen.Main.Contact -> ContactScreen()
-                is Screen.Main.DetailPublicBike -> DetailPublicBikeScreen()
-                is Screen.Main.PublicProfile -> PublicProfileScreen()
-
-                // LOGIN
-                is Screen.Login -> LoginScreen(
-                    onLoginSuccess = { navigate(Screen.Owner.HomeBike) }
+            composable(Screen.Login.route) {
+                LoginScreen(
+                    onLoginSuccess = {
+                        navController.navigate(Screen.Owner.HomeBike.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    }
                 )
+            }
 
-                // MESSAGING
-                is Screen.Messaging.MessagingDetail -> MessagingDetailScreen()
-                is Screen.Messaging.MessagingHome -> MessagingHomeScreen()
+            // ---------------- OWNER ----------------
 
-                // OWNER
-                is Screen.Owner.AddBike ->
-                    AddBikeScreen(
-                        viewModel = addBikeViewModel,
-                        onSaveClick = { navigate(Screen.Owner.HomeBike) }
-                    )
+            composable(Screen.Owner.HomeBike.route) {
 
-                is Screen.Owner.DetailBike ->
-                    DetailBikeScreen(
-                        bikeId = currentScreen.bikeId,
-                        viewModel = detailBikeViewModel,
-                        onBikeDeleted = { popBack() }
-                    )
+                val vm: HomeBikeViewModel = hiltViewModel()
 
-                is Screen.Owner.EditBike ->
-                    EditBikeScreen(
-                        bikeId = currentScreen.bikeId,
-                        viewModel = editBikeViewModel,
-                        onSaveClick = { popBack() }
+                HomeBikeScreen(
+                    viewModel = vm,
+                    onBikeClick = { bike ->
+                        navController.navigate(
+                            Screen.Owner.DetailBike.createRoute(bike.id)
                         )
+                    },
+                    onAddBikeClick = { navigateProtected(Screen.Owner.AddBike.route) }
+                )
+            }
 
-                is Screen.Owner.HomeBike ->
-                    HomeBikeScreen(
-                        viewModel = homeBikeViewModel,
-                        onBikeClick = { bike -> navigate(Screen.Owner.DetailBike(bike.id)) }
-                    )
+            composable(Screen.Owner.AddBike.route) {
 
-                // RENT
-                is Screen.Rent -> RentScreen()
+                val vm: AddBikeViewModel = hiltViewModel()
+
+                AddBikeScreen(
+                    viewModel = vm,
+                    onSaveClick = {
+                        navController.popBackStack()
+                    },
+                    onClose = { navController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = Screen.Owner.DetailBike.route,
+                arguments = listOf(
+                    navArgument("bikeId") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { backStackEntry ->
+
+                val bikeId =
+                    backStackEntry.arguments?.getString("bikeId")!!
+
+                val vm: DetailBikeViewModel = hiltViewModel()
+
+                DetailBikeScreen(
+                    bikeId = bikeId,
+                    viewModel = vm,
+                    onBikeDeleted = {
+                        navController.popBackStack()
+                    },
+                    onEditClick = {
+                        navController.navigate(
+                            Screen.Owner.EditBike.createRoute(bikeId)
+                        )
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(
+                route = Screen.Owner.EditBike.route,
+                arguments = listOf(
+                    navArgument("bikeId") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { backStackEntry ->
+
+                val bikeId =
+                    backStackEntry.arguments?.getString("bikeId")!!
+
+                val vm: EditBikeViewModel = hiltViewModel()
+
+                EditBikeScreen(
+                    bikeId = bikeId,
+                    viewModel = vm,
+                    onSaveClick = {
+                        navController.popBackStack()
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            // ---------------- ACCOUNT ----------------
+
+            composable(Screen.Account.AccountHome.route) {
+                AccountHomeScreen()
+            }
+
+            composable(Screen.Account.Profile.route) {
+                ProfileScreen()
+            }
+
+            composable(Screen.Account.Settings.HelpSettings.route) {
+                HelpSettingsScreen()
+            }
+
+            composable(Screen.Account.Settings.HomeSettings.route) {
+                HomeSettingsScreen()
+            }
+
+            composable(Screen.Account.Settings.InfoSettings.route) {
+                InfoSettingsScreen()
+            }
+
+            composable(Screen.Account.Settings.NotificationsSettings.route) {
+                NotificationsSettingsScreen()
+            }
+
+            composable(Screen.Account.Settings.PaymentSettings.route) {
+                PaymentSettingsScreen()
+            }
+
+            composable(Screen.Account.Settings.VersionSettings.route) {
+                VersionSettingsScreen()
+            }
+
+            // ---------------- MAIN ----------------
+
+            composable(Screen.Main.Home.route) {
+                HomeScreen()
+            }
+
+            composable(Screen.Main.Contact.route) {
+                ContactScreen()
+            }
+
+            composable(Screen.Main.DetailPublicBike.route) {
+                DetailPublicBikeScreen()
+            }
+
+            composable(Screen.Main.PublicProfile.route) {
+                PublicProfileScreen()
+            }
+
+            // ---------------- MESSAGING ----------------
+
+            composable(Screen.Messaging.MessagingHome.route) {
+                MessagingHomeScreen()
+            }
+
+            composable(Screen.Messaging.MessagingDetail.route) {
+                MessagingDetailScreen()
+            }
+
+            // ---------------- RENT ----------------
+
+            composable(Screen.Rent.route) {
+                RentScreen()
             }
         }
     }
 }
 
-fun screenFromRoute(route: String): Screen {
-    return when {
-        route == Screen.Login.route -> Screen.Login
+fun screenFromRoute(route: String?): Screen? {
+    return when (route?.substringBefore("/")) {
 
-        route == Screen.Owner.HomeBike.route -> Screen.Owner.HomeBike
-        route == Screen.Owner.AddBike.route -> Screen.Owner.AddBike
-        route.startsWith("owner_edit/") ->
-            Screen.Owner.EditBike.fromRoute(route)
+        Screen.Rent.route -> Screen.Rent
+        Screen.Owner.HomeBike.route -> Screen.Owner.HomeBike
+        Screen.Account.AccountHome.route -> Screen.Account.AccountHome
+        Screen.Messaging.MessagingHome.route -> Screen.Messaging.MessagingHome
+        Screen.Login.route -> Screen.Login
 
-        route.startsWith("owner_detail/") ->
-            Screen.Owner.DetailBike.fromRoute(route)
+        Screen.Owner.AddBike.route -> Screen.Owner.AddBike
 
-        route == Screen.Account.AccountHome.route ->
-            Screen.Account.AccountHome
+        "owner_detail" -> Screen.Owner.DetailBike
+        "owner_edit" -> Screen.Owner.EditBike
 
-        route == Screen.Account.Profile.route ->
-            Screen.Account.Profile
-
-        route == Screen.Main.Home.route ->
-            Screen.Main.Home
-
-        route == Screen.Messaging.MessagingHome.route ->
-            Screen.Messaging.MessagingHome
-
-        route == Screen.Rent.route ->
-            Screen.Rent
-
-        else -> Screen.Login
+        else -> null
     }
 }

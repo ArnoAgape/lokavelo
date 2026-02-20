@@ -7,54 +7,59 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.EventsEffect
+import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
+import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.CharacteristicsSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.DepositSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.LocationSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PhotosSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PricingSection
+import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PublishButton
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.TitleDescriptionSection
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
@@ -65,7 +70,8 @@ import com.arnoagape.lokavelo.ui.utils.createImageUri
 fun EditBikeScreen(
     bikeId: String,
     viewModel: EditBikeViewModel,
-    onSaveClick: () -> Unit
+    onSaveClick: () -> Unit,
+    onBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -74,6 +80,7 @@ fun EditBikeScreen(
 
     LaunchedEffect(bikeId) {
         viewModel.setBikeId(bikeId)
+        viewModel.resetSubmitting()
     }
 
     EventsEffect(viewModel.eventsFlow) { event ->
@@ -81,8 +88,6 @@ fun EditBikeScreen(
             is Event.ShowMessage -> {
                 snackbarHostState.showSnackbar(
                     message = resources.getString(event.message),
-                    actionLabel = resources.getString(R.string.try_again),
-                    withDismissAction = true,
                     duration = SnackbarDuration.Short
                 )
             }
@@ -95,64 +100,80 @@ fun EditBikeScreen(
                 ).show()
                 onSaveClick()
             }
-
         }
     }
 
-    when (state.uiState) {
-        is EditBikeUiState.Idle, is EditBikeUiState.Loaded -> {
-            EditBikeContent(
-                state = state,
-                onAction = viewModel::onAction,
-                removeRemotePhoto = { viewModel.removeRemotePhoto(it) }
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.edit)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            stringResource(R.string.cd_go_back)
+                        )
+                    }
+                }
+            )
+        },
+
+        bottomBar = {
+            PublishButton(
+                enabled = state.isValid,
+                onClick = {
+                    viewModel.onAction(EditBikeEvent.Submit)
+                },
+                isSubmitting = state.uiState is EditBikeUiState.Submitting
             )
         }
 
-        is EditBikeUiState.Loading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        }
+    ) { padding ->
 
-        is EditBikeUiState.Error -> {
-            Box(
+        Box(
+            modifier = Modifier
+                .padding(padding)
+                .consumeWindowInsets(padding)
+                .fillMaxSize()
+        ) {
+
+            // 🎯 CONTENU PRINCIPAL
+            EditBikeContent(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                state = state,
+                onAction = viewModel::onAction,
+                removeRemotePhoto = viewModel::removeRemotePhoto
+            )
+
+            // 🎯 OVERLAY LOADING / SUBMIT
+            if (
+                state.uiState is EditBikeUiState.Loading ||
+                state.uiState is EditBikeUiState.Submitting
             ) {
-                Text(
-                    text = stringResource(R.string.error_generic),
-                    color = MaterialTheme.colorScheme.error
+                LoadingOverlay(
+                    text = if (state.uiState is EditBikeUiState.Submitting)
+                        stringResource(R.string.publishing)
+                    else
+                        stringResource(R.string.loading)
                 )
             }
-        }
 
-        is EditBikeUiState.Submitting -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircularProgressIndicator()
-                    Spacer(Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(R.string.publishing),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+            // 🎯 ERREUR PLEIN ÉCRAN
+            if (state.uiState is EditBikeUiState.Error) {
+                ErrorOverlay(
+                    message = stringResource(R.string.error_generic)
+                )
             }
         }
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditBikeContent(
+    modifier: Modifier = Modifier,
     state: EditBikeScreenState,
     onAction: (EditBikeEvent) -> Unit,
     removeRemotePhoto: (String) -> Unit
@@ -252,7 +273,7 @@ private fun EditBikeContent(
     // ---------------- SCREEN CONTENT ----------------
 
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .imePadding(),
         contentPadding = PaddingValues(
@@ -262,7 +283,7 @@ private fun EditBikeContent(
         verticalArrangement = Arrangement.spacedBy(spacing.large)
     ) {
 
-        item { Spacer(modifier = Modifier.height(spacing.extraSmall)) }
+        item { Spacer(modifier = modifier.height(spacing.extraSmall)) }
 
         item {
             val allUris = state.remotePhotoUrls.map { it.toUri() } + state.localUris

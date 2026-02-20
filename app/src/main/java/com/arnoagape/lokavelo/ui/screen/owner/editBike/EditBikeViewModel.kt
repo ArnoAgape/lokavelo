@@ -41,8 +41,6 @@ class EditBikeViewModel @Inject constructor(
 
     private val bikeId = MutableStateFlow<String?>(null)
 
-    private val _uiState = MutableStateFlow<EditBikeUiState>(EditBikeUiState.Idle)
-
     private val _events = Channel<Event>(Channel.BUFFERED)
     val eventsFlow = _events.receiveAsFlow()
 
@@ -106,6 +104,10 @@ class EditBikeViewModel @Inject constructor(
 
     fun setBikeId(id: String) {
         bikeId.value = id
+    }
+
+    fun resetSubmitting() {
+        _isSubmitting.value = false
     }
 
     fun removeRemotePhoto(url: String) {
@@ -211,7 +213,7 @@ class EditBikeViewModel @Inject constructor(
                 return@launch
             }
 
-            _uiState.value = EditBikeUiState.Submitting
+            _isSubmitting.value = true
 
             val updatedBike = form.toUpdatedBikeOrNull(original)
                 ?: run {
@@ -227,13 +229,13 @@ class EditBikeViewModel @Inject constructor(
                 bikeRepository.editBike(localUris = uris, bike = finalBike)
             }.onSuccess {
 
-                _uiState.value = EditBikeUiState.Loaded(updatedBike)
+                _isSubmitting.value = true
                 _events.trySend(Event.ShowSuccessMessage(R.string.success_bike_edited))
 
             }.onFailure { throwable ->
                 Log.e("EditBike", "Error while editing bike", throwable)
 
-                _uiState.value = EditBikeUiState.Error.Generic()
+                _isSubmitting.value = false
                 _events.trySend(Event.ShowMessage(R.string.error_generic))
             }
         }
