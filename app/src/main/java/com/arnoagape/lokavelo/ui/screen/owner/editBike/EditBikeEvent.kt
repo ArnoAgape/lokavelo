@@ -24,8 +24,8 @@ sealed interface EditBikeEvent {
     data class StateChanged(val state: BikeCondition) : EditBikeEvent
     data class AccessoriesChanged(val accessories: List<BikeEquipment>) : EditBikeEvent
     data class AddPhoto(val uri: Uri) : EditBikeEvent
-    data class RemovePhoto(val uri: Uri) : EditBikeEvent
-    data class RemoveRemotePhoto(val url: String) : EditBikeEvent
-    data class ReplacePhoto(val oldUri: Uri, val newUri: Uri) : EditBikeEvent
+    data class RemovePhoto(val id: String) : EditBikeEvent
+    data class ReplacePhoto(val id: String, val newUri: Uri) : EditBikeEvent
+
     data object Submit : EditBikeEvent
 }

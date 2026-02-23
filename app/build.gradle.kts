@@ -52,7 +52,6 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.compose.foundation.layout)
-    implementation(libs.androidx.foundation)
 
     // Allows API < 26
     coreLibraryDesugaring(libs.desugar.jdk.libs)
@@ -77,6 +76,7 @@ dependencies {
     // Images
     implementation(libs.coil.compose)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.reorderable)
 
     // Tests
     testImplementation(libs.turbine)

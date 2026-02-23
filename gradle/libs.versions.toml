@@ -14,6 +14,7 @@ desugar_jdk_libs = "2.1.5"
 ksp = "2.3.5"
 navigationCompose = "2.9.7"
 playServicesAuth = "21.5.1"
+reorderable = "3.0.0"
 turbine = "1.2.1"
 kotlinxCoroutinesTest = "1.10.2"
 mockk = "1.14.9"
@@ -25,7 +26,6 @@ firebaseUiAuth = "9.1.1"
 firebaseUiStorage = "9.1.1"
 accompanistPermissions = "0.37.3"
 foundationLayout = "1.10.3"
-foundation = "1.10.3"
 
 [libraries]
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
@@ -62,11 +62,11 @@ hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
-androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

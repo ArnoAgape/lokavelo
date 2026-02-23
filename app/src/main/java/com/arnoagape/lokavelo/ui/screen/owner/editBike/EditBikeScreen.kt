@@ -48,7 +48,6 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.common.Event
@@ -59,7 +58,7 @@ import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.CharacteristicsSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.DepositSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.LocationSection
-import com.arnoagape.lokavelo.ui.common.components.PhotosSection
+import com.arnoagape.lokavelo.ui.common.components.photo.PhotosSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PricingSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PublishButton
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.TitleDescriptionSection
@@ -162,7 +161,8 @@ fun EditBikeScreen(
             EditBikeContent(
                 modifier = Modifier.fillMaxSize(),
                 state = state,
-                onAction = viewModel::onAction
+                onAction = viewModel::onAction,
+                onMovePhoto = viewModel::movePhoto
             )
 
             // 🎯 OVERLAY LOADING / SUBMIT
@@ -203,6 +203,7 @@ fun EditBikeScreen(
 private fun EditBikeContent(
     modifier: Modifier = Modifier,
     state: EditBikeScreenState,
+    onMovePhoto: (Int, Int) -> Unit,
     onAction: (EditBikeEvent) -> Unit
 ) {
     val spacing = LocalSpacing.current
@@ -318,26 +319,17 @@ private fun EditBikeContent(
         item { Spacer(modifier = modifier.height(spacing.extraSmall)) }
 
         item {
-            val allUris = state.remotePhotoUrls.map { it.toUri() } + state.localUris
-
             PhotosSection(
-                uris = allUris,
+                photos = state.photos,
                 photosError = state.form.photosError,
                 onAddPhotoClick = { showSheet = true },
-                onRemovePhoto = { uri ->
-
-                    val remoteMatch = state.remotePhotoUrls
-                        .firstOrNull { it == uri.toString() }
-
-                    if (remoteMatch != null) {
-                        onAction(EditBikeEvent.RemoveRemotePhoto(remoteMatch))
-                    } else {
-                        onAction(EditBikeEvent.RemovePhoto(uri))
-                    }
+                onRemovePhoto = { id ->
+                    onAction(EditBikeEvent.RemovePhoto(id))
                 },
-                onPhotoEdited = { oldUri, newUri ->
-                    onAction(EditBikeEvent.ReplacePhoto(oldUri, newUri))
+                onPhotoEdited = { id, newUri ->
+                    onAction(EditBikeEvent.ReplacePhoto(id, newUri))
                 },
+                onMovePhoto = onMovePhoto,
                 isEditable = true
             )
         }
@@ -426,7 +418,8 @@ private fun EditBikeContentPreview() {
     LokaveloTheme {
         EditBikeContent(
             state = EditBikeScreenState(),
-            onAction = {}
+            onAction = {},
+            onMovePhoto = { _, _ -> }
         )
     }
 }

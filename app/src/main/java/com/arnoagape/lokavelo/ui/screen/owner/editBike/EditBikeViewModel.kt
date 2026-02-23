@@ -1,6 +1,5 @@
 package com.arnoagape.lokavelo.ui.screen.owner.editBike
 
-import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +7,7 @@ import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.data.repository.BikeOwnerRepository
 import com.arnoagape.lokavelo.domain.model.BikeLocation
 import com.arnoagape.lokavelo.ui.common.Event
+import com.arnoagape.lokavelo.ui.common.components.photo.PhotoItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -21,7 +21,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
+import kotlin.collections.toMutableList
 
 /**
  * ViewModel responsible for editing a new bike.
@@ -68,8 +70,12 @@ class EditBikeViewModel @Inject constructor(
                         it.copy(
                             uiState = EditBikeUiState.Loaded(bike),
                             form = EditBikeFormState.fromBike(bike),
-                            remotePhotoUrls = bike.photoUrls,
-                            localUris = emptyList()
+                            photos = bike.photoUrls.map { url ->
+                                PhotoItem.Remote(
+                                    id = UUID.randomUUID().toString(),
+                                    url = url
+                                )
+                            }
                         )
                     }
                 }
@@ -86,9 +92,14 @@ class EditBikeViewModel @Inject constructor(
             val formChanged =
                 current.form != EditBikeFormState.fromBike(original)
 
+            val currentRemoteUrls = current.photos
+                .filterIsInstance<PhotoItem.Remote>()
+                .map { it.url }
+
+            val hasLocal = current.photos.any { it is PhotoItem.Local }
+
             val photosChanged =
-                current.localUris.isNotEmpty() ||
-                        current.remotePhotoUrls != original.photoUrls
+                hasLocal || currentRemoteUrls != original.photoUrls
 
             formChanged || photosChanged
 
@@ -162,61 +173,38 @@ class EditBikeViewModel @Inject constructor(
             is EditBikeEvent.AddPhoto ->
                 _state.update { current ->
 
-                    val totalPhotos =
-                        current.localUris.size + current.remotePhotoUrls.size
-
-                    if (totalPhotos >= 3) {
+                    if (current.photos.size >= 3) {
                         current
                     } else {
                         current.copy(
-                            localUris = current.localUris + event.uri
+                            photos = current.photos + PhotoItem.Local(
+                                id = UUID.randomUUID().toString(),
+                                uri = event.uri
+                            )
                         )
                     }
                 }
 
             is EditBikeEvent.RemovePhoto ->
                 _state.update {
-                    it.copy(localUris = it.localUris - event.uri)
-                }
-
-            is EditBikeEvent.RemoveRemotePhoto ->
-                _state.update {
                     it.copy(
-                        remotePhotoUrls = it.remotePhotoUrls - event.url
+                        photos = it.photos.filterNot { photo -> photo.id == event.id }
                     )
                 }
 
             is EditBikeEvent.ReplacePhoto ->
                 _state.update { current ->
 
-                    // 1️⃣ local
-                    val localIndex = current.localUris.indexOfFirst {
-                        it.toString() == event.oldUri.toString()
+                    val updated = current.photos.map { photo ->
+                        if (photo.id == event.id) {
+                            PhotoItem.Local(
+                                id = photo.id,
+                                uri = event.newUri
+                            )
+                        } else photo
                     }
 
-                    if (localIndex != -1) {
-                        val updatedLocal = current.localUris.toMutableList()
-                        updatedLocal[localIndex] = event.newUri
-                        return@update current.copy(localUris = updatedLocal)
-                    }
-
-                    // 2️⃣ remote → on garde la position
-                    val remoteIndex = current.remotePhotoUrls.indexOfFirst {
-                        it == event.oldUri.toString()
-                    }
-
-                    if (remoteIndex != -1) {
-
-                        val updatedRemote = current.remotePhotoUrls.toMutableList()
-
-                        updatedRemote[remoteIndex] = event.newUri.toString()
-
-                        return@update current.copy(
-                            remotePhotoUrls = updatedRemote
-                        )
-                    }
-
-                    current
+                    current.copy(photos = updated)
                 }
 
             EditBikeEvent.Submit ->
@@ -227,7 +215,7 @@ class EditBikeViewModel @Inject constructor(
     fun validateForm(): Boolean {
 
         val current = state.value.form
-        val totalPhotos = state.value.remotePhotoUrls.size + state.value.localUris.size
+        val totalPhotos = state.value.photos.size
         val photosError = totalPhotos == 0
 
         val titleError = current.title.isBlank()
@@ -297,13 +285,21 @@ class EditBikeViewModel @Inject constructor(
                 current.form.toUpdatedBikeOrNull(original)
                     ?: return@launch
 
+            val remoteUrls = current.photos
+                .filterIsInstance<PhotoItem.Remote>()
+                .map { it.url }
+
+            val localUris = current.photos
+                .filterIsInstance<PhotoItem.Local>()
+                .map { it.uri }
+
             val finalBike = updatedBike.copy(
-                photoUrls = current.remotePhotoUrls
+                photoUrls = remoteUrls
             )
 
             runCatching {
                 bikeRepository.editBike(
-                    localUris = current.localUris,
+                    localUris = localUris,
                     bike = finalBike
                 )
             }.onSuccess {
@@ -334,12 +330,21 @@ class EditBikeViewModel @Inject constructor(
             )
         }
     }
+
+    fun movePhoto(from: Int, to: Int) {
+        _state.update { current ->
+            val mutable = current.photos.toMutableList()
+            val item = mutable.removeAt(from)
+            mutable.add(to, item)
+
+            current.copy(photos = mutable)
+        }
+    }
 }
 
 data class EditBikeScreenState(
     val uiState: EditBikeUiState = EditBikeUiState.Idle,
     val form: EditBikeFormState = EditBikeFormState(),
     val isValid: Boolean = false,
-    val localUris: List<Uri> = emptyList(),
-    val remotePhotoUrls: List<String> = emptyList()
+    val photos: List<PhotoItem> = emptyList()
 )

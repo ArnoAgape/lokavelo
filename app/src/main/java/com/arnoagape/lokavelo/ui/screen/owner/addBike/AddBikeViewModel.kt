@@ -1,6 +1,5 @@
 package com.arnoagape.lokavelo.ui.screen.owner.addBike
 
-import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +7,7 @@ import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.data.repository.BikeOwnerRepository
 import com.arnoagape.lokavelo.domain.model.BikeLocation
 import com.arnoagape.lokavelo.ui.common.Event
+import com.arnoagape.lokavelo.ui.common.components.photo.PhotoItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +18,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
+import kotlin.collections.map
 
 @HiltViewModel
 class AddBikeViewModel @Inject constructor(
@@ -37,7 +39,7 @@ class AddBikeViewModel @Inject constructor(
             val initialForm = AddBikeFormState()
 
             val formChanged = current.form != initialForm
-            val photosChanged = current.localUris.isNotEmpty()
+            val photosChanged = current.photos.isNotEmpty()
 
             formChanged || photosChanged
 
@@ -113,30 +115,35 @@ class AddBikeViewModel @Inject constructor(
             is AddBikeEvent.AddPhoto ->
                 _state.update { current ->
 
-                    if (current.localUris.size >= 3) current
+                    if (current.photos.size >= 3) current
                     else current.copy(
-                        localUris = current.localUris + event.uri
+                        photos = current.photos + PhotoItem.Local(
+                            id = UUID.randomUUID().toString(),
+                            uri = event.uri
+                        )
                     )
                 }
 
             is AddBikeEvent.RemovePhoto ->
                 _state.update {
-                    it.copy(localUris = it.localUris - event.uri)
+                    it.copy(
+                        photos = it.photos.filterNot { photo -> photo.id == event.id }
+                    )
                 }
 
             is AddBikeEvent.ReplacePhoto ->
                 _state.update { current ->
 
-                    val index = current.localUris.indexOfFirst {
-                        it.toString() == event.oldUri.toString()
+                    val updated = current.photos.map { photo ->
+                        if (photo.id == event.id) {
+                            PhotoItem.Local(
+                                id = photo.id,
+                                uri = event.newUri
+                            )
+                        } else photo
                     }
 
-                    if (index == -1) current
-                    else {
-                        val updated = current.localUris.toMutableList()
-                        updated[index] = event.newUri
-                        current.copy(localUris = updated)
-                    }
+                    current.copy(photos = updated)
                 }
 
             AddBikeEvent.Submit ->
@@ -147,7 +154,7 @@ class AddBikeViewModel @Inject constructor(
     fun validateForm(): Boolean {
 
         val current = state.value.form
-        val totalPhotos = state.value.localUris.size
+        val totalPhotos = state.value.photos.size
 
         val titleError = current.title.isBlank()
         val categoryError = current.category == null
@@ -218,9 +225,13 @@ class AddBikeViewModel @Inject constructor(
             val bike = current.form.toBikeOrNull()
                 ?: return@launch
 
+            val localUris = current.photos
+                .filterIsInstance<PhotoItem.Local>()
+                .map { it.uri }
+
             runCatching {
                 bikeRepository.addBike(
-                    localUris = current.localUris,
+                    localUris = localUris,
                     bike = bike
                 )
             }.onSuccess {
@@ -254,11 +265,21 @@ class AddBikeViewModel @Inject constructor(
         }
     }
 
+    fun movePhoto(from: Int, to: Int) {
+        _state.update { current ->
+            val mutable = current.photos.toMutableList()
+            val item = mutable.removeAt(from)
+            mutable.add(to, item)
+
+            current.copy(photos = mutable)
+        }
+    }
+
 }
 
 data class AddBikeScreenState(
     val uiState: AddBikeUiState = AddBikeUiState.Idle,
     val form: AddBikeFormState = AddBikeFormState(),
     val isValid: Boolean = false,
-    val localUris: List<Uri> = emptyList()
+    val photos: List<PhotoItem> = emptyList()
 )

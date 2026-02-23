@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.ui.common.components
+package com.arnoagape.lokavelo.ui.common.components.photo
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
+import androidx.compose.foundation.lazy.items
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -19,13 +20,17 @@ import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -55,6 +60,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -68,21 +74,23 @@ import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.SectionCard
-import com.arnoagape.lokavelo.ui.theme.LocalSpacing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 
 @Composable
 fun PhotosSection(
-    uris: List<Uri>,
+    photos: List<PhotoItem>,
     photosError: Boolean,
-    onAddPhotoClick: () -> Unit = {},
-    onRemovePhoto: (Uri) -> Unit = {},
-    onPhotoEdited: (Uri, Uri) -> Unit = { _, _ -> },
+    onAddPhotoClick: () -> Unit,
+    onRemovePhoto: (String) -> Unit,
+    onPhotoEdited: (String, Uri) -> Unit,
+    onMovePhoto: (Int, Int) -> Unit,
     isEditable: Boolean = true
 ) {
     SectionCard(
@@ -95,11 +103,13 @@ fun PhotosSection(
                 color = MaterialTheme.colorScheme.error
             )
         }
+
         PhotosContent(
-            uris = uris,
+            photos = photos,
             onAddPhotoClick = onAddPhotoClick,
             onRemovePhoto = onRemovePhoto,
             onPhotoEdited = onPhotoEdited,
+            onMovePhoto = onMovePhoto,
             isEditable = isEditable
         )
     }
@@ -107,69 +117,133 @@ fun PhotosSection(
 
 @Composable
 fun PhotosContent(
-    uris: List<Uri>,
-    onAddPhotoClick: () -> Unit = {},
-    onRemovePhoto: (Uri) -> Unit = {},
-    onPhotoEdited: (Uri, Uri) -> Unit = { _, _ -> },
-    isEditable: Boolean = true
+    photos: List<PhotoItem>,
+    onAddPhotoClick: () -> Unit,
+    onRemovePhoto: (String) -> Unit,
+    onPhotoEdited: (String, Uri) -> Unit,
+    onMovePhoto: (Int, Int) -> Unit,
+    isEditable: Boolean
 ) {
-    var selectedUri by remember { mutableStateOf<Uri?>(null) }
-    val spacing = LocalSpacing.current
+
+    var selectedPhoto by remember { mutableStateOf<PhotoItem?>(null) }
 
     Row(
-        horizontalArrangement = Arrangement.spacedBy(spacing.medium),
         modifier = Modifier.fillMaxWidth()
     ) {
 
-        uris.forEach { uri ->
+        if (isEditable) {
 
-            PhotoPreview(
-                uri = uri,
-                onRemoveClick = if (isEditable) {
-                    { onRemovePhoto(uri) }
-                } else null,
-                onClick = { selectedUri = uri }
+            val lazyListState = rememberLazyListState()
+
+            val reorderState = rememberReorderableLazyListState(
+                lazyListState = lazyListState,
+                onMove = { from, to ->
+                    onMovePhoto(from.index, to.index)
+                }
             )
+
+            LazyRow(
+                state = lazyListState,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+
+                items(
+                    items = photos,
+                    key = { it.id }
+                ) { photo ->
+
+                    ReorderableItem(
+                        state = reorderState,
+                        key = photo.id
+                    ) {
+
+                        PhotoPreview(
+                            uri = photo.toUri(),
+                            onRemoveClick = { onRemovePhoto(photo.id) },
+                            onClick = { selectedPhoto = photo },
+                            modifier = Modifier.draggableHandle()
+                        )
+                    }
+                }
+            }
+
+        } else {
+
+            // MODE LECTURE SEULE → pas de reorder
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(
+                    items = photos,
+                    key = { it.id }
+                ) { photo ->
+
+                    PhotoPreview(
+                        uri = photo.toUri(),
+                        onRemoveClick = null,
+                        onClick = { selectedPhoto = photo }
+                    )
+                }
+            }
         }
 
-        if (isEditable && uris.size < 3) {
-            AddPhotoButton(
-                onClick = onAddPhotoClick
-            )
+        if (isEditable && photos.isNotEmpty()) {
+            Spacer(modifier = Modifier.width(16.dp))
+        }
+
+        if (isEditable && photos.size < 3) {
+            AddPhotoButton(onClick = onAddPhotoClick)
         }
     }
 
-    selectedUri?.let { uri ->
+    // -------- Dialog --------
+
+    selectedPhoto?.let { photo ->
+
+        val uri = when (photo) {
+            is PhotoItem.Local -> photo.uri
+            is PhotoItem.Remote -> photo.url.toUri()
+        }
 
         if (isEditable) {
-            // Mode édition
             PhotoEditorDialog(
                 uri = uri,
-                onDismiss = { selectedUri = null },
+                onDismiss = { selectedPhoto = null },
                 onValidate = { newUri ->
-                    onPhotoEdited(uri, newUri)
-                    selectedUri = null
+                    onPhotoEdited(photo.id, newUri)
+                    selectedPhoto = null
                 }
             )
         } else {
-            // Mode détail (viewer avec glissement)
             ZoomableImageViewer(
-                uris = uris,
-                startIndex = uris.indexOf(uri),
-                onDismiss = { selectedUri = null }
+                uris = photos.map {
+                    when (it) {
+                        is PhotoItem.Local -> it.uri
+                        is PhotoItem.Remote -> it.url.toUri()
+                    }
+                },
+                startIndex = photos.indexOf(photo),
+                onDismiss = { selectedPhoto = null }
             )
         }
     }
 }
 
+private fun PhotoItem.toUri(): Uri =
+    when (this) {
+        is PhotoItem.Local -> uri
+        is PhotoItem.Remote -> url.toUri()
+    }
+
 @Composable
 fun PhotoPreview(
+    modifier: Modifier = Modifier,
     uri: Uri,
     onRemoveClick: (() -> Unit)?,
     onClick: () -> Unit
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(100.dp)
             .clip(RoundedCornerShape(16.dp))
             .clickable { onClick() }
@@ -322,28 +396,31 @@ fun PhotoEditorDialog(
                         // Haut
                         drawRect(
                             color = overlayColor,
-                            size = androidx.compose.ui.geometry.Size(size.width, top)
+                            size = Size(size.width, top)
                         )
 
                         // Bas
                         drawRect(
                             color = overlayColor,
                             topLeft = Offset(0f, bottom),
-                            size = androidx.compose.ui.geometry.Size(size.width, size.height - bottom)
+                            size = Size(
+                                size.width,
+                                size.height - bottom
+                            )
                         )
 
                         // Gauche
                         drawRect(
                             color = overlayColor,
                             topLeft = Offset(0f, top),
-                            size = androidx.compose.ui.geometry.Size(left, cropSizePx)
+                            size = Size(left, cropSizePx)
                         )
 
                         // Droite
                         drawRect(
                             color = overlayColor,
                             topLeft = Offset(right, top),
-                            size = androidx.compose.ui.geometry.Size(size.width - right, cropSizePx)
+                            size = Size(size.width - right, cropSizePx)
                         )
                     }
 
@@ -479,7 +556,7 @@ fun ZoomableImageViewer(
     val scope = rememberCoroutineScope()
 
     var visible by remember { mutableStateOf(false) }
-    var isZoomed by remember { mutableStateOf(false)}
+    var isZoomed by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         visible = true

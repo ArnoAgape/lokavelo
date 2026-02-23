@@ -33,7 +33,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
@@ -47,7 +46,8 @@ import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.common.components.ConfirmDeleteDialog
 import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
 import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
-import com.arnoagape.lokavelo.ui.common.components.PhotosContent
+import com.arnoagape.lokavelo.ui.common.components.photo.PhotoItem
+import com.arnoagape.lokavelo.ui.common.components.photo.PhotosContent
 import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.AccessoriesRow
 import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.DetailCard
 import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.DetailRow
@@ -248,7 +248,16 @@ fun DetailItem(
         item {
             DetailCard(title = stringResource(R.string.pictures)) {
                 PhotosContent(
-                    uris = bike.photoUrls.map { it.toUri() },
+                    photos = bike.photoUrls.map { url ->
+                        PhotoItem.Remote(
+                            id = url,
+                            url = url
+                        )
+                    },
+                    onAddPhotoClick = {},
+                    onRemovePhoto = {},
+                    onPhotoEdited = { _, _ -> },
+                    onMovePhoto = { _, _ -> },
                     isEditable = false
                 )
             }

@@ -56,7 +56,7 @@ import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.CharacteristicsSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.DepositSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.LocationSection
-import com.arnoagape.lokavelo.ui.common.components.PhotosSection
+import com.arnoagape.lokavelo.ui.common.components.photo.PhotosSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PricingSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PublishButton
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.TitleDescriptionSection
@@ -150,7 +150,8 @@ fun AddBikeScreen(
             AddBikeContent(
                 modifier = Modifier.fillMaxSize(),
                 state = state,
-                onAction = viewModel::onAction
+                onAction = viewModel::onAction,
+                onMovePhoto = viewModel::movePhoto
             )
 
             // 🎯 OVERLAY LOADING / SUBMIT
@@ -191,6 +192,7 @@ fun AddBikeScreen(
 private fun AddBikeContent(
     modifier: Modifier = Modifier,
     state: AddBikeScreenState,
+    onMovePhoto: (Int, Int) -> Unit,
     onAction: (AddBikeEvent) -> Unit
 ) {
     val spacing = LocalSpacing.current
@@ -307,16 +309,16 @@ private fun AddBikeContent(
 
         item {
             PhotosSection(
-                uris = state.localUris,
+                photos = state.photos,
                 photosError = state.form.photosError,
                 onAddPhotoClick = { showSheet = true },
-                onRemovePhoto = { uri ->
-                    onAction(AddBikeEvent.RemovePhoto(uri))
+                onRemovePhoto = { id ->
+                    onAction(AddBikeEvent.RemovePhoto(id))
                 },
-                onPhotoEdited = { oldUri, newUri ->
-                    onAction(AddBikeEvent.ReplacePhoto(oldUri, newUri))
+                onPhotoEdited = { id, newUri ->
+                    onAction(AddBikeEvent.ReplacePhoto(id, newUri))
                 },
-                isEditable = true
+                onMovePhoto = onMovePhoto
             )
         }
 
@@ -404,7 +406,8 @@ private fun AddBikeContentPreview() {
     LokaveloTheme {
         AddBikeContent(
             state = AddBikeScreenState(),
-            onAction = {}
+            onAction = {},
+            onMovePhoto = { _, _ -> }
         )
     }
 }

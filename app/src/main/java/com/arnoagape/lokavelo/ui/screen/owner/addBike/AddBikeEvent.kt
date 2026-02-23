@@ -4,6 +4,7 @@ import android.net.Uri
 import com.arnoagape.lokavelo.domain.model.BikeCategory
 import com.arnoagape.lokavelo.domain.model.BikeEquipment
 import com.arnoagape.lokavelo.domain.model.BikeCondition
+import com.arnoagape.lokavelo.ui.screen.owner.editBike.EditBikeEvent
 
 /**
  * A sealed class representing different events that can occur on a form.
@@ -24,8 +25,8 @@ sealed interface AddBikeEvent {
     data class StateChanged(val state: BikeCondition) : AddBikeEvent
     data class AccessoriesChanged(val accessories: List<BikeEquipment>) : AddBikeEvent
     data class AddPhoto(val uri: Uri) : AddBikeEvent
-    data class RemovePhoto(val uri: Uri) : AddBikeEvent
-    data class ReplacePhoto(val oldUri: Uri, val newUri: Uri) : AddBikeEvent
+    data class RemovePhoto(val id: String) : AddBikeEvent
+    data class ReplacePhoto(val id: String, val newUri: Uri) : AddBikeEvent
 
     data object Submit : AddBikeEvent
 }
