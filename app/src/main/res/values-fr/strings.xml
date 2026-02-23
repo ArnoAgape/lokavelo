@@ -72,6 +72,7 @@
     <string name="error_no_network">Connecte-toi à internet</string>
     <string name="error_generic">Une erreur est survenue</string>
     <string name="error_sign_up">Inscription annulée ou échouée</string>
+    <string name="error_no_bike_found">Aucun vélo trouvé</string>
     <string name="error_no_account_bike">Un compte est nécessaire pour ajouter un vélo</string>
     <string name="error_editing_bike">Une erreur est survenue pendant la modification du vélo</string>
     <string name="error_no_account_profile">Un compte est nécessaire pour modifier tes infos</string>

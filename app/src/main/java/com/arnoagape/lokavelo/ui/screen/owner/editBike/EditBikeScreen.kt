@@ -56,7 +56,6 @@ import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.common.components.AlertDialogNonSaved
 import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
 import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeEvent
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.CharacteristicsSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.DepositSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.LocationSection

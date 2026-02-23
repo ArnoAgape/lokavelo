@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.data.repository.BikeOwnerRepository
-import com.arnoagape.lokavelo.data.repository.UserRepository
 import com.arnoagape.lokavelo.domain.model.BikeLocation
 import com.arnoagape.lokavelo.ui.common.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +13,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -24,60 +22,29 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddBikeViewModel @Inject constructor(
-    private val bikeRepository: BikeOwnerRepository,
-    userRepository: UserRepository
+    private val bikeRepository: BikeOwnerRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<AddBikeUiState>(AddBikeUiState.Idle)
     private val _events = Channel<Event>()
     val eventsFlow = _events.receiveAsFlow()
 
-    private val _localUris = MutableStateFlow<List<Uri>>(emptyList())
+    private val _state = MutableStateFlow(AddBikeScreenState())
+    val state: StateFlow<AddBikeScreenState> = _state
 
-    private val _isSubmitting = MutableStateFlow(false)
+    val hasUnsavedChanges: StateFlow<Boolean> =
+        state.map { current ->
 
-    private val isSignedIn =
-        userRepository.isUserSignedIn()
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                false
-            )
+            val initialForm = AddBikeFormState()
 
-    private val _formState = MutableStateFlow(
-        AddBikeFormState(
-            title = "test",
-            description = "",
-            location = BikeLocation(),
-            priceText = "300",
-            depositText = ""
-        )
-    )
+            val formChanged = current.form != initialForm
+            val photosChanged = current.localUris.isNotEmpty()
 
-    val state: StateFlow<AddBikeScreenState> =
-        combine(
-            _uiState,
-            _formState,
-            _localUris,
-            _isSubmitting,
-            isSignedIn
-        ) { ui, form, uris, submitting, signedIn ->
-            AddBikeScreenState(
-                uiState = if (submitting) AddBikeUiState.Submitting else ui,
-                form = form,
-                localUris = uris,
-                isValid = form.title.isNotBlank() &&
-                        form.priceText.isNotBlank() &&
-                        form.location.street.isNotBlank() &&
-                        form.location.city.isNotBlank() &&
-                        form.location.postalCode.isNotBlank() &&
-                        uris.isNotEmpty(),
-                isSignedIn = signedIn
-            )
+            formChanged || photosChanged
+
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            AddBikeScreenState()
+            false
         )
 
     /**
@@ -87,16 +54,24 @@ class AddBikeViewModel @Inject constructor(
         when (event) {
 
             is AddBikeEvent.TitleChanged ->
-                _formState.update { it.copy(title = event.title) }
+                _state.updateState {
+                    it.copy(form = it.form.copy(title = event.title))
+                }
 
             is AddBikeEvent.DescriptionChanged ->
-                _formState.update { it.copy(description = event.description) }
+                _state.updateState {
+                    it.copy(form = it.form.copy(description = event.description))
+                }
 
             is AddBikeEvent.PriceChanged ->
-                _formState.update { it.copy(priceText = event.priceText) }
+                _state.updateState {
+                    it.copy(form = it.form.copy(priceText = event.priceText))
+                }
 
             is AddBikeEvent.DepositChanged ->
-                _formState.update { it.copy(depositText = event.depositText) }
+                _state.updateState {
+                    it.copy(form = it.form.copy(depositText = event.depositText))
+                }
 
             is AddBikeEvent.AddressChanged ->
                 updateLocation { copy(street = event.address) }
@@ -111,33 +86,58 @@ class AddBikeViewModel @Inject constructor(
                 updateLocation { copy(city = event.city) }
 
             is AddBikeEvent.ElectricChanged ->
-                _formState.update { it.copy(isElectric = event.isElectric) }
+                _state.updateState {
+                    it.copy(form = it.form.copy(isElectric = event.isElectric))
+                }
 
             is AddBikeEvent.CategoryChanged ->
-                _formState.update { it.copy(category = event.category) }
+                _state.updateState {
+                    it.copy(form = it.form.copy(category = event.category))
+                }
 
             is AddBikeEvent.BrandChanged ->
-                _formState.update { it.copy(brand = event.brand) }
+                _state.updateState {
+                    it.copy(form = it.form.copy(brand = event.brand))
+                }
 
             is AddBikeEvent.StateChanged ->
-                _formState.update { it.copy(condition = event.state) }
+                _state.updateState {
+                    it.copy(form = it.form.copy(condition = event.state))
+                }
 
             is AddBikeEvent.AccessoriesChanged ->
-                _formState.update { it.copy(accessories = event.accessories) }
+                _state.updateState {
+                    it.copy(form = it.form.copy(accessories = event.accessories))
+                }
 
             is AddBikeEvent.AddPhoto ->
-                _localUris.update { (it + event.uri).take(3) }
+                _state.updateState { current ->
+
+                    if (current.localUris.size >= 3) current
+                    else current.copy(
+                        localUris = current.localUris + event.uri
+                    )
+                }
 
             is AddBikeEvent.RemovePhoto ->
-                _localUris.update { it - event.uri }
+                _state.updateState {
+                    it.copy(localUris = it.localUris - event.uri)
+                }
 
-            is AddBikeEvent.ReplacePhoto -> {
-                _localUris.update { currentList ->
-                    currentList.map {
-                        if (it == event.oldUri) event.newUri else it
+            is AddBikeEvent.ReplacePhoto ->
+                _state.updateState { current ->
+
+                    val index = current.localUris.indexOfFirst {
+                        it.toString() == event.oldUri.toString()
+                    }
+
+                    if (index == -1) current
+                    else {
+                        val updated = current.localUris.toMutableList()
+                        updated[index] = event.newUri
+                        current.copy(localUris = updated)
                     }
                 }
-            }
 
             AddBikeEvent.Submit ->
                 addBike()
@@ -148,56 +148,82 @@ class AddBikeViewModel @Inject constructor(
      * Uploads the selected files to Firebase Storage and Firestore.
      * Performs network and authentication checks before uploading.
      */
-    fun addBike() {
+    private fun addBike() {
+
         viewModelScope.launch {
 
-            val form = _formState.value
-            val uris = _localUris.value
+            val current = _state.value
+            val totalPhotos = current.localUris.size
 
-            if (!form.isValid(uris)) {
+            if (!current.form.isValid(totalPhotos)) {
                 _events.trySend(Event.ShowMessage(R.string.error_invalid_form))
                 return@launch
             }
 
-            _uiState.value = AddBikeUiState.Submitting
-
-            val bike = form.toBikeOrNull()
-
-            if (bike == null) {
-                _events.trySend(Event.ShowMessage(R.string.error_invalid_form))
-                return@launch
+            _state.update {
+                it.copy(uiState = AddBikeUiState.Submitting)
             }
+
+            val bike = current.form.toBikeOrNull()
+                ?: return@launch
 
             runCatching {
                 bikeRepository.addBike(
-                    localUris = uris,
+                    localUris = current.localUris,
                     bike = bike
                 )
             }.onSuccess {
-                _uiState.value = AddBikeUiState.Success
-                _localUris.value = emptyList()
-                _formState.value = AddBikeFormState()
-                _events.trySend(Event.ShowSuccessMessage(R.string.success_bike_added))
+
+                _events.trySend(
+                    Event.ShowSuccessMessage(R.string.success_bike_added)
+                )
+
+                _state.value = AddBikeScreenState()
+
             }.onFailure { throwable ->
+
                 Log.e("AddBike", "Error while adding bike", throwable)
 
-                _uiState.value = AddBikeUiState.Error.Generic()
+                _state.update {
+                    it.copy(uiState = AddBikeUiState.Error.Generic())
+                }
+
                 _events.trySend(Event.ShowMessage(R.string.error_generic))
             }
         }
     }
 
-    fun updateLocation(update: BikeLocation.() -> BikeLocation) {
-        _formState.update {
-            it.copy(location = it.location.update())
+    private fun updateLocation(update: BikeLocation.() -> BikeLocation) {
+        _state.updateState {
+            it.copy(
+                form = it.form.copy(
+                    location = it.form.location.update()
+                )
+            )
         }
     }
+
+    private fun computeIsValid(state: AddBikeScreenState): Boolean {
+
+        val totalPhotos = state.localUris.size
+
+        return state.form.isValid(totalPhotos)
+    }
+
+    private fun MutableStateFlow<AddBikeScreenState>.updateState(
+        reducer: (AddBikeScreenState) -> AddBikeScreenState
+    ) {
+        update { current ->
+            val updated = reducer(current)
+            updated.copy(isValid = computeIsValid(updated))
+        }
+    }
+
 }
 
 data class AddBikeScreenState(
     val uiState: AddBikeUiState = AddBikeUiState.Idle,
     val form: AddBikeFormState = AddBikeFormState(),
     val isValid: Boolean = false,
-    val localUris: List<Uri> = emptyList(),
-    val isSignedIn: Boolean = false
+    val localUris: List<Uri> = emptyList()
 )

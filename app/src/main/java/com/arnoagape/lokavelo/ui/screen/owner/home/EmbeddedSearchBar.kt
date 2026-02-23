@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.navigation
+package com.arnoagape.lokavelo.ui.screen.owner.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row

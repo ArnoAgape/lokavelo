@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -49,6 +50,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.EventsEffect
+import com.arnoagape.lokavelo.ui.common.components.AlertDialogNonSaved
 import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
 import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.CharacteristicsSection
@@ -70,9 +72,19 @@ fun AddBikeScreen(
     onClose: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val hasUnsavedChanges by viewModel.hasUnsavedChanges.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val resources = LocalResources.current
     val snackbarHostState = remember { SnackbarHostState() }
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler {
+        if (hasUnsavedChanges) {
+            showExitDialog = true
+        } else {
+            onClose()
+        }
+    }
 
     EventsEffect(viewModel.eventsFlow) { event ->
         when (event) {
@@ -100,7 +112,15 @@ fun AddBikeScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.add_bike)) },
                 navigationIcon = {
-                    IconButton(onClick = onClose) {
+                    IconButton(
+                        onClick = {
+                            if (hasUnsavedChanges) {
+                                showExitDialog = true
+                            } else {
+                                onClose()
+                            }
+                        }
+                    ) {
                         Icon(Icons.Default.Close, null)
                     }
                 }
@@ -152,6 +172,16 @@ fun AddBikeScreen(
                     message = stringResource(R.string.error_generic)
                 )
             }
+        }
+
+        if (showExitDialog) {
+            AlertDialogNonSaved(
+                onConfirm = {
+                    showExitDialog = false
+                    onClose()
+                },
+                onDismiss = { showExitDialog = false }
+            )
         }
     }
 }

@@ -71,6 +71,7 @@
     <string name="error_no_network">Please connect to network</string>
     <string name="error_generic">An issue occurred</string>
     <string name="error_sign_up">Sign up canceled or failed</string>
+    <string name="error_no_bike_found">No bike found</string>
     <string name="error_no_account_bike">An account is mandatory in order to add a bike</string>
     <string name="error_editing_bike">An issue occurred while editing the bike</string>
     <string name="error_no_account_profile">An account is mandatory in order to update your profile</string>
