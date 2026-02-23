@@ -47,7 +47,7 @@ import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.common.components.ConfirmDeleteDialog
 import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
 import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PhotosContent
+import com.arnoagape.lokavelo.ui.common.components.PhotosContent
 import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.AccessoriesRow
 import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.DetailCard
 import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.DetailRow
@@ -265,6 +265,14 @@ fun DetailItem(
                         stringResource(it.labelRes())
                     } ?: ""
                 )
+
+                // Electric?
+                val isBikeElectric =
+                    if (bike.electric) stringResource(R.string.yes) else stringResource(R.string.no)
+                DetailRow(
+                    stringResource(R.string.electric_bike),
+                    isBikeElectric
+                )
                 // Brand
                 DetailRow(stringResource(R.string.brand), bike.brand)
 
@@ -277,10 +285,12 @@ fun DetailItem(
                 )
 
                 // Accessories
-                AccessoriesRow(
-                    label = stringResource(R.string.accessories),
-                    accessories = bike.accessories
-                )
+                if (bike.accessories.isNotEmpty()) {
+                    AccessoriesRow(
+                        label = stringResource(R.string.accessories),
+                        accessories = bike.accessories
+                    )
+                }
             }
         }
 

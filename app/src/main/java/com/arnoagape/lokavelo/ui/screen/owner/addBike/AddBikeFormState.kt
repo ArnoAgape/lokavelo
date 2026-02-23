@@ -56,7 +56,7 @@ data class AddBikeFormState(
             location = location,
             priceInCents = price,
             depositInCents = deposit,
-            isElectric = isElectric,
+            electric = isElectric,
             category = category,
             brand = brand,
             condition = condition,

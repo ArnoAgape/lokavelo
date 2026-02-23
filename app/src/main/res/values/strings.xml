@@ -37,7 +37,7 @@
     <string name="pricing_half_day">Price for half a day</string>
     <string name="pricing_week">Price for a week</string>
     <string name="pricing_month">Price for a month</string>
-    <string name="deposit">Deposit</string>
+    <string name="deposit">Deposit (€)</string>
     <string name="deposit_amount">Deposit amount (€)</string>
     <string name="brand">Brand</string>
     <string name="electric_bike">Electric?</string>
@@ -121,6 +121,8 @@
     <string name="cd_remove">Click here to erase</string>
     <string name="cd_bike_preview">Bike preview</string>
     <string name="cd_go_back">Go back</string>
+    <string name="cd_previous_picture">Previous picture</string>
+    <string name="cd_next_picture">Next picture</string>
     <string name="cd_close">Close</string>
     <string name="cd_expand_accessories">Click here to expand the accessories section</string>
     <string name="cd_button_add_bike">Add a new bike</string>
@@ -160,6 +162,7 @@
     <string name="bike_equipment_rear_rack">Rear rack</string>
     <string name="bike_equipment_bottle_cage">Bottle cage</string>
     <string name="bike_equipment_panniers">Panniers</string>
+    <string name="no_bike_equipment">No bike equipment</string>
 
     // BIKE STATE
     <string name="bike_state_like_new">Like new</string>

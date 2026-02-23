@@ -41,7 +41,7 @@
     <string name="deposit">Caution</string>
     <string name="deposit_amount">Montant de la caution (€)</string>
     <string name="brand">Marque</string>
-    <string name="electric_bike">Assistance électrique ?</string>
+    <string name="electric_bike">Électrique ?</string>
     <string name="condition">État</string>
     <string name="category">Catégorie</string>
     <string name="accessories">Accessoires</string>
@@ -126,6 +126,8 @@
     <string name="cd_remove">Clique ici pour effacer</string>
     <string name="cd_bike_preview">Aperçu du vélo</string>
     <string name="cd_go_back">Retour arrière</string>
+    <string name="cd_previous_picture">Photo précédente</string>
+    <string name="cd_next_picture">Photo suivante</string>
     <string name="cd_close">Fermer</string>
     <string name="cd_expand_accessories">Clique ici pour ouvrir le menu des accessoires</string>
     <string name="cd_button_add_bike">Clique ici pour ajouter un vélo à louer</string>
@@ -165,6 +167,7 @@
     <string name="bike_equipment_rear_rack">Porte-bagage</string>
     <string name="bike_equipment_bottle_cage">Porte-bidon</string>
     <string name="bike_equipment_panniers">Sacoches</string>
+    <string name="no_bike_equipment">Aucun accessoire</string>
 
     // BIKE STATE
     <string name="bike_state_like_new">Comme neuf</string>

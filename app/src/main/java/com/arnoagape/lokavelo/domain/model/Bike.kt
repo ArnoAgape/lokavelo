@@ -14,12 +14,12 @@ data class Bike(
     val category: BikeCategory? = null,
     val brand: String = "",
     val condition: BikeCondition? = null,
-    val isElectric: Boolean = false,
+    val electric: Boolean = false,
     val accessories: List<BikeEquipment> = emptyList(),
     val priceInCents: Long = 0L,
     val depositInCents: Long? = null,
     val location: BikeLocation = BikeLocation(),
-    val isAvailable: Boolean = true,
+    val available: Boolean = true,
     val rentalStart: Instant? = null,
     val rentalEnd: Instant? = null
 ) {
@@ -39,8 +39,8 @@ data class Bike(
             photoUrls = photoUrls,
             location = location,
             ownerId = ownerId,
-            isElectric = isElectric,
-            isAvailable = isAvailable,
+            electric = electric,
+            available = available,
             rentalStart = rentalStart,
             rentalEnd = rentalEnd
         )
@@ -62,8 +62,8 @@ data class Bike(
                 photoUrls = dto.photoUrls,
                 location = dto.location,
                 ownerId = dto.ownerId,
-                isElectric = dto.isElectric,
-                isAvailable = dto.isAvailable,
+                electric = dto.electric,
+                available = dto.available,
                 rentalStart = dto.rentalStart,
                 rentalEnd = dto.rentalEnd
             )

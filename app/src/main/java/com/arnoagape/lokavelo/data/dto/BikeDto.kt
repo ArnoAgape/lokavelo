@@ -18,12 +18,12 @@ data class BikeDto(
     val category: BikeCategory? = null,
     val brand: String = "",
     val condition: BikeCondition? = null,
-    val isElectric: Boolean = false,
+    val electric: Boolean = false,
     val accessories: List<BikeEquipment> = emptyList(),
     val priceInCents: Long = 0L,
     val depositInCents: Long? = null,
     val location: BikeLocation = BikeLocation(),
-    val isAvailable: Boolean = true,
+    val available: Boolean = true,
     val rentalStart: Instant? = null,
     val rentalEnd: Instant? = null
 ) : Serializable

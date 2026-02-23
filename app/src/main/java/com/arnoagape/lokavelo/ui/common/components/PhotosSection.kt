@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.ui.screen.owner.addBike.sections
+package com.arnoagape.lokavelo.ui.common.components
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -67,6 +67,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.arnoagape.lokavelo.R
+import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.SectionCard
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -573,7 +574,7 @@ fun ZoomableImageViewer(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Previous",
+                            contentDescription = stringResource(R.string.cd_previous_picture),
                             tint = Color.White
                         )
                     }
@@ -598,7 +599,7 @@ fun ZoomableImageViewer(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Next",
+                            contentDescription = stringResource(R.string.cd_next_picture),
                             tint = Color.White
                         )
                     }
