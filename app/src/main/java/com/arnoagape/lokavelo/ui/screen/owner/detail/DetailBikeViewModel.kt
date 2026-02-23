@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -90,9 +89,7 @@ class DetailBikeViewModel @Inject constructor(
                 } else {
                     Log.e("DETAIL_FLOW", "Flow error", e)
                     emit(
-                        DetailBikeUiState.Error.Generic(
-                            e.message ?: "Unknown error"
-                        )
+                        DetailBikeUiState.Error.Generic()
                     )
                 }
             }

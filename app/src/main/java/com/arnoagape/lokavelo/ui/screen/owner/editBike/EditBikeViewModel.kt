@@ -74,7 +74,17 @@ class EditBikeViewModel @Inject constructor(
                             } ?: EditBikeUiState.Error.NotFound
                         }
                         .onStart { emit(EditBikeUiState.Loading) }
-                        .catch { emit(EditBikeUiState.Error.Generic()) }
+                        .catch { e ->
+
+                            if (_isSubmitting.value) {
+                                emit(EditBikeUiState.Submitting)
+                            } else {
+                                Log.e("EDIT_FLOW", "Flow error", e)
+                                emit(
+                                    EditBikeUiState.Error.Generic()
+                                )
+                            }
+                        }
                 }
             }
             .onEach { state ->

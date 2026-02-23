@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,16 +44,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
 import kotlinx.coroutines.Dispatchers
@@ -107,11 +109,7 @@ fun PhotosContent(
                 onRemoveClick = if (isEditable) {
                     { onRemovePhoto(uri) }
                 } else null,
-                onClick = {
-                    if (isEditable) {
-                        selectedUri = uri
-                    }
-                }
+                onClick = { selectedUri = uri }
             )
         }
 
@@ -122,17 +120,25 @@ fun PhotosContent(
         }
     }
 
-    // 👇 Photo Editor Dialog
     selectedUri?.let { uri ->
 
-        PhotoEditorDialog(
-            uri = uri,
-            onDismiss = { selectedUri = null },
-            onValidate = { newUri ->
-                onPhotoEdited(uri, newUri)
-                selectedUri = null
-            }
-        )
+        if (isEditable) {
+            // Mode édition
+            PhotoEditorDialog(
+                uri = uri,
+                onDismiss = { selectedUri = null },
+                onValidate = { newUri ->
+                    onPhotoEdited(uri, newUri)
+                    selectedUri = null
+                }
+            )
+        } else {
+            // Mode détail (viewer simple)
+            FullScreenImageViewer(
+                uri = uri,
+                onDismiss = { selectedUri = null }
+            )
+        }
     }
 }
 
@@ -189,6 +195,35 @@ fun PhotoEditorDialog(
     var rotation by remember { mutableFloatStateOf(0f) }
     var localUri by remember { mutableStateOf<Uri?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+    var isCropping by remember { mutableStateOf(false) }
+
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    val density = LocalDensity.current
+    val cropSizePx = with(density) { 300.dp.toPx() }
+
+    val transformState = rememberTransformableState { zoomChange, offsetChange, _ ->
+
+        val newScale = (scale * zoomChange).coerceIn(1f, 5f)
+        scale = newScale
+
+        val maxOffsetX = (cropSizePx * (scale - 1f)) / 2f
+        val maxOffsetY = (cropSizePx * (scale - 1f)) / 2f
+
+        val newOffset = offset + offsetChange
+
+        offset = Offset(
+            x = newOffset.x.coerceIn(-maxOffsetX, maxOffsetX),
+            y = newOffset.y.coerceIn(-maxOffsetY, maxOffsetY)
+        )
+    }
+
+    LaunchedEffect(scale) {
+        if (scale <= 1f) {
+            offset = Offset.Zero
+        }
+    }
 
     // 🔄 Téléchargement si nécessaire
     LaunchedEffect(uri) {
@@ -222,16 +257,83 @@ fun PhotoEditorDialog(
             }
 
             // 🖼️ Image preview
-            AsyncImage(
-                model = localUri.toString() + "?t=${System.currentTimeMillis()}",
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer {
-                        rotationZ = rotation
-                    },
-                contentScale = ContentScale.Fit
-            )
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+
+                AsyncImage(
+                    model = localUri,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale,
+                            translationX = offset.x,
+                            translationY = offset.y,
+                            rotationZ = rotation
+                        )
+                        .then(
+                            if (isCropping) {
+                                Modifier.transformable(transformState)
+                            } else {
+                                Modifier
+                            }
+                        ),
+                    contentScale = ContentScale.Fit
+                )
+
+                // 🎯 Cadre crop carré
+                if (isCropping) {
+
+                    Canvas(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+
+                        val overlayColor = Color.Black.copy(alpha = 0.6f)
+                        val cropSizePx = 300.dp.toPx()
+
+                        val left = (size.width - cropSizePx) / 2f
+                        val top = (size.height - cropSizePx) / 2f
+                        val right = left + cropSizePx
+                        val bottom = top + cropSizePx
+
+                        // Haut
+                        drawRect(
+                            color = overlayColor,
+                            size = androidx.compose.ui.geometry.Size(size.width, top)
+                        )
+
+                        // Bas
+                        drawRect(
+                            color = overlayColor,
+                            topLeft = Offset(0f, bottom),
+                            size = androidx.compose.ui.geometry.Size(size.width, size.height - bottom)
+                        )
+
+                        // Gauche
+                        drawRect(
+                            color = overlayColor,
+                            topLeft = Offset(0f, top),
+                            size = androidx.compose.ui.geometry.Size(left, cropSizePx)
+                        )
+
+                        // Droite
+                        drawRect(
+                            color = overlayColor,
+                            topLeft = Offset(right, top),
+                            size = androidx.compose.ui.geometry.Size(size.width - right, cropSizePx)
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(300.dp)
+                            .border(2.dp, Color.White)
+                    )
+                }
+            }
 
             // 🔝 Top bar
             Row(
@@ -244,7 +346,7 @@ fun PhotoEditorDialog(
                 TextButton(
                     onClick = {
 
-                        if (rotation % 360f == 0f) {
+                        if (!isCropping && rotation % 360f == 0f) {
                             onDismiss()
                             return@TextButton
                         }
@@ -253,9 +355,11 @@ fun PhotoEditorDialog(
                             isLoading = true
 
                             val newUri = withContext(Dispatchers.IO) {
-                                rotateImageAndSave(
+                                cropAndRotateImage(
                                     context,
                                     localUri!!,
+                                    scale,
+                                    offset,
                                     rotation
                                 )
                             }
@@ -294,55 +398,18 @@ fun PhotoEditorDialog(
 
                 IconButton(
                     onClick = {
-                        // TODO Crop plus tard
+                        isCropping = !isCropping
                     }
                 ) {
                     Icon(
                         Icons.Default.Crop,
                         contentDescription = "Crop",
-                        tint = Color.White
+                        tint = if (isCropping) Color.Green else Color.White
                     )
                 }
             }
         }
     }
-}
-
-fun rotateImageAndSave(
-    context: Context,
-    uri: Uri,
-    rotation: Float
-): Uri {
-
-    val inputStream = context.contentResolver.openInputStream(uri)
-    val bitmap = BitmapFactory.decodeStream(inputStream)
-
-    val matrix = Matrix().apply {
-        postRotate(rotation)
-    }
-
-    val rotatedBitmap = Bitmap.createBitmap(
-        bitmap,
-        0,
-        0,
-        bitmap.width,
-        bitmap.height,
-        matrix,
-        true
-    )
-
-    val file = File(
-        context.cacheDir,
-        "edited_${System.currentTimeMillis()}.jpg"
-    )
-
-    val outputStream = FileOutputStream(file)
-    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)
-
-    outputStream.flush()
-    outputStream.close()
-
-    return file.toUri()
 }
 
 suspend fun downloadImageToCache(
@@ -403,12 +470,22 @@ fun FullScreenImageViewer(
     var offset by remember { mutableStateOf(Offset.Zero) }
 
     val transformState = rememberTransformableState { zoomChange, offsetChange, _ ->
+
         val newScale = (scale * zoomChange).coerceIn(1f, 5f)
         scale = newScale
 
-        if (scale > 1f) {
-            offset += offsetChange
-        } else {
+        val maxOffset = 600f * (scale - 1f)
+
+        val newOffset = offset + offsetChange
+
+        offset = Offset(
+            x = newOffset.x.coerceIn(-maxOffset, maxOffset),
+            y = newOffset.y.coerceIn(-maxOffset, maxOffset)
+        )
+    }
+
+    LaunchedEffect(scale, offset) {
+        if (scale <= 1f) {
             offset = Offset.Zero
         }
     }
@@ -441,4 +518,67 @@ fun FullScreenImageViewer(
             )
         }
     }
+}
+
+fun cropAndRotateImage(
+    context: Context,
+    uri: Uri,
+    scale: Float,
+    offset: Offset,
+    rotation: Float
+): Uri {
+
+    val input = context.contentResolver.openInputStream(uri)
+    val original = BitmapFactory.decodeStream(input)
+    input?.close()
+
+    // 1️⃣ Rotation d’abord
+    val rotationMatrix = Matrix().apply {
+        postRotate(rotation)
+    }
+
+    val rotated = Bitmap.createBitmap(
+        original,
+        0,
+        0,
+        original.width,
+        original.height,
+        rotationMatrix,
+        true
+    )
+
+    // 2️⃣ Calcul du crop basé sur scale et offset
+
+    val bitmapWidth = rotated.width.toFloat()
+    val bitmapHeight = rotated.height.toFloat()
+
+    val visibleWidth = bitmapWidth / scale
+    val visibleHeight = bitmapHeight / scale
+
+    val centerX = bitmapWidth / 2f - offset.x / scale
+    val centerY = bitmapHeight / 2f - offset.y / scale
+
+    val cropSize = minOf(visibleWidth, visibleHeight)
+
+    val left = (centerX - cropSize / 2).coerceIn(0f, bitmapWidth - cropSize)
+    val top = (centerY - cropSize / 2).coerceIn(0f, bitmapHeight - cropSize)
+
+    val cropped = Bitmap.createBitmap(
+        rotated,
+        left.toInt(),
+        top.toInt(),
+        cropSize.toInt(),
+        cropSize.toInt()
+    )
+
+    val file = File(
+        context.cacheDir,
+        "cropped_${System.currentTimeMillis()}.jpg"
+    )
+
+    FileOutputStream(file).use {
+        cropped.compress(Bitmap.CompressFormat.JPEG, 95, it)
+    }
+
+    return file.toUri()
 }
