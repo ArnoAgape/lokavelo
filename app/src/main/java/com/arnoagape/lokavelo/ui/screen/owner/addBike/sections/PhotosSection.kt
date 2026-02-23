@@ -6,7 +6,11 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import androidx.exifinterface.media.ExifInterface
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,13 +19,20 @@ import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -133,9 +144,10 @@ fun PhotosContent(
                 }
             )
         } else {
-            // Mode détail (viewer simple)
-            FullScreenImageViewer(
-                uri = uri,
+            // Mode détail (viewer avec glissement)
+            ZoomableImageViewer(
+                uris = uris,
+                startIndex = uris.indexOf(uri),
                 onDismiss = { selectedUri = null }
             )
         }
@@ -445,61 +457,175 @@ fun AddPhotoButton(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FullScreenImageViewer(
-    uri: Uri,
+fun ZoomableImageViewer(
+    uris: List<Uri>,
+    startIndex: Int,
     onDismiss: () -> Unit
 ) {
-    var scale by remember { mutableFloatStateOf(1f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
+    val pagerState = rememberPagerState(
+        initialPage = startIndex,
+        pageCount = { uris.size }
+    )
+    val scope = rememberCoroutineScope()
 
-    val transformState = rememberTransformableState { zoomChange, offsetChange, _ ->
+    var visible by remember { mutableStateOf(false) }
+    var isZoomed by remember { mutableStateOf(false)}
 
-        val newScale = (scale * zoomChange).coerceIn(1f, 5f)
-        scale = newScale
-
-        val maxOffset = 600f * (scale - 1f)
-
-        val newOffset = offset + offsetChange
-
-        offset = Offset(
-            x = newOffset.x.coerceIn(-maxOffset, maxOffset),
-            y = newOffset.y.coerceIn(-maxOffset, maxOffset)
-        )
+    LaunchedEffect(Unit) {
+        visible = true
     }
 
-    LaunchedEffect(scale, offset) {
-        if (scale <= 1f) {
-            offset = Offset.Zero
-        }
-    }
-
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false
-        )
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut()
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black),
-            contentAlignment = Alignment.Center
+
+        Dialog(
+            onDismissRequest = {
+                visible = false
+                onDismiss()
+            },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = false
+            )
         ) {
-            AsyncImage(
-                model = uri,
-                contentDescription = null,
+
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .graphicsLayer(
-                        scaleX = scale,
-                        scaleY = scale,
-                        translationX = offset.x,
-                        translationY = offset.y
+                    .background(Color.Black)
+            ) {
+
+                HorizontalPager(
+                    state = pagerState,
+                    userScrollEnabled = !isZoomed
+                ) { page ->
+
+                    var scale by remember { mutableFloatStateOf(1f) }
+                    var offset by remember { mutableStateOf(Offset.Zero) }
+
+                    val transformState = rememberTransformableState { zoomChange, offsetChange, _ ->
+
+                        val newScale = (scale * zoomChange).coerceIn(1f, 5f)
+                        scale = newScale
+
+                        isZoomed = scale > 1f
+
+                        val maxOffset = 800f * (scale - 1f)
+
+                        val newOffset = offset + offsetChange
+
+                        offset = Offset(
+                            x = newOffset.x.coerceIn(-maxOffset, maxOffset),
+                            y = newOffset.y.coerceIn(-maxOffset, maxOffset)
+                        )
+                    }
+
+                    LaunchedEffect(scale) {
+                        if (scale <= 1f) {
+                            offset = Offset.Zero
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AsyncImage(
+                            model = uris[page],
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .graphicsLayer(
+                                    scaleX = scale,
+                                    scaleY = scale,
+                                    translationX = offset.x,
+                                    translationY = offset.y
+                                )
+                                .transformable(transformState),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                }
+
+                // Flèche gauche
+                if (pagerState.currentPage > 0) {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                            }
+                        },
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(16.dp)
+                            .windowInsetsPadding(WindowInsets.systemBars)
+                            .background(
+                                Color.Black,
+                                CircleShape
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Previous",
+                            tint = Color.White
+                        )
+                    }
+                }
+
+                // Flèche droite
+                if (pagerState.currentPage < uris.lastIndex) {
+                    IconButton(
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                            }
+                        },
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(16.dp)
+                            .windowInsetsPadding(WindowInsets.systemBars)
+                            .background(
+                                Color.Black,
+                                CircleShape
+                            )
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Next",
+                            tint = Color.White
+                        )
+                    }
+                }
+
+                // Bouton X
+                IconButton(
+                    onClick = {
+                        visible = false
+                        onDismiss()
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                        .windowInsetsPadding(WindowInsets.systemBars)
+                        .background(
+                            Color.Black,
+                            CircleShape
+                        )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(R.string.close),
+                        tint = Color.White
                     )
-                    .transformable(state = transformState),
-                contentScale = ContentScale.Fit
-            )
+                }
+            }
         }
     }
 }

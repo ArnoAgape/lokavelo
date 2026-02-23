@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -13,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.arnoagape.lokavelo.ui.screen.account.home.AccountHomeScreen
@@ -48,14 +50,14 @@ fun MainScreen(
 
     val tabNavController = rememberNavController()
     val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    val navBackStackEntry by tabNavController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
     Scaffold(
         bottomBar = {
             if (!isKeyboardVisible) {
                 BottomBar(
-                    currentScreen = screenFromRoute(
-                        tabNavController.currentDestination?.route
-                    ) ?: Screen.Owner.HomeBike,
+                    currentScreen = screenFromRoute(currentRoute) ?: Screen.Owner.HomeBike,
                     onItemSelected = { screen ->
                         tabNavController.navigate(screen.route) {
                             popUpTo(tabNavController.graph.startDestinationId) {
