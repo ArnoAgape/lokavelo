@@ -1,5 +1,9 @@
 package com.arnoagape.lokavelo.ui.screen.owner.addBike.sections
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,20 +15,28 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Crop
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,20 +45,29 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.arnoagape.lokavelo.R
-import com.arnoagape.lokavelo.ui.common.components.ZoomableImageViewer
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.net.URL
 
 @Composable
 fun PhotosSection(
     uris: List<Uri>,
     onAddPhotoClick: () -> Unit = {},
     onRemovePhoto: (Uri) -> Unit = {},
+    onPhotoEdited: (Uri, Uri) -> Unit = { _, _ -> },
     isEditable: Boolean = true
 ) {
     SectionCard(
@@ -57,6 +78,7 @@ fun PhotosSection(
             uris = uris,
             onAddPhotoClick = onAddPhotoClick,
             onRemovePhoto = onRemovePhoto,
+            onPhotoEdited = onPhotoEdited,
             isEditable = isEditable
         )
     }
@@ -67,34 +89,29 @@ fun PhotosContent(
     uris: List<Uri>,
     onAddPhotoClick: () -> Unit = {},
     onRemovePhoto: (Uri) -> Unit = {},
+    onPhotoEdited: (Uri, Uri) -> Unit = { _, _ -> },
     isEditable: Boolean = true
 ) {
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
     val spacing = LocalSpacing.current
-    var viewerIndex by remember { mutableStateOf<Int?>(null) }
 
     Row(
         horizontalArrangement = Arrangement.spacedBy(spacing.medium),
         modifier = Modifier.fillMaxWidth()
     ) {
 
-        uris.forEachIndexed { index, uri ->
+        uris.forEach { uri ->
+
             PhotoPreview(
                 uri = uri,
                 onRemoveClick = if (isEditable) {
                     { onRemovePhoto(uri) }
-                } else {
-                    null
-                },
-                onClick = { viewerIndex = index }
-            )
-        }
-
-        viewerIndex?.let { index ->
-            ZoomableImageViewer(
-                uris = uris,
-                startIndex = index,
-                onDismiss = { viewerIndex = null }
+                } else null,
+                onClick = {
+                    if (isEditable) {
+                        selectedUri = uri
+                    }
+                }
             )
         }
 
@@ -104,10 +121,17 @@ fun PhotosContent(
             )
         }
     }
-    selectedUri?.let {
-        FullScreenImageViewer(
-            uri = it,
-            onDismiss = { selectedUri = null }
+
+    // 👇 Photo Editor Dialog
+    selectedUri?.let { uri ->
+
+        PhotoEditorDialog(
+            uri = uri,
+            onDismiss = { selectedUri = null },
+            onValidate = { newUri ->
+                onPhotoEdited(uri, newUri)
+                selectedUri = null
+            }
         )
     }
 }
@@ -151,6 +175,199 @@ fun PhotoPreview(
             }
         }
     }
+}
+
+@Composable
+fun PhotoEditorDialog(
+    uri: Uri,
+    onDismiss: () -> Unit,
+    onValidate: (Uri) -> Unit
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    var rotation by remember { mutableFloatStateOf(0f) }
+    var localUri by remember { mutableStateOf<Uri?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    // 🔄 Téléchargement si nécessaire
+    LaunchedEffect(uri) {
+        withContext(Dispatchers.IO) {
+            localUri = when (uri.scheme) {
+                "http", "https" -> downloadImageToCache(context, uri)
+                else -> uri
+            }
+        }
+        isLoading = false
+    }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
+
+            // ⏳ Loader pendant téléchargement
+            if (isLoading || localUri == null) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color.White
+                )
+                return@Dialog
+            }
+
+            // 🖼️ Image preview
+            AsyncImage(
+                model = localUri.toString() + "?t=${System.currentTimeMillis()}",
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        rotationZ = rotation
+                    },
+                contentScale = ContentScale.Fit
+            )
+
+            // 🔝 Top bar
+            Row(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                TextButton(
+                    onClick = {
+
+                        if (rotation % 360f == 0f) {
+                            onDismiss()
+                            return@TextButton
+                        }
+
+                        scope.launch {
+                            isLoading = true
+
+                            val newUri = withContext(Dispatchers.IO) {
+                                rotateImageAndSave(
+                                    context,
+                                    localUri!!,
+                                    rotation
+                                )
+                            }
+
+                            isLoading = false
+                            onValidate(newUri)
+                        }
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.validate),
+                        color = Color.White
+                    )
+                }
+            }
+
+            // 🔻 Bottom actions
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(24.dp),
+                horizontalArrangement = Arrangement.spacedBy(32.dp)
+            ) {
+
+                IconButton(
+                    onClick = {
+                        rotation = (rotation + 90f) % 360f
+                    }
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.RotateRight,
+                        contentDescription = "Rotate",
+                        tint = Color.White
+                    )
+                }
+
+                IconButton(
+                    onClick = {
+                        // TODO Crop plus tard
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.Crop,
+                        contentDescription = "Crop",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+    }
+}
+
+fun rotateImageAndSave(
+    context: Context,
+    uri: Uri,
+    rotation: Float
+): Uri {
+
+    val inputStream = context.contentResolver.openInputStream(uri)
+    val bitmap = BitmapFactory.decodeStream(inputStream)
+
+    val matrix = Matrix().apply {
+        postRotate(rotation)
+    }
+
+    val rotatedBitmap = Bitmap.createBitmap(
+        bitmap,
+        0,
+        0,
+        bitmap.width,
+        bitmap.height,
+        matrix,
+        true
+    )
+
+    val file = File(
+        context.cacheDir,
+        "edited_${System.currentTimeMillis()}.jpg"
+    )
+
+    val outputStream = FileOutputStream(file)
+    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)
+
+    outputStream.flush()
+    outputStream.close()
+
+    return file.toUri()
+}
+
+suspend fun downloadImageToCache(
+    context: Context,
+    uri: Uri
+): Uri = withContext(Dispatchers.IO) {
+
+    val url = URL(uri.toString())
+    val connection = url.openConnection()
+    connection.connect()
+
+    val input = connection.getInputStream()
+
+    val file = File(
+        context.cacheDir,
+        "temp_${System.currentTimeMillis()}.jpg"
+    )
+
+    FileOutputStream(file).use { output ->
+        input.copyTo(output)
+    }
+
+    input.close()
+
+    file.toUri()
 }
 
 @Composable

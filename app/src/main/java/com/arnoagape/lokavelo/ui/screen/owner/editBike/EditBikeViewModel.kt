@@ -34,6 +34,7 @@ import javax.inject.Inject
  * Manages form state, validation, and user interactions
  * related to bike edition.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class EditBikeViewModel @Inject constructor(
     private val bikeRepository: BikeOwnerRepository
@@ -60,7 +61,6 @@ class EditBikeViewModel @Inject constructor(
         )
     )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val bikeFlow: StateFlow<EditBikeUiState> =
         bikeId
             .flatMapLatest { id ->
@@ -193,6 +193,27 @@ class EditBikeViewModel @Inject constructor(
 
             is EditBikeEvent.RemovePhoto ->
                 _localUris.update { it - event.uri }
+
+            is EditBikeEvent.ReplacePhoto -> {
+
+                // Si l'ancienne est locale
+                _localUris.update { current ->
+                    current.map {
+                        if (it == event.oldUri) event.newUri else it
+                    }
+                }
+
+                // Si l'ancienne était distante
+                _remotePhotoUrls.update { remoteList ->
+                    remoteList.filterNot { it == event.oldUri.toString() }
+                }
+
+                // Ajouter la nouvelle locale si elle n'existe pas déjà
+                _localUris.update { current ->
+                    if (current.contains(event.newUri)) current
+                    else current + event.newUri
+                }
+            }
 
             EditBikeEvent.Submit ->
                 editBike()

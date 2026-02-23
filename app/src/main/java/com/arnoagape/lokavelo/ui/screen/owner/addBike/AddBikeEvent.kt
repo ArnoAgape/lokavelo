@@ -25,5 +25,7 @@ sealed interface AddBikeEvent {
     data class AccessoriesChanged(val accessories: List<BikeEquipment>) : AddBikeEvent
     data class AddPhoto(val uri: Uri) : AddBikeEvent
     data class RemovePhoto(val uri: Uri) : AddBikeEvent
+    data class ReplacePhoto(val oldUri: Uri, val newUri: Uri) : AddBikeEvent
+
     data object Submit : AddBikeEvent
 }

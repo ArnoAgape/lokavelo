@@ -302,6 +302,9 @@ private fun EditBikeContent(
                         onAction(EditBikeEvent.RemovePhoto(uri))
                     }
                 },
+                onPhotoEdited = { oldUri, newUri ->
+                    onAction(EditBikeEvent.ReplacePhoto(oldUri, newUri))
+                },
                 isEditable = true
             )
         }
