@@ -395,7 +395,13 @@ private fun EditBikeContent(
                 priceError = state.form.priceError,
                 onPriceChange = {
                     onAction(EditBikeEvent.PriceChanged(it))
-                }
+                },
+                monthPrice = state.form.monthPriceText,
+                halfDayPrice = state.form.halfDayPriceText,
+                weekPrice = state.form.weekPriceText,
+                onHalfDayChange = { onAction(EditBikeEvent.HalfDayPriceChanged(it)) },
+                onWeekChange = { onAction(EditBikeEvent.WeekPriceChanged(it)) },
+                onMonthChange = { onAction(EditBikeEvent.MonthPriceChanged(it)) }
             )
         }
 

@@ -53,8 +53,7 @@ import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.DetailCard
 import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.DetailRow
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
-import java.text.NumberFormat
-import java.util.Locale
+import com.arnoagape.lokavelo.ui.utils.toEuroString
 
 /**
  * Displays the detail view of a file.
@@ -211,26 +210,7 @@ fun DetailItem(
     modifier: Modifier = Modifier,
     bike: Bike
 ) {
-
     val spacing = LocalSpacing.current
-
-    // Prix
-    val formattedPrice = remember(bike.priceInCents) {
-        val priceInEuros = bike.priceInCents / 100.0
-        NumberFormat
-            .getCurrencyInstance(Locale.FRANCE)
-            .format(priceInEuros)
-    }
-
-    // Caution
-    val formattedDeposit = remember(bike.depositInCents) {
-        bike.depositInCents?.let { cents ->
-            val depositInEuros = cents / 100.0
-            NumberFormat
-                .getCurrencyInstance(Locale.FRANCE)
-                .format(depositInEuros)
-        }
-    }
 
     LazyColumn(
         modifier = modifier
@@ -329,10 +309,36 @@ fun DetailItem(
         // Pricing
         item {
             DetailCard(title = stringResource(R.string.pricing)) {
-                DetailRow(stringResource(R.string.pricing_day), formattedPrice)
+
+                bike.priceInCents
+                    .toEuroString()
+                    .let {
+                        DetailRow(stringResource(R.string.pricing_day), it)
+                    }
+
+                bike.priceHalfDayInCents
+                    ?.toEuroString()
+                    ?.let {
+                        DetailRow(stringResource(R.string.pricing_half_day), it)
+                    }
+
+                bike.priceWeekInCents
+                    ?.toEuroString()
+                    ?.let {
+                        DetailRow(stringResource(R.string.pricing_week), it)
+                    }
+
+                bike.priceMonthInCents
+                    ?.toEuroString()
+                    ?.let {
+                        DetailRow(stringResource(R.string.pricing_month), it)
+                    }
+
                 DetailRow(
                     stringResource(R.string.deposit),
-                    formattedDeposit ?: stringResource(R.string.no_deposit)
+                    bike.depositInCents
+                        ?.toEuroString()
+                        ?: stringResource(R.string.no_deposit)
                 )
             }
         }
@@ -358,6 +364,9 @@ private fun DetailBikeScreenPreview() {
                     BikeEquipment.REFLECTIVE_VEST
                 ),
                 priceInCents = 2500,
+                priceHalfDayInCents = 1250,
+                priceWeekInCents = 10000,
+                priceMonthInCents = 25000,
                 depositInCents = 50000,
                 location = BikeLocation(
                     street = "4 bd Longchamp",

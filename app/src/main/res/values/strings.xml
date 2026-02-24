@@ -33,11 +33,15 @@
     <string name="description">Description</string>
     <string name="location">Location</string>
     <string name="pricing">Pricing</string>
-    <string name="pricing_day">Daily rate</string>
     <string name="pricing_day_amount">Daily rate (€)</string>
+    <string name="pricing_half_day_amount">Price for half a day (€)</string>
+    <string name="pricing_week_amount">Price for a week (€)</string>
+    <string name="pricing_month_amount">Price for a month (€)</string>
+    <string name="pricing_day">Daily rate</string>
     <string name="pricing_half_day">Price for half a day</string>
     <string name="pricing_week">Price for a week</string>
     <string name="pricing_month">Price for a month</string>
+    <string name="discount">Discount: %1$d%%</string>
     <string name="deposit">Deposit</string>
     <string name="deposit_amount">Deposit amount (€)</string>
     <string name="brand">Brand</string>

@@ -8,6 +8,8 @@ import com.arnoagape.lokavelo.data.repository.BikeOwnerRepository
 import com.arnoagape.lokavelo.domain.model.BikeLocation
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.components.photo.PhotoItem
+import com.arnoagape.lokavelo.ui.utils.toCentsOrNull
+import com.arnoagape.lokavelo.ui.utils.toEuroString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -123,9 +125,70 @@ class EditBikeViewModel @Inject constructor(
                     it.copy(form = it.form.copy(description = event.description))
                 }
 
-            is EditBikeEvent.PriceChanged ->
+            is EditBikeEvent.PriceChanged -> {
+
+                val cents = event.value.toCentsOrNull()
+
+                _state.update { current ->
+
+                    if (cents != null) {
+
+                        val (half, week, month) = calculateDerivedPrices(cents)
+
+                        current.copy(
+                            form = current.form.copy(
+                                priceText = event.value,
+
+                                isHalfDayManuallyEdited = false,
+                                isWeekManuallyEdited = false,
+                                isMonthManuallyEdited = false,
+
+                                halfDayPriceText = half.toEuroString(),
+                                weekPriceText = week.toEuroString(),
+                                monthPriceText = month.toEuroString()
+                            )
+                        )
+                    } else {
+                        current.copy(
+                            form = current.form.copy(
+                                priceText = event.value,
+                                halfDayPriceText = "",
+                                weekPriceText = "",
+                                monthPriceText = ""
+                            )
+                        )
+                    }
+                }
+            }
+
+            is EditBikeEvent.HalfDayPriceChanged ->
                 _state.update {
-                    it.copy(form = it.form.copy(priceText = event.priceText))
+                    it.copy(
+                        form = it.form.copy(
+                            halfDayPriceText = event.value,
+                            isHalfDayManuallyEdited = true
+                        )
+                    )
+                }
+
+            is EditBikeEvent.WeekPriceChanged ->
+                _state.update {
+                    it.copy(
+                        form = it.form.copy(
+                            weekPriceText = event.value,
+                            isWeekManuallyEdited = true
+                        )
+                    )
+                }
+
+            is EditBikeEvent.MonthPriceChanged ->
+                _state.update {
+                    it.copy(
+                        form = it.form.copy(
+                            monthPriceText = event.value,
+                            isMonthManuallyEdited = true
+                        )
+                    )
                 }
 
             is EditBikeEvent.DepositChanged ->
@@ -222,10 +285,7 @@ class EditBikeViewModel @Inject constructor(
         val categoryError = current.category == null
         val conditionError = current.condition == null
 
-        val price = current.priceText
-            .replace(",", ".")
-            .toDoubleOrNull()
-
+        val price = current.priceText.toCentsOrNull()
         val priceError = price == null || price <= 0
 
         val streetError = current.location.street.isBlank()
@@ -339,6 +399,16 @@ class EditBikeViewModel @Inject constructor(
 
             current.copy(photos = mutable)
         }
+    }
+
+    private fun calculateDerivedPrices(dayPriceCents: Long): Triple<Long, Long, Long> {
+
+        val half = dayPriceCents / 2
+
+        val week = (dayPriceCents * 7 * 70) / 100   // -30%
+        val month = (dayPriceCents * 30 * 50) / 100 // -50%
+
+        return Triple(half, week, month)
     }
 }
 
