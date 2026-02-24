@@ -147,7 +147,7 @@ class EditBikeViewModel @Inject constructor(
 
             is EditBikeEvent.ElectricChanged ->
                 _state.update {
-                    it.copy(form = it.form.copy(isElectric = event.isElectric))
+                    it.copy(form = it.form.copy(electric = event.electric))
                 }
 
             is EditBikeEvent.CategoryChanged ->

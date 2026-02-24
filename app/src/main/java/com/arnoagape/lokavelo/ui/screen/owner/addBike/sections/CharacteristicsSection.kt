@@ -46,7 +46,7 @@ fun CharacteristicsSection(
     category: BikeCategory?,
     brand: String,
     condition: BikeCondition?,
-    isElectric: Boolean,
+    electric: Boolean,
     accessories: List<BikeEquipment>,
     categoryError: Boolean,
     conditionError: Boolean,
@@ -81,7 +81,7 @@ fun CharacteristicsSection(
                 Spacer(modifier = Modifier.weight(1f))
 
                 Switch(
-                    checked = isElectric,
+                    checked = electric,
                     onCheckedChange = onElectricChange
                 )
             }

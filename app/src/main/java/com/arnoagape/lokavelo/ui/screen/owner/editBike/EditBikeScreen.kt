@@ -339,7 +339,7 @@ private fun EditBikeContent(
                 category = state.form.category,
                 brand = state.form.brand,
                 condition = state.form.condition,
-                isElectric = state.form.isElectric,
+                electric = state.form.electric,
                 accessories = state.form.accessories,
                 categoryError = state.form.categoryError,
                 conditionError = state.form.conditionError,

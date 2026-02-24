@@ -3,7 +3,9 @@ package com.arnoagape.lokavelo.ui.screen.owner.addBike.sections
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -30,8 +32,7 @@ fun SectionCard(
         ),
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
             Text(
                 text = title,
@@ -40,12 +41,15 @@ fun SectionCard(
             )
 
             subtitle?.let {
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             content()
         }

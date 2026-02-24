@@ -120,7 +120,7 @@ class FirebaseBikeApi @Inject constructor(
                     "location" to bike.location,
                     "priceInCents" to bike.priceInCents,
                     "depositInCents" to bike.depositInCents,
-                    "isElectric" to bike.electric,
+                    "electric" to bike.electric,
                     "category" to bike.category,
                     "brand" to bike.brand,
                     "condition" to bike.condition,

@@ -39,7 +39,7 @@ fun LocationSection(
         subtitle = stringResource(R.string.subtitle_location)
     ) {
 
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
             AddressLineField(
                 value = addressLine,
