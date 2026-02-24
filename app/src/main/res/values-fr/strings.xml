@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     // TOP BAR
     <string name="add_bike">Publier une annonce</string>
@@ -113,9 +113,9 @@
     <string name="action_delete_account">Supprimer le compte</string>
     <string name="confirm_delete_bike">Supprimer ce vélo ?</string>
     <string name="bike_deleted">Vélo supprimé</string>
-    <plurals name="confirm_delete_bikes">
+    <plurals name="confirm_delete_bikes" tools:ignore="MissingQuantity">
     <item quantity="one">Supprimer %d vélo ?</item>
-        <item quantity="many">Supprimer %d vélos ?</item>
+        <item quantity="other">Supprimer %d vélos ?</item>
     </plurals>
     <string name="delete_irreversible">Cette action est irréversible.</string>
     <string name="confirm_delete_account_message">
