@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.BikeCategory
@@ -91,7 +92,8 @@ fun CharacteristicsSection(
                 onValueChange = { onBrandChange(it) },
                 label = { Text(stringResource(R.string.brand)) },
                 keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Next
                 ),
                 modifier = Modifier.fillMaxWidth()
             )

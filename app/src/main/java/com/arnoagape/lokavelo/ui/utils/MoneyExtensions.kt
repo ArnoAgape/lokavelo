@@ -21,3 +21,14 @@ fun Long.toEuroString(): String {
 
     return formatter.format(this / 100.0)
 }
+
+fun Long.toPriceString(): String {
+    val formatter = NumberFormat
+        .getNumberInstance(Locale.FRANCE)
+        .apply {
+            minimumFractionDigits = 0
+            maximumFractionDigits = 2
+        }
+
+    return formatter.format(this / 100.0)
+}

@@ -98,7 +98,8 @@ fun AddressLineField(
         },
         singleLine = true,
         keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Sentences
+            capitalization = KeyboardCapitalization.Sentences,
+            imeAction = ImeAction.Next
         ),
         leadingIcon = {
             Icon(
@@ -125,7 +126,8 @@ fun AddressLine2Field(
         },
         singleLine = true,
         keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.Words
+            capitalization = KeyboardCapitalization.Words,
+            imeAction = ImeAction.Next
         )
     )
 }
@@ -155,7 +157,7 @@ fun CityField(
         singleLine = true,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Words,
-            imeAction = ImeAction.Done
+            imeAction = ImeAction.Next
         )
     )
 }

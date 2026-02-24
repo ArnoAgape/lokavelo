@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.arnoagape.lokavelo.R
@@ -33,7 +34,8 @@ fun TitleDescriptionSection(
                 onValueChange = { onTitleChange(it) },
                 label = { Text(stringResource(R.string.title)) },
                 keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Next
                 ),
                 isError = titleError,
                 modifier = Modifier.fillMaxWidth(),
@@ -49,7 +51,8 @@ fun TitleDescriptionSection(
                 onValueChange = { onDescriptionChange(it) },
                 label = { Text(stringResource(R.string.description)) },
                 keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Next
                 ),
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
