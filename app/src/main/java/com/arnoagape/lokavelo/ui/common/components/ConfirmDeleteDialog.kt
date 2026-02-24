@@ -1,6 +1,12 @@
 package com.arnoagape.lokavelo.ui.common.components
 
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.arnoagape.lokavelo.R
 
 /**
  * Displays a confirmation dialog when deletion is requested.
@@ -16,11 +22,24 @@ fun ConfirmDeleteDialog(
     confirmButtonMessage: String
 ) {
     if (show) {
-        ConfirmDialog(
-            title = confirmButtonTitle,
-            message = confirmButtonMessage,
-            onConfirm = onConfirm,
-            onDismiss = onDismiss
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(confirmButtonTitle) },
+            text = { Text(confirmButtonMessage) },
+            confirmButton = {
+                TextButton(onClick = {
+                    onConfirm()
+                    onDismiss()
+                }) {
+                    Text(stringResource(R.string.delete),
+                        color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
         )
     }
 }

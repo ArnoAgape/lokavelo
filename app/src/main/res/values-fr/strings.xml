@@ -111,12 +111,17 @@
 
     // CONFIRM ACTIONS
     <string name="action_delete_account">Supprimer le compte</string>
-    <string name="confirm_delete_bike">Supprimer l’annonce</string>
-    <string name="bike_deleted">Annonce supprimée</string>
-    <string name="confirm_delete_message_current_bike">
-        Tu es sur le point de supprimer l’annonce. Continuer ?</string>
-    <string name="confirm_delete_message_bikes">
-        Tu es sur le point de supprimer les annonces sélectionnées. Continuer ?</string>
+    <string name="confirm_delete_bike">Supprimer ce vélo ?</string>
+    <string name="bike_deleted">Vélo supprimé</string>
+    <plurals name="confirm_delete_bikes">
+    <item quantity="one">
+        Supprimer ce vélo ?
+    </item>
+        <item quantity="other">
+        Supprimer %d vélos ?
+    </item>
+    </plurals>
+    <string name="delete_irreversible">Cette action est irréversible.</string>
     <string name="confirm_delete_account_message">
         Tu es sur le point d’effacer ton compte.
         Un email te sera envoyé pour confirmer la suppression. Continuer ?</string>

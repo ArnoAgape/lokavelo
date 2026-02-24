@@ -186,7 +186,7 @@ fun DetailBikeScreen(
                 viewModel.dismissDeleteDialog()
             },
             confirmButtonTitle = stringResource(R.string.confirm_delete_bike),
-            confirmButtonMessage = stringResource(R.string.confirm_delete_message_current_bike)
+            confirmButtonMessage = stringResource(R.string.delete_irreversible)
         )
     }
 }

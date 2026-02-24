@@ -33,6 +33,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -115,10 +116,13 @@ fun HomeBikeScreen(
 
                             IconButton(
                                 onClick = {
-                                    if (hasSelection)
-                                        viewModel.requestDeleteConfirmation()
-                                    else
+                                    if (!state.selection.isSelectionMode) {
+                                        viewModel.enterSelectionMode()
+                                    } else if (!hasSelection) {
                                         viewModel.exitSelectionMode()
+                                    } else {
+                                        viewModel.requestDeleteConfirmation()
+                                    }
                                 }
                             ) {
                                 Icon(
@@ -127,7 +131,7 @@ fun HomeBikeScreen(
                                             Icons.Default.DeleteForever
                                         else
                                             Icons.Default.Delete,
-                                    contentDescription = null,
+                                    contentDescription = stringResource(R.string.cd_button_delete_bike),
                                     tint =
                                         if (hasSelection)
                                             MaterialTheme.colorScheme.error
@@ -167,13 +171,17 @@ fun HomeBikeScreen(
             onToggleSelection = { viewModel.toggleSelection(it) },
             onEnterSelectionMode = { viewModel.enterSelectionMode() }
         )
-
+        val count = state.selection.selectedIds.size
         ConfirmDeleteDialog(
             show = showDeleteDialog,
             onConfirm = { viewModel.deleteSelectedBikes() },
             onDismiss = { viewModel.dismissDeleteDialog() },
-            confirmButtonTitle = stringResource(R.string.confirm_delete_bike),
-            confirmButtonMessage = stringResource(R.string.confirm_delete_message_bikes)
+            confirmButtonTitle = pluralStringResource(
+                id = R.plurals.confirm_delete_bikes,
+                count = count,
+                count
+            ),
+            confirmButtonMessage = stringResource(R.string.delete_irreversible)
         )
     }
 }

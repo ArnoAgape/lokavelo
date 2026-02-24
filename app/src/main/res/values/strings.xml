@@ -110,10 +110,17 @@
 
     // CONFIRM ACTIONS
     <string name="action_delete_account">Delete account</string>
-    <string name="confirm_delete_bike">Delete bike</string>
+    <string name="confirm_delete_bike">Delete this bike?</string>
     <string name="bike_deleted">Bike deleted</string>
-    <string name="confirm_delete_message_current_bike">You’re about to delete the bike. Continue?</string>
-    <string name="confirm_delete_message_bikes">You’re about to delete the selected bike(s). Continue?</string>
+    <plurals name="confirm_delete_bikes">
+    <item quantity="one">
+        Delete this bike?
+    </item>
+        <item quantity="other">
+        Delete %d bikes?
+    </item>
+    </plurals>
+    <string name="delete_irreversible">This action cannot be undone.</string>
     <string name="confirm_delete_account_message">
         You’re about to delete your account. An email will be sent to confirm the deletion. Continue?</string>
     <string name="unsaved_changes">Unsaved changes</string>
