@@ -62,7 +62,7 @@
     <string name="required">Obligatoire</string>
 
     // SUCCESS
-    <string name="success_user_updated">Tes données ont bien été mises à jour</string>
+    <string name="success_user_updated">Infos mises à jour</string>
     <string name="success_sign_up">Identifié avec succès</string>
     <string name="success_sign_out">Déconnecté avec succès</string>
     <string name="success_deleted_account">Compte supprimé avec succès</string>
@@ -88,7 +88,7 @@
     <string name="sign_in_google">Continue avec Google</string>
     <string name="sign_in_email">Continue avec ton adresse email</string>
     <string name="sign_in_phone">Continue avec ton numéro</string>
-    <string name="sign_in_title">Bienvenue !\n Connecte-toi pour utiliser LokaVélo.</string>
+    <string name="sign_in_title">Bienvenue ! Connecte-toi pour utiliser LokaVélo.</string>
     <string name="sign_in_continue">Continuer</string>
 
     // ACTIONS
@@ -103,7 +103,7 @@
     <string name="or">ou</string>
     <string name="try_again">Réessayer</string>
     <string name="publishing">Publication en cours…</string>
-    <string name="loading">Les données chargent…</string>
+    <string name="loading">Chargement…</string>
     <string name="deleting">Suppression en cours…</string>
     <string name="add_picture">Ajouter une photo</string>
     <string name="remove_picture">Supprimer</string>
@@ -114,12 +114,8 @@
     <string name="confirm_delete_bike">Supprimer ce vélo ?</string>
     <string name="bike_deleted">Vélo supprimé</string>
     <plurals name="confirm_delete_bikes">
-    <item quantity="one">
-        Supprimer ce vélo ?
-    </item>
-        <item quantity="other">
-        Supprimer %d vélos ?
-    </item>
+    <item quantity="one">Supprimer %d vélo ?</item>
+        <item quantity="many">Supprimer %d vélos ?</item>
     </plurals>
     <string name="delete_irreversible">Cette action est irréversible.</string>
     <string name="confirm_delete_account_message">
@@ -138,8 +134,8 @@
     <string name="cd_close">Fermer</string>
     <string name="cd_expand_accessories">Clique ici pour ouvrir le menu des accessoires</string>
     <string name="cd_button_add_bike">Clique ici pour ajouter un vélo à louer</string>
-    <string name="cd_button_delete">Supprimer les annonces sélectionnées</string>
-    <string name="cd_button_delete_bike">Supprimer une annonce</string>
+    <string name="cd_button_delete">Supprimer les vélos sélectionnés</string>
+    <string name="cd_button_delete_bike">Supprimer un vélo</string>
 
     // CATEGORY
     <string name="bike_category_road">Vélo de route</string>

@@ -87,7 +87,7 @@
     <string name="sign_in_google">Sign in with Google</string>
     <string name="sign_in_email">Sign in with your email</string>
     <string name="sign_in_phone">Sign in with your phone number</string>
-    <string name="sign_in_title">Welcome! Log in or sign up to use LokaVelo.</string>
+    <string name="sign_in_title">Welcome! Log in or sign up to use LokaVélo.</string>
     <string name="sign_in_continue">Continue</string>
 
     // ACTIONS
