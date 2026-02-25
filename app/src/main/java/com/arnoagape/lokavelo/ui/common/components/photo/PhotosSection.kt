@@ -55,6 +55,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -125,7 +126,7 @@ fun PhotosContent(
     isEditable: Boolean
 ) {
 
-    var selectedPhoto by remember { mutableStateOf<PhotoItem?>(null) }
+    var selectedPhotoId by rememberSaveable { mutableStateOf<String?>(null) }
 
     Row(
         modifier = Modifier.fillMaxWidth()
@@ -160,7 +161,7 @@ fun PhotosContent(
                         PhotoPreview(
                             uri = photo.toUri(),
                             onRemoveClick = { onRemovePhoto(photo.id) },
-                            onClick = { selectedPhoto = photo },
+                            onClick = { selectedPhotoId = photo.id },
                             modifier = Modifier.draggableHandle()
                         )
                     }
@@ -181,7 +182,7 @@ fun PhotosContent(
                     PhotoPreview(
                         uri = photo.toUri(),
                         onRemoveClick = null,
-                        onClick = { selectedPhoto = photo }
+                        onClick = { selectedPhotoId = photo.id }
                     )
                 }
             }
@@ -198,6 +199,7 @@ fun PhotosContent(
 
     // -------- Dialog --------
 
+    val selectedPhoto = photos.find { it.id == selectedPhotoId }
     selectedPhoto?.let { photo ->
 
         val uri = when (photo) {
@@ -208,10 +210,10 @@ fun PhotosContent(
         if (isEditable) {
             PhotoEditorDialog(
                 uri = uri,
-                onDismiss = { selectedPhoto = null },
+                onDismiss = { selectedPhotoId = null },
                 onValidate = { newUri ->
                     onPhotoEdited(photo.id, newUri)
-                    selectedPhoto = null
+                    selectedPhotoId = null
                 }
             )
         } else {
@@ -223,7 +225,7 @@ fun PhotosContent(
                     }
                 },
                 startIndex = photos.indexOf(photo),
-                onDismiss = { selectedPhoto = null }
+                onDismiss = { selectedPhotoId = null }
             )
         }
     }
