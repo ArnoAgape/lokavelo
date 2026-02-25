@@ -33,6 +33,12 @@ import java.util.UUID
 import javax.inject.Inject
 import kotlin.collections.map
 
+/**
+ * ViewModel responsible for adding a new bike.
+ *
+ * Manages form state, validation, and user interactions
+ * related to bike edition.
+ */
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class AddBikeViewModel @Inject constructor(

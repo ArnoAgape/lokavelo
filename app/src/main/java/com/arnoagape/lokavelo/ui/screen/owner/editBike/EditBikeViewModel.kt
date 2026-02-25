@@ -17,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -36,7 +38,7 @@ import javax.inject.Inject
 import kotlin.collections.toMutableList
 
 /**
- * ViewModel responsible for editing a new bike.
+ * ViewModel responsible for editing a bike.
  *
  * Manages form state, validation, and user interactions
  * related to bike edition.
@@ -72,45 +74,19 @@ class EditBikeViewModel @Inject constructor(
                 emptyList()
             )
 
-    private val bikeFlow: StateFlow<Bike?> =
+    private val bikeFlow: Flow<Bike> =
         bikeId
             .filterNotNull()
             .flatMapLatest { id ->
                 bikeRepository.observeBike(id)
             }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                null
-            )
+            .filterNotNull()
 
     private val _state = MutableStateFlow(EditBikeScreenState())
+
     val state: StateFlow<EditBikeScreenState> =
-        combine(_state, suggestions, bikeFlow) { state, suggestions, bike ->
-
-            bike?.let {
-
-                if (!state.isFormInitialized) {
-                    state.copy(
-                        suggestions = suggestions,
-                        uiState = EditBikeUiState.Loaded(it),
-                        form = EditBikeFormState.fromBike(it),
-                        photos = it.photoUrls.map { url ->
-                            PhotoItem.Remote(id = url, url = url)
-                        },
-                        isFormInitialized = true
-                    )
-                } else {
-                    state.copy(
-                        suggestions = suggestions,
-                        uiState = EditBikeUiState.Loaded(it)
-                    )
-                }
-
-            } ?: state.copy(
-                suggestions = suggestions,
-                uiState = EditBikeUiState.Idle
-            )
+        combine(_state, suggestions) { state, suggestions ->
+            state.copy(suggestions = suggestions)
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
@@ -119,6 +95,24 @@ class EditBikeViewModel @Inject constructor(
 
     fun setBikeId(id: String) {
         bikeId.value = id
+        observeBike()
+    }
+
+    private fun observeBike() {
+        viewModelScope.launch {
+            bikeFlow.firstOrNull()?.let { bike ->
+                _state.update {
+                    it.copy(
+                        uiState = EditBikeUiState.Loaded(bike),
+                        form = EditBikeFormState.fromBike(bike),
+                        photos = bike.photoUrls.map { url ->
+                            PhotoItem.Remote(id = url, url = url)
+                        },
+                        isFormInitialized = true
+                    )
+                }
+            }
+        }
     }
 
     val hasUnsavedChanges: StateFlow<Boolean> =
