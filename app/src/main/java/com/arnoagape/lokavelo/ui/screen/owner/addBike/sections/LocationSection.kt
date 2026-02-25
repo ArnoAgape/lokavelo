@@ -2,6 +2,7 @@ package com.arnoagape.lokavelo.ui.screen.owner.addBike.sections
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
@@ -11,7 +12,9 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arnoagape.lokavelo.R
@@ -137,13 +141,66 @@ fun AddressLineField(
             expanded = expanded,
             onDismissRequest = { }
         ) {
-            suggestions.forEach { suggestion ->
+            suggestions.forEachIndexed { index, suggestion ->
+
                 DropdownMenuItem(
-                    text = { Text(suggestion.displayName) },
                     onClick = {
                         onSuggestionSelected(suggestion)
+                    },
+                    contentPadding = PaddingValues(
+                        horizontal = 16.dp,
+                        vertical = 12.dp
+                    ),
+                    text = {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+
+                            Column {
+
+                                Text(
+                                    text = suggestion.street
+                                        ?: suggestion.displayName,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+
+                                Text(
+                                    text = buildString {
+                                        suggestion.postalCode?.let {
+                                            append(it)
+                                            append(" ")
+                                        }
+                                        suggestion.city?.let { append(it) }
+                                        suggestion.country?.let {
+                                            append(" • ")
+                                            append(it)
+                                        }
+                                    },
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
                     }
                 )
+
+                if (index < suggestions.lastIndex) {
+                    HorizontalDivider(
+                        Modifier,
+                        thickness = 0.5.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
+                }
             }
         }
     }
