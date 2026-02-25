@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -65,8 +66,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -292,20 +293,18 @@ fun PhotoEditorDialog(
     var localUri by remember { mutableStateOf<Uri?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var isCropping by remember { mutableStateOf(false) }
+    var containerWidthPx by remember { mutableFloatStateOf(0f) }
 
     var scale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
-
-    val density = LocalDensity.current
-    val cropSizePx = with(density) { 300.dp.toPx() }
 
     val transformState = rememberTransformableState { zoomChange, offsetChange, _ ->
 
         val newScale = (scale * zoomChange).coerceIn(1f, 5f)
         scale = newScale
 
-        val maxOffsetX = (cropSizePx * (scale - 1f)) / 2f
-        val maxOffsetY = (cropSizePx * (scale - 1f)) / 2f
+        val maxOffsetX = (containerWidthPx * (scale - 1f)) / 2f
+        val maxOffsetY = (containerWidthPx * (scale - 1f)) / 2f
 
         val newOffset = offset + offsetChange
 
@@ -341,6 +340,9 @@ fun PhotoEditorDialog(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
+                .onGloballyPositioned { coordinates ->
+                    containerWidthPx = coordinates.size.width.toFloat()
+                }
         ) {
 
             // ⏳ Loader pendant téléchargement
@@ -388,7 +390,7 @@ fun PhotoEditorDialog(
                     ) {
 
                         val overlayColor = Color.Black.copy(alpha = 0.6f)
-                        val cropSizePx = 300.dp.toPx()
+                        val cropSizePx = size.width
 
                         val left = (size.width - cropSizePx) / 2f
                         val top = (size.height - cropSizePx) / 2f
@@ -428,7 +430,8 @@ fun PhotoEditorDialog(
 
                     Box(
                         modifier = Modifier
-                            .size(300.dp)
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
                             .border(2.dp, Color.White)
                     )
                 }
@@ -456,7 +459,8 @@ fun PhotoEditorDialog(
                                             localUri!!,
                                             scale,
                                             offset,
-                                            rotation
+                                            rotation,
+                                            containerWidthPx = containerWidthPx,
                                         )
                                     }
 
@@ -747,7 +751,8 @@ fun cropAndRotateImage(
     uri: Uri,
     scale: Float,
     offset: Offset,
-    rotation: Float
+    rotation: Float,
+    containerWidthPx: Float
 ): Uri {
 
     val original = context.contentResolver.openInputStream(uri)?.use {
@@ -803,19 +808,30 @@ fun cropAndRotateImage(
     val bitmapWidth = rotated.width.toFloat()
     val bitmapHeight = rotated.height.toFloat()
 
-    val visibleWidth = bitmapWidth / scale
-    val visibleHeight = bitmapHeight / scale
+    val baseScale = minOf(
+        containerWidthPx / bitmapWidth,
+        containerWidthPx / bitmapHeight
+    )
 
-    val centerX = bitmapWidth / 2f - offset.x / scale
-    val centerY = bitmapHeight / 2f - offset.y / scale
+    val effectiveScale = baseScale * scale
 
-    val cropSize = minOf(visibleWidth, visibleHeight)
+    val cropSizeRaw = containerWidthPx / effectiveScale
 
-    val left = (centerX - cropSize / 2)
-        .coerceIn(0f, bitmapWidth - cropSize)
+    val cropSize = cropSizeRaw.coerceAtMost(
+        minOf(bitmapWidth, bitmapHeight)
+    )
 
-    val top = (centerY - cropSize / 2)
-        .coerceIn(0f, bitmapHeight - cropSize)
+    val centerX = bitmapWidth / 2f - offset.x / effectiveScale
+    val centerY = bitmapHeight / 2f - offset.y / effectiveScale
+
+    val maxLeft = (bitmapWidth - cropSize).coerceAtLeast(0f)
+    val maxTop = (bitmapHeight - cropSize).coerceAtLeast(0f)
+
+    val left = (centerX - cropSize / 2f)
+        .coerceIn(0f, maxLeft)
+
+    val top = (centerY - cropSize / 2f)
+        .coerceIn(0f, maxTop)
 
     val cropped = Bitmap.createBitmap(
         rotated,

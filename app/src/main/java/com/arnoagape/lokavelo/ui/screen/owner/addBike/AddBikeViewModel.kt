@@ -186,9 +186,6 @@ class AddBikeViewModel @Inject constructor(
                 updateLocation { copy(street = event.address) }
             }
 
-            is AddBikeEvent.Address2Changed ->
-                updateLocation { copy(addressLine2 = event.address2) }
-
             is AddBikeEvent.ZipChanged ->
                 updateLocation { copy(postalCode = event.zipCode) }
 

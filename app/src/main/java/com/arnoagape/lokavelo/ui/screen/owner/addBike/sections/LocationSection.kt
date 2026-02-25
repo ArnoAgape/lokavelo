@@ -32,7 +32,7 @@ import com.arnoagape.lokavelo.domain.model.AddressSuggestion
 @Composable
 fun LocationSection(
     addressLine: String,
-    addressLine2: String,
+    // addressLine2: String,
     zipCode: String,
     city: String,
     addressError: Boolean,
@@ -40,7 +40,7 @@ fun LocationSection(
     cityError: Boolean,
     suggestions: List<AddressSuggestion>,
     onAddressLineChange: (String) -> Unit,
-    onAddressLine2Change: (String) -> Unit,
+    // onAddressLine2Change: (String) -> Unit,
     onZipCodeChange: (String) -> Unit,
     onCityChange: (String) -> Unit,
     onSuggestionSelected: (AddressSuggestion) -> Unit
@@ -60,10 +60,10 @@ fun LocationSection(
                 onSuggestionSelected = onSuggestionSelected
             )
 
-            AddressLine2Field(
+            /*AddressLine2Field(
                 value = addressLine2,
                 onValueChange = onAddressLine2Change
-            )
+            )*/
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -206,7 +206,7 @@ fun AddressLineField(
     }
 }
 
-@Composable
+/*@Composable
 fun AddressLine2Field(
     value: String,
     onValueChange: (String) -> Unit
@@ -226,7 +226,7 @@ fun AddressLine2Field(
             imeAction = ImeAction.Next
         )
     )
-}
+}*/
 
 @Composable
 fun CityField(

@@ -302,12 +302,6 @@ fun DetailItem(
         item {
             DetailCard(title = stringResource(R.string.location)) {
                 DetailRow(stringResource(R.string.address_line), bike.location.street)
-                if (bike.location.addressLine2.isNotBlank()) {
-                    DetailRow(
-                        stringResource(R.string.address_line_2_optional),
-                        bike.location.addressLine2
-                    )
-                }
                 DetailRow(stringResource(R.string.zip_code), bike.location.postalCode)
                 DetailRow(stringResource(R.string.city), bike.location.city)
             }

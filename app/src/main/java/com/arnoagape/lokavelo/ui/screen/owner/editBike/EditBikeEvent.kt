@@ -13,7 +13,6 @@ sealed interface EditBikeEvent {
     data class TitleChanged(val title: String) : EditBikeEvent
     data class DescriptionChanged(val description: String) : EditBikeEvent
     data class AddressChanged(val address: String) : EditBikeEvent
-    data class Address2Changed(val address2: String) : EditBikeEvent
     data class ZipChanged(val zipCode: String) : EditBikeEvent
     data class CityChanged(val city: String) : EditBikeEvent
     data class PriceChanged(val value: String) : EditBikeEvent

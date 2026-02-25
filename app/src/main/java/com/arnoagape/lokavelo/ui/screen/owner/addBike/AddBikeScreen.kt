@@ -354,7 +354,6 @@ private fun AddBikeContent(
         item {
             LocationSection(
                 addressLine = state.form.location.street,
-                addressLine2 = state.form.location.addressLine2,
                 zipCode = state.form.location.postalCode,
                 city = state.form.location.city,
                 addressError = state.form.streetError,
@@ -363,9 +362,6 @@ private fun AddBikeContent(
                 suggestions = suggestions,
                 onAddressLineChange = {
                     onAction(AddBikeEvent.AddressChanged(it))
-                },
-                onAddressLine2Change = {
-                    onAction(AddBikeEvent.Address2Changed(it))
                 },
                 onZipCodeChange = {
                     onAction(AddBikeEvent.ZipChanged(it))
