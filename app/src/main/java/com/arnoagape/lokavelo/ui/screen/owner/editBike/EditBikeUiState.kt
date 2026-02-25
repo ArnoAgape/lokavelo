@@ -10,7 +10,6 @@ sealed class EditBikeUiState {
     object Loading : EditBikeUiState()
     data class Loaded(val bike: Bike) : EditBikeUiState()
     sealed class Error : EditBikeUiState() {
-        object NotFound : Error()
         data class Generic(
             @param:StringRes val messageRes: Int = R.string.error_generic
         ) : Error()

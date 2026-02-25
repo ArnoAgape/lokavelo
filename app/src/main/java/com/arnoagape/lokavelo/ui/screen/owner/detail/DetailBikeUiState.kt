@@ -13,7 +13,5 @@ sealed class DetailBikeUiState {
     object Loading : DetailBikeUiState()
     data class Success(val bike: Bike) : DetailBikeUiState()
     object Deleting : DetailBikeUiState()
-    sealed class Error : DetailBikeUiState() {
-        data class Generic(@param:StringRes val messageRes: Int = R.string.error_generic) : Error()
-    }
+    object Error : DetailBikeUiState()
 }
