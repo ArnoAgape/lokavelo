@@ -97,7 +97,8 @@
 
     // ACTIONS
     <string name="cancel">Cancel</string>
-    <string name="discard_changes">Discard changes</string>
+    <string name="stay">Stay</string>
+    <string name="leave">Leave</string>
     <string name="close">Close</string>
     <string name="search">Search</string>
     <string name="delete">Delete</string>
@@ -128,7 +129,7 @@
     <string name="delete_irreversible">This action cannot be undone.</string>
     <string name="confirm_delete_account_message">
         You’re about to delete your account. An email will be sent to confirm the deletion. Continue?</string>
-    <string name="unsaved_changes">Unsaved changes</string>
+    <string name="unsaved_changes">Leave this screen?</string>
     <string name="confirm_unsaved_changes">You have unsaved changes. Are you sure you want to leave this page?</string>
 
     // CONTENT_DESCRIPTION

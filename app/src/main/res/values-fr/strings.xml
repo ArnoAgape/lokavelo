@@ -98,7 +98,8 @@
 
     // ACTIONS
     <string name="cancel">Annuler</string>
-    <string name="discard_changes">Quitter</string>
+    <string name="stay">Rester</string>
+    <string name="leave">Quitter</string>
     <string name="close">Fermer</string>
     <string name="search">Rechercher</string>
     <string name="delete">Supprimer</string>
@@ -126,9 +127,9 @@
     <string name="confirm_delete_account_message">
         Tu es sur le point d’effacer ton compte.
         Un email te sera envoyé pour confirmer la suppression. Continuer ?</string>
-    <string name="unsaved_changes">Non enregistré</string>
-    <string name="confirm_unsaved_changes">Certaines modifications n’ont pas été sauvegardées.
-        Veux-tu vraiment quitter ?</string>
+    <string name="unsaved_changes">Quitter l’écran ?</string>
+    <string name="confirm_unsaved_changes">Si tu quittes maintenant, tes modifications seront perdues.
+        Souhaites-tu continuer ?</string>
 
     // CONTENT_DESCRIPTION
     <string name="cd_remove">Clique ici pour effacer</string>

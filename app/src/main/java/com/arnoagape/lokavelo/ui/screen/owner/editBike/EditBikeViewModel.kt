@@ -61,6 +61,7 @@ class EditBikeViewModel @Inject constructor(
                 }
                 .collect { bike ->
 
+                    val current = _state.value
                     if (bike == null) {
                         _state.update {
                             it.copy(uiState = EditBikeUiState.Error.NotFound)
@@ -68,18 +69,28 @@ class EditBikeViewModel @Inject constructor(
                         return@collect
                     }
 
-                    _state.update {
-                        it.copy(
-                            uiState = EditBikeUiState.Loaded(bike),
-                            form = EditBikeFormState.fromBike(bike),
-                            photos = bike.photoUrls.map { url ->
-                                PhotoItem.Remote(
-                                    id = url,
-                                    url = url
-                                )
-                            }
-                        )
+                    if (!current.isFormInitialized) {
+                        _state.update {
+                            it.copy(
+                                uiState = EditBikeUiState.Loaded(bike),
+                                form = EditBikeFormState.fromBike(bike),
+                                photos = bike.photoUrls.map { url ->
+                                    PhotoItem.Remote(
+                                        id = url,
+                                        url = url
+                                    )
+                                },
+                                isFormInitialized = true
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(
+                                uiState = EditBikeUiState.Loaded(bike)
+                            )
+                        }
                     }
+
                 }
         }
     }
@@ -417,5 +428,6 @@ data class EditBikeScreenState(
     val form: EditBikeFormState = EditBikeFormState(),
     val isValid: Boolean = false,
     val isSaving: Boolean = false,
+    val isFormInitialized: Boolean = false,
     val photos: List<PhotoItem> = emptyList()
 )
