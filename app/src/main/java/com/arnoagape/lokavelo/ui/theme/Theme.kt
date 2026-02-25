@@ -44,7 +44,7 @@ private val LightColorScheme = lightColorScheme(
     onSecondary = Color.White,
     secondaryContainer = BlueGrey80,
 
-    tertiary = Blue80,
+    tertiary = Blue20,
     onTertiary = Color.Black,
 
     background = Color(0xFFF4F9FD),

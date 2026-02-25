@@ -2,13 +2,12 @@ package com.arnoagape.lokavelo.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Blue80 = Color(0xFF56B4E9)        // primary light
-val BlueGrey80 = Color(0xFF9CCBE8)    // secondary
-
-val Blue40 = Color(0xFF63A4D9)        // primary
-val Blue = Color(0xFF1F4F91)    // secondary dark
-val Cyan40 = Color(0xFF1767A3)        // tertiary dark
-
+val Blue80 = Color(0xFF56B4E9)
+val BlueGrey80 = Color(0xFF9CCBE8)
+val Blue40 = Color(0xFF63A4D9)
+val Blue20 = Color(0xFF78c0fb)
+val Blue = Color(0xFF184583)
+val Cyan40 = Color(0xFF1767A3)
 val DarkBlue = Color(0xFF060e17)
 
 // RENT BACKGROUND AND TEXT

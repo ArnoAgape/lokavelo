@@ -270,7 +270,7 @@ fun AccessoriesChips(
                         Text(stringResource(equipment.labelRes()))
                     },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary
+                        selectedContainerColor = MaterialTheme.colorScheme.tertiary
                     )
                 )
             }
