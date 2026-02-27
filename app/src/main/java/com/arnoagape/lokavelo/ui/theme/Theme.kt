@@ -15,6 +15,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
@@ -65,6 +66,7 @@ fun LokaveloTheme(
     content: @Composable () -> Unit
 ) {
     val view = LocalView.current
+    val isInPreview = LocalInspectionMode.current
 
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -75,17 +77,18 @@ fun LokaveloTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    if (!isInPreview) {
+        SideEffect {
+            val window = (view.context as Activity).window
 
-    SideEffect {
-        val window = (view.context as Activity).window
+            // Status bar
+            window.statusBarColor = colorScheme.surface.toArgb()
+            window.navigationBarColor = colorScheme.surface.toArgb()
 
-        // Status bar
-        window.statusBarColor = colorScheme.surface.toArgb()
-        window.navigationBarColor = colorScheme.surface.toArgb()
-
-        // Couleur des icônes (clair = icônes sombres)
-        WindowCompat.getInsetsController(window, view)
-            .isAppearanceLightStatusBars = !darkTheme
+            // Couleur des icônes (clair = icônes sombres)
+            WindowCompat.getInsetsController(window, view)
+                .isAppearanceLightStatusBars = !darkTheme
+        }
     }
 
     val spacing = Spacing()
