@@ -116,7 +116,7 @@ fun AddressLineField(
             isError = addressError,
             supportingText = {
                 if (addressError) {
-                    Text(stringResource(R.string.required))
+                    Text(stringResource(R.string.error_invalid_address))
                 }
             },
             label = {

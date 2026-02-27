@@ -87,6 +87,7 @@
     <string name="error_delete_bike">Une erreur est survenue pendant la suppression du vélo</string>
     <string name="error_no_account_add_bike">Tu dois te connecter pour publier une annonce</string>
     <string name="error_no_account_edit_bike">Tu dois te connecter pour modifier une annonce</string>
+    <string name="error_invalid_address">L’adresse est incorrecte</string>
 
     // SIGN IN
     <string name="sign_in_google">Continue avec Google</string>

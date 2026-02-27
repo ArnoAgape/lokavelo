@@ -236,7 +236,13 @@ class EditBikeViewModel @Inject constructor(
 
             is EditBikeEvent.AddressChanged -> {
                 addressQuery.value = event.address
-                updateLocation { copy(street = event.address) }
+                updateLocation {
+                    copy(
+                        street = event.address,
+                        longitude = null,
+                        latitude = null
+                    )
+                }
             }
 
             is EditBikeEvent.ZipChanged ->
@@ -325,7 +331,10 @@ class EditBikeViewModel @Inject constructor(
         val price = current.priceText.toCentsOrNull()
         val priceError = price == null || price <= 0
 
-        val streetError = current.location.street.isBlank()
+        val streetError =
+            current.location.street.isBlank() ||
+                    current.location.latitude == null ||
+                    current.location.longitude == null
         val postalCodeError = current.location.postalCode.isBlank()
         val cityError = current.location.city.isBlank()
 
@@ -481,16 +490,6 @@ class EditBikeViewModel @Inject constructor(
         return Triple(half, week, month)
     }
 
-    fun onSaveButton(onAllowed: () -> Unit) {
-        viewModelScope.launch {
-            if (!networkUtils.isNetworkAvailable()) {
-                _events.trySend(Event.ShowMessage(R.string.error_no_network))
-                return@launch
-            }
-
-            onAllowed()
-        }
-    }
 }
 
 data class EditBikeScreenState(
