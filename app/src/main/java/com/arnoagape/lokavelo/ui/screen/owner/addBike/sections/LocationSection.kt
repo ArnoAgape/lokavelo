@@ -92,6 +92,7 @@ fun LocationSection(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddressLineField(
+    modifier: Modifier = Modifier,
     value: String,
     suggestions: List<AddressSuggestion>,
     addressError: Boolean,
@@ -109,7 +110,7 @@ fun AddressLineField(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .menuAnchor(
                     type = ExposedDropdownMenuAnchorType.PrimaryEditable,

@@ -1,6 +1,7 @@
 package com.arnoagape.lokavelo.ui.screen.main.home.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,6 +19,7 @@ import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -30,9 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.screen.main.home.SearchFilters
 import java.time.Instant
 import java.time.LocalDate
@@ -46,18 +51,7 @@ fun SearchBar(
     onAddressClick: () -> Unit,
     onDatesSelected: (LocalDate, LocalDate) -> Unit
 ) {
-
     var showDatePicker by remember { mutableStateOf(false) }
-
-    val dateText =
-        if (filters.startDate != null && filters.endDate != null) {
-            val start = filters.startDate.toLocalDate()
-            val end = filters.endDate.toLocalDate()
-            "${start.format(DateTimeFormatter.ofPattern("d MMM"))} - " +
-                    end.format(DateTimeFormatter.ofPattern("d MMM"))
-        } else {
-            "Quand ?"
-        }
 
     Surface(
         modifier = Modifier
@@ -76,7 +70,7 @@ fun SearchBar(
             // 📍 Adresse
             Row(
                 modifier = Modifier
-                    .weight(1.4f)
+                    .weight(1f)
                     .fillMaxHeight()
                     .clickable { onAddressClick() }
                     .padding(horizontal = 16.dp),
@@ -91,7 +85,7 @@ fun SearchBar(
                 Spacer(Modifier.width(12.dp))
 
                 Text(
-                    text = filters.addressQuery ?: "Position actuelle",
+                    text = filters.addressQuery ?: stringResource(R.string.search),
                     style = MaterialTheme.typography.bodyLarge,
                     fontSize = 15.sp,
                     maxLines = 1,
@@ -118,19 +112,54 @@ fun SearchBar(
 
                 Spacer(Modifier.width(12.dp))
 
-                Text(
-                    text = dateText,
-                    fontSize = 15.sp,
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                if (filters.startDate != null && filters.endDate != null) {
+
+                    val start = filters.startDate.toLocalDate()
+                    val end = filters.endDate.toLocalDate()
+
+                    Column {
+
+                        Text(
+                            text = "→ ${start.format(DateTimeFormatter.ofPattern("d MMM"))}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+
+                        Text(
+                            text = "← ${end.format(DateTimeFormatter.ofPattern("d MMM"))}",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        )
+                    }
+
+                } else {
+
+                    Text(
+                        text = stringResource(R.string.`when`),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
         }
     }
 
-    // 🔥 DateRangePicker intégré
+    // ---- Date Picker ----
+
     if (showDatePicker) {
 
-        val datePickerState = rememberDateRangePickerState()
+        val todayUtcMillis = LocalDate.now()
+            .atStartOfDay(ZoneId.of("UTC"))
+            .toInstant()
+            .toEpochMilli()
+
+        val datePickerState = rememberDateRangePickerState(
+            selectableDates = object : SelectableDates {
+
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    return utcTimeMillis >= todayUtcMillis
+                }
+            }
+        )
 
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
@@ -156,25 +185,60 @@ fun SearchBar(
                         showDatePicker = false
                     }
                 ) {
-                    Text("Valider")
+                    Text(stringResource(R.string.validate))
                 }
             },
             dismissButton = {
                 TextButton(
                     onClick = { showDatePicker = false }
                 ) {
-                    Text("Annuler")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         ) {
-            DateRangePicker(
-                state = datePickerState,
-                showModeToggle = false,
-                colors = DatePickerDefaults.colors(
-                    selectedDayContainerColor =
-                        MaterialTheme.colorScheme.primary
+
+            Column {
+
+                DateRangePicker(
+                    state = datePickerState,
+                    showModeToggle = false,
+                    title = {},
+                    headline = {
+                        val startMillis = datePickerState.selectedStartDateMillis
+                        val endMillis = datePickerState.selectedEndDateMillis
+
+                        val headerText =
+                            if (startMillis != null && endMillis != null) {
+                                val start = Instant.ofEpochMilli(startMillis)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+
+                                val end = Instant.ofEpochMilli(endMillis)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+
+                                "${start.format(DateTimeFormatter.ofPattern("d MMM"))} - " +
+                                        end.format(DateTimeFormatter.ofPattern("d MMM"))
+                            } else {
+                                "Choisissez vos dates"
+                            }
+
+                        Text(
+                            text = headerText,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp),
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center,
+                            maxLines = 1
+                        )
+                    },
+                    colors = DatePickerDefaults.colors(
+                        selectedDayContainerColor =
+                            MaterialTheme.colorScheme.primary
+                    )
                 )
-            )
+            }
         }
     }
 }

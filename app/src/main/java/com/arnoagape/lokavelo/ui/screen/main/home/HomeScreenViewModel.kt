@@ -148,6 +148,13 @@ class HomeScreenViewModel @Inject constructor(
             endDate = end
         )
     }
+
+    fun clearLocationFilter() {
+        _filters.value = _filters.value.copy(
+            center = null,
+            addressQuery = null
+        )
+    }
 }
 
 data class SearchFilters(

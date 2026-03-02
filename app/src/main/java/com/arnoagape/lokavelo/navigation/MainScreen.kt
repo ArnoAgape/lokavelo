@@ -66,7 +66,7 @@ fun MainScreen(
 
         NavHost(
             navController = tabNavController,
-            startDestination = Screen.Owner.HomeBike.route,
+            startDestination = Screen.Main.Home.route,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)

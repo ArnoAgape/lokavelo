@@ -5,14 +5,20 @@ import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -23,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -36,6 +43,7 @@ import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.screen.main.home.components.OSMMap
 import com.arnoagape.lokavelo.ui.screen.main.home.components.SearchBar
+import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.AddressLineField
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -57,6 +65,7 @@ fun HomeScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     var showAddressSheet by remember { mutableStateOf(false) }
+    var recenterTrigger by remember { mutableStateOf(false) }
 
     val locationPermissionState =
         rememberPermissionState(
@@ -101,33 +110,50 @@ fun HomeScreen(
 
             Column(Modifier.padding(16.dp)) {
 
-                OutlinedTextField(
+                AddressLineField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
                     value = text,
+                    suggestions = state.suggestions,
+                    addressError = false,
                     onValueChange = {
                         text = it
                         viewModel.onAddressQueryChange(it)
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                    label = { Text(stringResource(R.string.city)) },
-                    singleLine = true
+                    onSuggestionSelected = { suggestion ->
+                        viewModel.updateAddressFromSuggestion(suggestion)
+                        keyboardController?.hide()
+                        showAddressSheet = false
+                    }
                 )
 
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(16.dp))
 
-                state.suggestions.forEach { suggestion ->
+                // 📍 Position actuelle
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            viewModel.clearLocationFilter()
+                            keyboardController?.hide()
+                            showAddressSheet = false
+                            recenterTrigger = true
+                        }
+                        .padding(vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MyLocation,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(Modifier.width(12.dp))
 
                     Text(
-                        text = suggestion.displayName,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                viewModel.updateAddressFromSuggestion(suggestion)
-                                keyboardController?.hide()
-                                showAddressSheet = false
-                            }
-                            .padding(vertical = 14.dp)
+                        text = stringResource(R.string.current_position),
+                        style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }
@@ -136,14 +162,16 @@ fun HomeScreen(
 
     Box(Modifier.fillMaxSize()) {
 
-        // 🗺 Carte
+        // Carte
         MapContent(
             userLocation = userLocation,
             bikes = state.filteredBikes,
-            state = state
+            state = state,
+            recenterTrigger = recenterTrigger,
+            onRecenterHandled = { recenterTrigger = false }
         )
 
-        // 🔎 Barre + Dates
+        // Barre + Dates
         Column {
 
             SearchBar(
@@ -156,6 +184,22 @@ fun HomeScreen(
                     )
                 }
             )
+
+            Spacer(Modifier.weight(1f))
+
+            FloatingActionButton(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                onClick = { viewModel.clearLocationFilter()
+                    recenterTrigger = true },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.End)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MyLocation,
+                    contentDescription = stringResource(R.string.recenter)
+                )
+            }
         }
     }
 }
@@ -164,7 +208,9 @@ fun HomeScreen(
 fun MapContent(
     userLocation: Location?,
     bikes: List<Bike>,
-    state: HomeScreenState
+    state: HomeScreenState,
+    recenterTrigger: Boolean,
+    onRecenterHandled: () -> Unit
 ) {
 
     val geoPoint = userLocation?.let {
@@ -174,7 +220,9 @@ fun MapContent(
     OSMMap(
         userLocation = geoPoint,
         bikes = bikes,
-        filters = state.filters
+        filters = state.filters,
+        recenterTrigger = recenterTrigger,
+        onRecenterHandled = onRecenterHandled
     )
 
 }

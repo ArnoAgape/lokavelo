@@ -62,6 +62,10 @@
     <string name="no_deposit">No deposit</string>
     <string name="no_brand">No brand</string>
     <string name="required">Required</string>
+    <string name="current_position">Current position</string>
+    <string name="city_address">City or address</string>
+    <string name="when">When?</string>
+    <string name="recenter">Recenter</string>
 
     // SUCCESS
     <string name="success_user_updated">Details updated successfully</string>

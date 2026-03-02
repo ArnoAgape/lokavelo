@@ -62,6 +62,10 @@
     <string name="no_deposit">Aucune caution</string>
     <string name="no_brand">Aucune marque</string>
     <string name="required">Obligatoire</string>
+    <string name="current_position">Position actuelle</string>
+    <string name="city_address">Ville ou adresse</string>
+    <string name="when">Quand ?</string>
+    <string name="recenter">Recentrer</string>
 
     // SUCCESS
     <string name="success_user_updated">Infos mises à jour</string>

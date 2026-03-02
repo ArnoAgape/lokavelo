@@ -3,7 +3,6 @@ package com.arnoagape.lokavelo.ui.screen.main.home.components
 import android.graphics.Paint
 import androidx.preference.PreferenceManager
 import android.view.ViewGroup
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -16,7 +15,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.viewinterop.AndroidView
 import com.arnoagape.lokavelo.domain.model.Bike
 import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -26,19 +24,21 @@ import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.screen.main.home.SearchFilters
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.XYTileSource
+import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.MapEventsOverlay
 
 @Composable
 fun OSMMap(
     userLocation: GeoPoint?,
     bikes: List<Bike>,
-    filters: SearchFilters
+    filters: SearchFilters,
+    recenterTrigger: Boolean,
+    onRecenterHandled: () -> Unit
 ) {
     var lastCentered by remember { mutableStateOf<GeoPoint?>(null) }
-    val isDark = isSystemInDarkTheme()
     val primaryColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f).toArgb()
 
-    val darkTileSource = XYTileSource(
+    val tileSource = XYTileSource(
         "CartoVoyager",
         0,
         19,
@@ -67,12 +67,7 @@ fun OSMMap(
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
 
-                val tileSource = if (isDark) {
-                    darkTileSource
-                } else {
-                    TileSourceFactory.MAPNIK
-                }
-
+                zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
                 setTileSource(tileSource)
                 setMultiTouchControls(true)
                 controller.setZoom(14.0)
@@ -94,9 +89,21 @@ fun OSMMap(
         },
         update = { mapView ->
 
-            mapView.setTileSource(
-                if (isDark) darkTileSource else TileSourceFactory.MAPNIK
-            )
+            if (mapView.tileProvider.tileSource != tileSource) {
+                mapView.setTileSource(tileSource)
+            }
+
+            // 🔁 Bouton recentrage
+            if (recenterTrigger && userLocation != null) {
+
+                mapView.controller.apply {
+                    setZoom(16.0)
+                    animateTo(userLocation)
+                }
+
+                lastCentered = userLocation
+                onRecenterHandled()
+            }
 
             // 🔥 Recentrage si nouvelle ville
             filters.center?.let { center ->
@@ -115,7 +122,7 @@ fun OSMMap(
             // 📍 Cercle position utilisateur
             userLocation?.let { location ->
                 val circle = Polygon().apply {
-                    points = Polygon.pointsAsCircle(location, 500.0)
+                    points = Polygon.pointsAsCircle(location, 200.0)
 
                     fillPaint.color = "#403B82F6".toColorInt()
                     fillPaint.style = Paint.Style.FILL
@@ -135,6 +142,19 @@ fun OSMMap(
                     outlinePaint.strokeWidth = 0f
                 }
                 mapView.overlays.add(cityCircle)
+            }
+
+            // 📍 Marker adresse recherchée
+            filters.center?.let { center ->
+
+                val searchMarker = Marker(mapView).apply {
+                    position = center
+                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+
+                    icon = mapView.context.getDrawable(R.drawable.ic_search_location_marker)
+                }
+
+                mapView.overlays.add(searchMarker)
             }
 
             // 🚲 Markers vélos
