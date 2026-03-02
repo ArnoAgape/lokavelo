@@ -57,8 +57,6 @@
     <string name="take_picture">Prends une photo</string>
     <string name="browse_gallery">Choisis dans la galerie</string>
     <string name="no_bike">Pour ajouter un vélo, appuie sur le bouton "+"</string>
-    <string name="renting">En cours</string>
-    <string name="available">Disponible</string>
     <string name="finished">Terminé</string>
     <string name="no_accessories">Aucun accessoire</string>
     <string name="no_deposit">Aucune caution</string>
@@ -144,6 +142,11 @@
     <string name="cd_button_delete">Supprimer les vélos sélectionnés</string>
     <string name="cd_button_delete_bike">Supprimer un vélo</string>
     <string name="cd_button_delete_the_bike">Supprimer le vélo</string>
+
+    // AVAILABILITY
+    <string name="bike_availability_yes">Disponible</string>
+    <string name="bike_availability_no">Non disponible</string>
+    <string name="bike_availability_renting">En location</string>
 
     // CATEGORY
     <string name="bike_category_road">Vélo de route</string>

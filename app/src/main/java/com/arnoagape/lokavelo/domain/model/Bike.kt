@@ -2,7 +2,6 @@ package com.arnoagape.lokavelo.domain.model
 
 import com.arnoagape.lokavelo.data.dto.BikeDto
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.GeoPoint
 import java.time.Instant
 
 data class Bike(
@@ -71,6 +70,9 @@ data class Bike(
                 depositInCents = dto.depositInCents,
                 photoUrls = dto.photoUrls,
                 location = BikeLocation(
+                    street = dto.location?.street ?: "",
+                    postalCode = dto.location?.postalCode ?: "",
+                    city = dto.location?.city ?: "",
                     latitude = dto.location?.latitude ?: 0.0,
                     longitude = dto.location?.longitude ?: 0.0
                 ),

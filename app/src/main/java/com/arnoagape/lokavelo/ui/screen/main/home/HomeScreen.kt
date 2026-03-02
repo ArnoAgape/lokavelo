@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
-import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -27,6 +26,7 @@ fun HomeScreen(
     viewModel: HomeScreenViewModel
 ) {
 
+    val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val resources = LocalResources.current
     val context = LocalContext.current
@@ -39,7 +39,7 @@ fun HomeScreen(
 
     LaunchedEffect(locationPermissionState.status) {
         if (locationPermissionState.status.isGranted) {
-            viewModel.fetchUserLocation()
+            viewModel.userLocation
         } else {
             locationPermissionState.launchPermissionRequest()
         }
@@ -76,7 +76,7 @@ fun HomeScreen(
 
         MapContent(
             userLocation = userLocation,
-            bikes = emptyList() // on branchera plus tard
+            state = state
         )
 
         // Ici tu peux ajouter :
@@ -89,15 +89,24 @@ fun HomeScreen(
 @Composable
 fun MapContent(
     userLocation: Location?,
-    bikes: List<Bike>
+    state: HomeScreenState
 ) {
 
     val geoPoint = userLocation?.let {
         org.osmdroid.util.GeoPoint(it.latitude, it.longitude)
     }
 
-    OSMMap(
-        userLocation = geoPoint,
-        bikes = bikes
-    )
+    when (val ui = state.uiState) {
+
+        is HomeScreenUiState.Success -> {
+            OSMMap(
+                userLocation = geoPoint,
+                bikes = ui.bikes
+            )
+        }
+
+        else -> {}
+    }
+
+
 }

@@ -57,8 +57,6 @@
     <string name="take_picture">Take a picture</string>
     <string name="browse_gallery">Browse gallery</string>
     <string name="no_bike">To post a new ad, please press the button "+"</string>
-    <string name="renting">Renting</string>
-    <string name="available">Available</string>
     <string name="finished">Finished</string>
     <string name="no_accessories">No accessories</string>
     <string name="no_deposit">No deposit</string>
@@ -146,6 +144,11 @@
     <string name="cd_button_delete">Delete the selected elements</string>
     <string name="cd_button_delete_bike">Delete a bike</string>
     <string name="cd_button_delete_the_bike">Delete the bike</string>
+
+    // AVAILABILITY
+    <string name="bike_availability_yes">Available</string>
+    <string name="bike_availability_no">Unavailable</string>
+    <string name="bike_availability_renting">Renting</string>
 
     // CATEGORY
     <string name="bike_category_road">Racing bike</string>

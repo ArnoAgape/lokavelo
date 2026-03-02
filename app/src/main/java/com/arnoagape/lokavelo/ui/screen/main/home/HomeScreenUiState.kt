@@ -7,6 +7,7 @@ import com.arnoagape.lokavelo.domain.model.Bike
 sealed class HomeScreenUiState {
 
     object Loading : HomeScreenUiState()
+    object Empty : HomeScreenUiState()
     data class Success(val bikes: List<Bike>) : HomeScreenUiState()
 
     sealed class Error : HomeScreenUiState() {

@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -98,6 +99,7 @@ fun AddressLineField(
     onSuggestionSelected: (AddressSuggestion) -> Unit
 ) {
 
+    val keyboardController = LocalSoftwareKeyboardController.current
     val expanded = suggestions.isNotEmpty()
 
     ExposedDropdownMenuBox(
@@ -146,6 +148,7 @@ fun AddressLineField(
                 DropdownMenuItem(
                     onClick = {
                         onSuggestionSelected(suggestion)
+                        keyboardController?.hide()
                     },
                     contentPadding = PaddingValues(
                         horizontal = 16.dp,

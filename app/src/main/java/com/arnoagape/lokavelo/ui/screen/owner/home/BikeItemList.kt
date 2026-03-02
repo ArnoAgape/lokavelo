@@ -157,9 +157,9 @@ fun StatusBadge(isRented: Boolean) {
         lightGreenText
 
     val text = if (isRented)
-        stringResource(R.string.renting)
+        stringResource(R.string.bike_availability_renting)
     else
-        stringResource(R.string.available)
+        stringResource(R.string.bike_availability_yes)
 
     Box(
         modifier = Modifier

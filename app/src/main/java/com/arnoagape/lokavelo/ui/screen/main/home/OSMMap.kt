@@ -3,6 +3,7 @@ package com.arnoagape.lokavelo.ui.screen.main.home
 import android.graphics.Paint
 import androidx.preference.PreferenceManager
 import android.view.ViewGroup
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,6 +20,7 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polygon
 import androidx.core.graphics.toColorInt
+import com.arnoagape.lokavelo.R
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.views.overlay.MapEventsOverlay
 
@@ -28,6 +30,7 @@ fun OSMMap(
     bikes: List<Bike>
 ) {
     var hasCentered by remember { mutableStateOf(false) }
+    val isDark = isSystemInDarkTheme()
 
     AndroidView(
         modifier = Modifier.fillMaxSize(),
@@ -91,7 +94,7 @@ fun OSMMap(
 
                 mapView.overlays.add(circle)
             }
-
+            println("Bikes size = ${bikes.size}")
             // 🚲 Vélos
             bikes.forEach { bike ->
                 val marker = Marker(mapView)
@@ -100,6 +103,12 @@ fun OSMMap(
                     bike.location.longitude
                 )
                 marker.title = bike.title
+                marker.icon = if (isDark) {
+                    mapView.context.getDrawable(R.drawable.ic_bike_marker_light)
+                } else {
+                    mapView.context.getDrawable(R.drawable.ic_bike_marker_light)
+                }
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 mapView.overlays.add(marker)
             }
 
