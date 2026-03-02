@@ -11,12 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.arnoagape.lokavelo.ui.screen.account.home.AccountHomeScreen
 import com.arnoagape.lokavelo.ui.screen.account.profile.ProfileScreen
 import com.arnoagape.lokavelo.ui.screen.account.settings.help.HelpSettingsScreen
@@ -33,15 +31,8 @@ import com.arnoagape.lokavelo.ui.screen.main.home.HomeScreenViewModel
 import com.arnoagape.lokavelo.ui.screen.main.profile.PublicProfileScreen
 import com.arnoagape.lokavelo.ui.screen.messaging.detail.MessagingDetailScreen
 import com.arnoagape.lokavelo.ui.screen.messaging.home.MessagingHomeScreen
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeScreen
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeViewModel
-import com.arnoagape.lokavelo.ui.screen.owner.detail.DetailBikeScreen
-import com.arnoagape.lokavelo.ui.screen.owner.detail.DetailBikeViewModel
-import com.arnoagape.lokavelo.ui.screen.owner.editBike.EditBikeScreen
-import com.arnoagape.lokavelo.ui.screen.owner.editBike.EditBikeViewModel
 import com.arnoagape.lokavelo.ui.screen.owner.home.HomeBikeScreen
 import com.arnoagape.lokavelo.ui.screen.owner.home.HomeBikeViewModel
-import com.arnoagape.lokavelo.ui.screen.rent.RentScreen
 
 @Composable
 fun MainScreen(
