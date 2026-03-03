@@ -26,8 +26,8 @@ import com.arnoagape.lokavelo.ui.screen.account.settings.version.VersionSettings
 import com.arnoagape.lokavelo.ui.screen.login.LoginScreen
 import com.arnoagape.lokavelo.ui.screen.main.contact.ContactScreen
 import com.arnoagape.lokavelo.ui.screen.main.detail.DetailPublicBikeScreen
-import com.arnoagape.lokavelo.ui.screen.main.home.HomeScreen
-import com.arnoagape.lokavelo.ui.screen.main.home.HomeScreenViewModel
+import com.arnoagape.lokavelo.ui.screen.main.map.HomeScreen
+import com.arnoagape.lokavelo.ui.screen.main.map.HomeScreenViewModel
 import com.arnoagape.lokavelo.ui.screen.main.profile.PublicProfileScreen
 import com.arnoagape.lokavelo.ui.screen.messaging.detail.MessagingDetailScreen
 import com.arnoagape.lokavelo.ui.screen.messaging.home.MessagingHomeScreen

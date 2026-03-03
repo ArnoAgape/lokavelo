@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.ui.screen.main.home.components
+package com.arnoagape.lokavelo.ui.screen.main.map.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.DatePickerDefaults
@@ -38,7 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arnoagape.lokavelo.R
-import com.arnoagape.lokavelo.ui.screen.main.home.SearchFilters
+import com.arnoagape.lokavelo.ui.screen.main.map.SearchFilters
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -119,23 +122,49 @@ fun SearchBar(
 
                     Column {
 
-                        Text(
-                            text = "→ ${start.format(DateTimeFormatter.ofPattern("d MMM"))}",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
 
-                        Text(
-                            text = "← ${end.format(DateTimeFormatter.ofPattern("d MMM"))}",
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.primary
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                        )
+
+                            Spacer(Modifier.width(6.dp))
+
+                            Text(
+                                text = start.format(DateTimeFormatter.ofPattern("d MMM")),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+
+                        Spacer(Modifier.height(2.dp))
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+
+                            Spacer(Modifier.width(6.dp))
+
+                            Text(
+                                text = end.format(DateTimeFormatter.ofPattern("d MMM")),
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                        }
                     }
 
                 } else {
 
                     Text(
-                        text = stringResource(R.string.`when`),
+                        text = stringResource(R.string.period),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -220,7 +249,7 @@ fun SearchBar(
                                 "${start.format(DateTimeFormatter.ofPattern("d MMM"))} - " +
                                         end.format(DateTimeFormatter.ofPattern("d MMM"))
                             } else {
-                                "Choisissez vos dates"
+                                stringResource(R.string.pick_dates)
                             }
 
                         Text(

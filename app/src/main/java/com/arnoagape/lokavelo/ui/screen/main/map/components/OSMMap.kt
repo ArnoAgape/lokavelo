@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.ui.screen.main.home.components
+package com.arnoagape.lokavelo.ui.screen.main.map.components
 
 import android.graphics.Paint
 import androidx.preference.PreferenceManager
@@ -21,7 +21,7 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.Polygon
 import androidx.core.graphics.toColorInt
 import com.arnoagape.lokavelo.R
-import com.arnoagape.lokavelo.ui.screen.main.home.SearchFilters
+import com.arnoagape.lokavelo.ui.screen.main.map.SearchFilters
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.views.CustomZoomButtonsController

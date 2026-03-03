@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.ui.screen.main.home
+package com.arnoagape.lokavelo.ui.screen.main.map
 
 import android.location.Location
 import android.widget.Toast
@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.dp
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.ui.common.EventsEffect
-import com.arnoagape.lokavelo.ui.screen.main.home.components.OSMMap
-import com.arnoagape.lokavelo.ui.screen.main.home.components.SearchBar
+import com.arnoagape.lokavelo.ui.screen.main.map.components.OSMMap
+import com.arnoagape.lokavelo.ui.screen.main.map.components.SearchBar
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.AddressLineField
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -82,14 +82,14 @@ fun HomeScreen(
 
     EventsEffect(viewModel.eventsFlow) { event ->
         when (event) {
-            is HomeEvent.ShowMessage -> {
+            is MapEvent.ShowMessage -> {
                 snackbarHostState.showSnackbar(
                     message = resources.getString(event.message),
                     duration = SnackbarDuration.Short
                 )
             }
 
-            is HomeEvent.ShowSuccessMessage -> {
+            is MapEvent.ShowSuccessMessage -> {
                 Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
             }
         }

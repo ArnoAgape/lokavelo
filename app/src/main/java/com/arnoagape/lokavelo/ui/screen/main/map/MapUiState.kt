@@ -1,16 +1,16 @@
-package com.arnoagape.lokavelo.ui.screen.main.home
+package com.arnoagape.lokavelo.ui.screen.main.map
 
 import androidx.annotation.StringRes
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
 
-sealed class HomeScreenUiState {
+sealed class MapUiState {
 
-    object Loading : HomeScreenUiState()
-    object Empty : HomeScreenUiState()
-    data class Success(val bikes: List<Bike>) : HomeScreenUiState()
+    object Loading : MapUiState()
+    object Empty : MapUiState()
+    data class Success(val bikes: List<Bike>) : MapUiState()
 
-    sealed class Error : HomeScreenUiState() {
+    sealed class Error : MapUiState() {
         data class Generic(@param:StringRes val messageRes: Int = R.string.error_generic) : Error()
         data class Network(@param:StringRes val messageRes: Int = R.string.error_no_network) : Error()
     }

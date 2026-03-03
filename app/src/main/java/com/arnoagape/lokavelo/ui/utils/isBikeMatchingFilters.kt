@@ -1,7 +1,7 @@
 package com.arnoagape.lokavelo.ui.utils
 
 import com.arnoagape.lokavelo.domain.model.Bike
-import com.arnoagape.lokavelo.ui.screen.main.home.SearchFilters
+import com.arnoagape.lokavelo.ui.screen.main.map.SearchFilters
 
 fun isBikeMatchingFilters(
     bike: Bike,

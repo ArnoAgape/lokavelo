@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.ui.screen.main.home
+package com.arnoagape.lokavelo.ui.screen.main.map
 
 import android.location.Location
 import androidx.lifecycle.ViewModel
@@ -41,7 +41,7 @@ class HomeScreenViewModel @Inject constructor(
     private val networkUtils: NetworkUtils
 ) : ViewModel() {
 
-    private val _events = Channel<HomeEvent>(Channel.BUFFERED)
+    private val _events = Channel<MapEvent>(Channel.BUFFERED)
     val eventsFlow = _events.receiveAsFlow()
 
     val userLocation: StateFlow<Location?> =

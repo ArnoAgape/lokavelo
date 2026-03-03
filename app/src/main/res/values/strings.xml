@@ -64,7 +64,7 @@
     <string name="required">Required</string>
     <string name="current_position">Current position</string>
     <string name="city_address">City or address</string>
-    <string name="when">When?</string>
+    <string name="period">Period</string>
     <string name="recenter">Recenter</string>
 
     // SUCCESS
@@ -116,6 +116,7 @@
     <string name="add_picture">Add picture</string>
     <string name="remove_picture">Remove picture</string>
     <string name="press_again_exit">Press again to exit the app</string>
+    <string name="pick_dates">When are you cycling?</string>
 
     // CONFIRM ACTIONS
     <string name="action_delete_account">Delete account</string>
