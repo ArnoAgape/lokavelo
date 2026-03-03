@@ -66,7 +66,7 @@ fun MainScreen(
 
         NavHost(
             navController = tabNavController,
-            startDestination = Screen.Main.Home.route,
+            startDestination = Screen.Main.Map.route,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
@@ -105,6 +105,13 @@ fun MainScreen(
 
             composable(Screen.Account.AccountHome.route) {
                 AccountHomeScreen()
+                LoginScreen(
+                    onLoginSuccess = {
+                        tabNavController.navigate(Screen.Owner.HomeBike.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    }
+                )
             }
 
             composable(Screen.Account.Profile.route) {
@@ -137,7 +144,7 @@ fun MainScreen(
 
             // ---------------- MAIN ----------------
 
-            composable(Screen.Main.Home.route) {
+            composable(Screen.Main.Map.route) {
 
                 val vm: MapViewModel = hiltViewModel()
                 MapScreen(

@@ -13,13 +13,15 @@ fun isBikeMatchingFilters(
 
         val results = FloatArray(1)
 
-        android.location.Location.distanceBetween(
-            filters.center.latitude,
-            filters.center.longitude,
-            bike.location.latitude,
-            bike.location.longitude,
-            results
-        )
+        if (bike.location.latitude != null && bike.location.longitude != null) {
+            android.location.Location.distanceBetween(
+                filters.center.latitude,
+                filters.center.longitude,
+                bike.location.latitude,
+                bike.location.longitude,
+                results
+            )
+        }
 
         val distanceKm = results[0] / 1000.0
 

@@ -36,15 +36,20 @@ class FirebaseBikeApi @Inject constructor(
 
     private val auth = FirebaseAuth.getInstance()
     private val firestore = FirebaseFirestore.getInstance()
-    private fun bikesCollectionForUser(userId: String) =
-        firestore.collection("users")
-            .document(userId)
-            .collection("bikes")
+    private val bikesCollection = firestore.collection("bikes")
 
     override fun observeBikesForOwner(ownerId: String): Flow<List<Bike>> {
-
-        return bikesCollectionForUser(ownerId)
+        return bikesCollection
+            .whereEqualTo("ownerId", ownerId)
             .orderBy("createdAt", Query.Direction.DESCENDING)
+            .dataObjects<BikeDto>()
+            .map { it.map(Bike::fromDto) }
+            .flowOn(Dispatchers.IO)
+    }
+
+    override fun observeAllBikes(): Flow<List<Bike>> {
+
+        return bikesCollection
             .dataObjects<BikeDto>()
             .map { it.map(Bike::fromDto) }
             .flowOn(Dispatchers.IO)
@@ -57,7 +62,7 @@ class FirebaseBikeApi @Inject constructor(
         }
 
         val ownerId = requireUserId()
-        val bikeRef = bikesCollectionForUser(ownerId).document()
+        val bikeRef = bikesCollection.document()
         val bikeId = bikeRef.id
 
         val uploadedUrls = uploadBikePictures(
@@ -87,7 +92,7 @@ class FirebaseBikeApi @Inject constructor(
             val ownerId = requireUserId()
             val bikeId = bike.id
 
-            val docRef = bikesCollectionForUser(ownerId).document(bikeId)
+            val docRef = bikesCollection.document(bikeId)
 
             // 1️⃣ Récupérer état actuel Firestore
             val snapshot = docRef.get().await()
@@ -150,8 +155,7 @@ class FirebaseBikeApi @Inject constructor(
         userId: String
     ): Flow<Bike?> {
 
-        return bikesCollectionForUser(userId)
-            .document(bikeId)
+        return bikesCollection.document(bikeId)
             .snapshots()
             .map { snapshot ->
                 snapshot.toObject(BikeDto::class.java)
@@ -187,7 +191,7 @@ class FirebaseBikeApi @Inject constructor(
                 val ownerId = requireUserId()
                 ids.forEach { id ->
                     if (id.isBlank()) error("Bike ID empty")
-                    bikesCollectionForUser(ownerId).document(id).delete()
+                    bikesCollection.document(id).delete()
                 }
                 ids.forEach { id ->
                     deleteBikeFolder(ownerId, id)

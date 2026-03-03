@@ -1,6 +1,7 @@
 package com.arnoagape.lokavelo.ui.screen.main.map
 
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arnoagape.lokavelo.data.repository.BikeOwnerRepository
@@ -53,7 +54,15 @@ class MapViewModel @Inject constructor(
             null
         )
 
-    private val bikesFlow: Flow<List<Bike>> = bikeRepository.observeBikes()
+    private val bikesFlow: Flow<List<Bike>> =
+        bikeRepository.observeAllBikes()
+            .map { bikes ->
+                Log.d("MAP", "All bikes size = ${bikes.size}")
+                bikes.filter {
+                    it.location.latitude != null &&
+                            it.location.longitude != null
+                }
+            }
 
     private val _filters = MutableStateFlow(SearchFilters())
 

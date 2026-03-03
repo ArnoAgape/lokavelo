@@ -46,8 +46,8 @@ sealed interface Screen {
     // ---------------- MAIN ----------------
     sealed interface Main : Screen {
 
-        data object Home : Main {
-            override val route = "main_home"
+        data object Map : Main {
+            override val route = "main_map"
         }
 
         data object DetailPublicBike : Main {

@@ -168,7 +168,7 @@ fun screenFromRoute(route: String?): Screen? {
         Screen.Account.AccountHome.route -> Screen.Account.AccountHome
         Screen.Messaging.MessagingHome.route -> Screen.Messaging.MessagingHome
         Screen.Login.route -> Screen.Login
-        Screen.Main.Home.route -> Screen.Main.Home
+        Screen.Main.Map.route -> Screen.Main.Map
 
         Screen.Owner.AddBike.route -> Screen.Owner.AddBike
 

@@ -41,7 +41,7 @@ class HomeBikeViewModel @Inject constructor(
     private val _selection = MutableStateFlow(SelectionState())
     private val _isRefreshing = MutableStateFlow(false)
 
-    private val bikesFlow: Flow<List<Bike>> = bikeRepository.observeBikes()
+    private val bikesFlow: Flow<List<Bike>> = bikeRepository.observeBikesForOwner()
 
     private val _searchQuery = MutableStateFlow("")
     private val _isSearchActive = MutableStateFlow(false)

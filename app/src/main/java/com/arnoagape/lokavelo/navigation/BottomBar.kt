@@ -26,8 +26,8 @@ fun BottomBar(
     ) {
 
         NavigationBarItem(
-            selected = currentScreen is Screen.Main.Home,
-            onClick = { onItemSelected(Screen.Main.Home) },
+            selected = currentScreen is Screen.Main.Map,
+            onClick = { onItemSelected(Screen.Main.Map) },
             icon = { Icon(Icons.Default.Search, null) },
             label = { Text(stringResource(R.string.rent)) }
         )

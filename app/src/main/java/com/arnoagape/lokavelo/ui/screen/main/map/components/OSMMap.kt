@@ -205,10 +205,9 @@ fun OSMMap(
 
                         Marker(mapView).apply {
 
-                            position = GeoPoint(
-                                bike.location.latitude,
-                                bike.location.longitude
-                            )
+                            if (bike.location.latitude != null && bike.location.longitude != null) {
+                                position = GeoPoint(bike.location.latitude, bike.location.longitude)
+                            }
 
                             icon = mapView.context.getDrawable(
                                 R.drawable.ic_bike_marker_light
