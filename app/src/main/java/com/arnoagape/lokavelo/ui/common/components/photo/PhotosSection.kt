@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
@@ -128,6 +129,7 @@ fun PhotosContent(
 ) {
 
     var selectedPhotoId by rememberSaveable { mutableStateOf<String?>(null) }
+    val selectedIndex = photos.indexOfFirst { it.id == selectedPhotoId }
 
     Row(
         modifier = Modifier.fillMaxWidth()
@@ -172,21 +174,15 @@ fun PhotosContent(
         } else {
 
             // MODE LECTURE SEULE → pas de reorder
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(
-                    items = photos,
-                    key = { it.id }
-                ) { photo ->
-
-                    PhotoPreview(
-                        uri = photo.toUri(),
-                        onRemoveClick = null,
-                        onClick = { selectedPhotoId = photo.id }
-                    )
+            PhotoCarousel(
+                photos = photos,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(220.dp),
+                onPhotoClick = { index ->
+                    selectedPhotoId = photos[index].id
                 }
-            }
+            )
         }
 
         if (isEditable && photos.isNotEmpty()) {
@@ -225,7 +221,7 @@ fun PhotosContent(
                         is PhotoItem.Remote -> it.url.toUri()
                     }
                 },
-                startIndex = photos.indexOf(photo),
+                startIndex = selectedIndex,
                 onDismiss = { selectedPhotoId = null }
             )
         }

@@ -43,7 +43,8 @@ import com.arnoagape.lokavelo.domain.model.BikeEquipment
 import com.arnoagape.lokavelo.domain.model.BikeLocation
 import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
 import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
-import com.arnoagape.lokavelo.ui.screen.main.detail.sections.BikeImageCarousel
+import com.arnoagape.lokavelo.ui.common.components.photo.PhotoItem
+import com.arnoagape.lokavelo.ui.common.components.photo.PhotosContent
 import com.arnoagape.lokavelo.ui.screen.main.detail.sections.BikeSpecsCard
 import com.arnoagape.lokavelo.ui.screen.main.detail.sections.DescriptionCard
 import com.arnoagape.lokavelo.ui.screen.main.detail.sections.OwnerCard
@@ -172,11 +173,18 @@ fun DetailPublicBikeContent(
         // Images
         item {
 
-            BikeImageCarousel(
-                photos = state.bike?.photoUrls ?: emptyList(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
+            PhotosContent(
+                photos = state.bike?.photoUrls?.map { url ->
+                    PhotoItem.Remote(
+                        id = url,
+                        url = url
+                    )
+                } ?: emptyList(),
+                onAddPhotoClick = {},
+                onRemovePhoto = {},
+                onPhotoEdited = { _, _ -> },
+                onMovePhoto = { _, _ -> },
+                isEditable = false
             )
         }
 

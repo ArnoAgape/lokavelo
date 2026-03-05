@@ -1,7 +1,8 @@
-package com.arnoagape.lokavelo.ui.screen.main.detail.sections
+package com.arnoagape.lokavelo.ui.common.components.photo
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,13 +19,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BikeImageCarousel(
-    photos: List<String>,
-    modifier: Modifier = Modifier
+fun PhotoCarousel(
+    photos: List<PhotoItem>,
+    modifier: Modifier = Modifier,
+    onPhotoClick: (Int) -> Unit
 ) {
 
     val pagerState = rememberPagerState { photos.size }
@@ -35,11 +38,18 @@ fun BikeImageCarousel(
             state = pagerState
         ) { page ->
 
+            val uri = when (val photo = photos[page]) {
+                is PhotoItem.Local -> photo.uri
+                is PhotoItem.Remote -> photo.url.toUri()
+            }
+
             AsyncImage(
-                model = photos[page],
+                model = uri,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable { onPhotoClick(page) }
             )
         }
 
