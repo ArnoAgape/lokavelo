@@ -16,7 +16,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Repository that manages file-related operations.
+ * Repository that manages bike-related operations.
  * Delegates data access to [BikeApi] to provide
  * a clean abstraction layer for ViewModels.
  */

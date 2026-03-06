@@ -16,12 +16,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.screen.login.LoginScreen
 import com.arnoagape.lokavelo.ui.screen.login.LoginViewModel
+import com.arnoagape.lokavelo.ui.screen.main.contact.ContactScreen
 import com.arnoagape.lokavelo.ui.screen.main.detail.DetailPublicBikeScreen
 import com.arnoagape.lokavelo.ui.screen.main.detail.DetailPublicBikeViewModel
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeScreen
@@ -30,8 +30,6 @@ import com.arnoagape.lokavelo.ui.screen.owner.detail.DetailBikeScreen
 import com.arnoagape.lokavelo.ui.screen.owner.detail.DetailBikeViewModel
 import com.arnoagape.lokavelo.ui.screen.owner.editBike.EditBikeScreen
 import com.arnoagape.lokavelo.ui.screen.owner.editBike.EditBikeViewModel
-import java.time.Instant
-import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,18 +40,13 @@ fun LokaveloApp() {
     val loginViewModel: LoginViewModel = hiltViewModel()
     val isSignedIn by loginViewModel.isSignedIn.collectAsStateWithLifecycle()
 
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
     var lastBackPressedTime by remember { mutableLongStateOf(0L) }
     val context = LocalContext.current
     val resources = LocalResources.current
 
     BackHandler {
 
-        val currentRoute =
-            currentBackStackEntry?.destination?.route?.substringBefore("/")
-
-        val isOnRoot =
-            currentRoute == "main_graph"
+        val isOnRoot = navController.previousBackStackEntry == null
 
         if (!isOnRoot) {
             navController.popBackStack()
@@ -73,9 +66,9 @@ fun LokaveloApp() {
         }
     }
 
-    fun navigateProtected(route: String) {
+    fun navigateProtected(screen: Screen) {
         if (isSignedIn) {
-            navController.navigate(route)
+            navController.navigate(screen)
         } else {
             navController.navigate(Screen.Login.route)
         }
@@ -91,8 +84,8 @@ fun LokaveloApp() {
         composable("main_graph") {
             MainScreen(
                 rootNavController = navController,
-                navigateProtected = { route ->
-                    navigateProtected(route)
+                navigateProtected = { screen ->
+                    navigateProtected(screen)
                 }
             )
         }
@@ -115,10 +108,9 @@ fun LokaveloApp() {
             arguments = listOf(
                 navArgument("bikeId") { type = NavType.StringType }
             )
-        ) { backStackEntry ->
+        ) { entry ->
 
-            val bikeId =
-                backStackEntry.arguments?.getString("bikeId")!!
+            val bikeId = entry.stringArg("bikeId") ?: return@composable
 
             val vm: DetailBikeViewModel = hiltViewModel()
 
@@ -140,10 +132,9 @@ fun LokaveloApp() {
             arguments = listOf(
                 navArgument("bikeId") { type = NavType.StringType }
             )
-        ) { backStackEntry ->
+        ) { entry ->
 
-            val bikeId =
-                backStackEntry.arguments?.getString("bikeId")!!
+            val bikeId = entry.stringArg("bikeId") ?: return@composable
 
             val vm: EditBikeViewModel = hiltViewModel()
 
@@ -170,36 +161,53 @@ fun LokaveloApp() {
                     defaultValue = -1L
                 }
             )
-        ) { backStackEntry ->
+        ) { entry ->
 
-            val bikeId = backStackEntry.arguments?.getString("bikeId")!!
-
-            val startMillis = backStackEntry.arguments?.getLong("start") ?: -1L
-            val endMillis = backStackEntry.arguments?.getLong("end") ?: -1L
-
-            val startDate =
-                startMillis.takeIf { it > 0 }?.let {
-                    Instant.ofEpochMilli(it)
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate()
-                }
-
-            val endDate =
-                endMillis.takeIf { it > 0 }?.let {
-                    Instant.ofEpochMilli(it)
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate()
-                }
+            val bikeId = entry.stringArg("bikeId") ?: return@composable
+            val start = entry.localDateArg("start") ?: return@composable
+            val end = entry.localDateArg("end") ?: return@composable
 
             val vm: DetailPublicBikeViewModel = hiltViewModel()
 
             DetailPublicBikeScreen(
                 bikeId = bikeId,
                 viewModel = vm,
-                startDate = startDate,
-                endDate = endDate,
+                startDate = start,
+                endDate = end,
                 onBack = { navController.popBackStack() },
-                onContactClick = { /* TODO */ }
+                onContactClick = { bikeId, start, end ->
+                    navController.navigate(
+                        Screen.Main.Contact.createRoute(
+                            bikeId,
+                            start,
+                            end
+                        )
+                    )
+                }
+            )
+        }
+
+        composable(
+            route = Screen.Main.Contact.route,
+            arguments = listOf(
+                navArgument("bikeId") { type = NavType.StringType },
+                navArgument("start") { type = NavType.LongType },
+                navArgument("end") { type = NavType.LongType }
+            )
+        ) { entry ->
+
+            val bikeId = entry.stringArg("bikeId") ?: return@composable
+            val start = entry.localDateArg("start") ?: return@composable
+            val end = entry.localDateArg("end") ?: return@composable
+
+            ContactScreen(
+                bikeId = bikeId,
+                startDate = start,
+                endDate = end,
+                onConversationCreated = { conversationId ->
+                    navController.navigate("conversation/$conversationId")
+                },
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -216,18 +224,15 @@ fun LokaveloApp() {
 }
 
 fun screenFromRoute(route: String?): Screen? {
-    return when (route?.substringBefore("/")) {
+
+    val baseRoute = route?.substringBefore("/") ?: return null
+
+    return when (baseRoute) {
 
         Screen.Owner.HomeBike.route -> Screen.Owner.HomeBike
-        Screen.Account.AccountHome.route -> Screen.Account.AccountHome
-        Screen.Messaging.MessagingHome.route -> Screen.Messaging.MessagingHome
-        Screen.Login.route -> Screen.Login
         Screen.Main.Map.route -> Screen.Main.Map
-
-        Screen.Owner.AddBike.route -> Screen.Owner.AddBike
-
-        "owner_detail" -> Screen.Owner.DetailBike
-        "owner_edit" -> Screen.Owner.EditBike
+        Screen.Messaging.MessagingHome.route -> Screen.Messaging.MessagingHome
+        Screen.Account.AccountHome.route -> Screen.Account.AccountHome
 
         else -> null
     }

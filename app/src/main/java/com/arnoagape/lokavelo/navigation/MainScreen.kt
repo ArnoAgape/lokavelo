@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -25,10 +23,8 @@ import com.arnoagape.lokavelo.ui.screen.account.settings.notifications.Notificat
 import com.arnoagape.lokavelo.ui.screen.account.settings.payment.PaymentSettingsScreen
 import com.arnoagape.lokavelo.ui.screen.account.settings.version.VersionSettingsScreen
 import com.arnoagape.lokavelo.ui.screen.login.LoginScreen
-import com.arnoagape.lokavelo.ui.screen.main.contact.ContactScreen
 import com.arnoagape.lokavelo.ui.screen.main.map.MapScreen
 import com.arnoagape.lokavelo.ui.screen.main.map.MapViewModel
-import com.arnoagape.lokavelo.ui.screen.main.profile.PublicProfileScreen
 import com.arnoagape.lokavelo.ui.screen.messaging.detail.MessagingDetailScreen
 import com.arnoagape.lokavelo.ui.screen.messaging.home.MessagingHomeScreen
 import com.arnoagape.lokavelo.ui.screen.owner.home.HomeBikeScreen
@@ -38,13 +34,12 @@ import java.time.ZoneId
 @Composable
 fun MainScreen(
     rootNavController: NavController,
-    navigateProtected: (String) -> Unit
+    navigateProtected: (Screen) -> Unit
 ) {
 
     val tabNavController = rememberNavController()
     val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
-    val navBackStackEntry by tabNavController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    val currentRoute = tabNavController.currentBackStackEntryAsState().value?.destination?.route
 
     Scaffold(
         bottomBar = {
@@ -98,7 +93,7 @@ fun MainScreen(
                             Screen.Owner.DetailBike.createRoute(bike.id)
                         )
                     },
-                    onAddBikeClick = { navigateProtected(Screen.Owner.AddBike.route) }
+                    onAddBikeClick = { navigateProtected(Screen.Owner.AddBike) }
                 )
             }
 
@@ -148,7 +143,6 @@ fun MainScreen(
             composable(Screen.Main.Map.route) {
 
                 val vm: MapViewModel = hiltViewModel()
-                val state by vm.state.collectAsState()
 
                 MapScreen(
                     viewModel = vm,
@@ -173,14 +167,6 @@ fun MainScreen(
                         )
                     }
                 )
-            }
-
-            composable(Screen.Main.Contact.route) {
-                ContactScreen()
-            }
-
-            composable(Screen.Main.PublicProfile.route) {
-                PublicProfileScreen()
             }
 
             // ---------------- MESSAGING ----------------

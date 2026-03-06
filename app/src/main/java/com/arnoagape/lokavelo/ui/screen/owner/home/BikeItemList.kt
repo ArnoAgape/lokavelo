@@ -31,15 +31,16 @@ import coil.compose.AsyncImage
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.ui.common.SelectionState
+import com.arnoagape.lokavelo.ui.common.components.RentalDates
 import com.arnoagape.lokavelo.ui.common.components.SelectItemRow
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import com.arnoagape.lokavelo.ui.theme.lightBlue
 import com.arnoagape.lokavelo.ui.theme.lightBlueText
 import com.arnoagape.lokavelo.ui.theme.lightGreen
 import com.arnoagape.lokavelo.ui.theme.lightGreenText
-import com.arnoagape.lokavelo.ui.utils.Format.formatDate
 import java.text.NumberFormat
 import java.time.Instant
+import java.time.LocalDate
 import java.util.Locale
 
 @Composable
@@ -80,7 +81,10 @@ fun BikeItem(
 @Composable
 fun BikeItemRow(
     bike: Bike,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    startDate: LocalDate? = null,
+    endDate: LocalDate? = null,
+    showStatus: Boolean = true
 ) {
     val isRented = bike.rentalStart != null && bike.rentalEnd != null
 
@@ -112,7 +116,7 @@ fun BikeItemRow(
                     modifier = Modifier.weight(1f)
                 )
 
-                StatusBadge(isRented)
+                if (showStatus) StatusBadge(isRented)
             }
 
             // 💰 Prix
@@ -132,14 +136,11 @@ fun BikeItemRow(
             )
 
             // 📅 Dates si location active
-            if (isRented) {
-                Text(
-                    text = "→ ${formatDate(bike.rentalStart)}",
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Text(
-                    text = "← ${formatDate(bike.rentalEnd)}",
-                    style = MaterialTheme.typography.bodySmall
+            if (startDate != null && endDate != null) {
+
+                RentalDates(
+                    start = startDate,
+                    end = endDate
                 )
             }
         }
@@ -212,38 +213,10 @@ fun BikeItemRowPreview() {
                 photoUrls = emptyList(),
                 rentalStart = Instant.parse("2026-02-21T16:30:00Z"),
                 rentalEnd = Instant.parse("2026-02-28T11:30:00Z")
-            )
-        )
-    }
-}
-
-@PreviewLightDark
-@Composable
-private fun BikeItemPreview() {
-    LokaveloTheme {
-        BikeItem(
-            bikes = listOf(
-                Bike(
-                    id = "1",
-                    title = "Origine Trail Explore",
-                    priceInCents = 2500,
-                    photoUrls = emptyList(),
-                    rentalStart = Instant.parse("2026-02-21T16:30:00Z"),
-                    rentalEnd = Instant.parse("2026-02-28T11:30:00Z")
-                ),
-                Bike(
-                    id = "2",
-                    title = "Origine Trail Explore",
-                    priceInCents = 2500,
-                    photoUrls = emptyList(),
-                    rentalStart = null,
-                    rentalEnd = null
-                )
             ),
-            onBikeClick = {},
-            selectionState = SelectionState(),
-            onToggleSelection = {},
-            onEnterSelectionMode = {}
+            showStatus = false,
+            startDate = LocalDate.of(2026, 2, 21),
+            endDate = LocalDate.of(2026, 2, 28)
         )
     }
 }

@@ -14,7 +14,7 @@
     <string name="button_edit_bike">Sauvegarder</string>
     <string name="button_contact">Contacter</string>
 
-    // SUBTITLE
+    // SUBTITLE or HINT
     <string name="subtitle_add_3_pictures">Ajoute jusqu’à 3 photos</string>
     <string name="subtitle_characteristics">Ajoute les détails de ton vélo</string>
     <string name="subtitle_title_description">Ajoute un titre et une description qui définissent
@@ -23,6 +23,8 @@
     <string name="subtitle_pricing">Généralement entre 1 € et 25 € par jour</string>
     <string name="subtitle_deposit">Ce montant sera bloqué sur la carte bancaire du locataire
         pendant toute la durée de la location</string>
+    <string name="message_owner_hint">Envoie ton message au propriétaire du vélo
+        en précisant ta demande</string>
 
     // MISC WORDS
     <string name="yes">Oui</string>
@@ -118,6 +120,7 @@
     <string name="delete">Supprimer</string>
     <string name="edit">Modifier</string>
     <string name="save">Sauvegarder</string>
+    <string name="send">Envoyer</string>
     <string name="contact">Contacter</string>
     <string name="validate">Valider</string>
     <string name="retry">Réessayer</string>
@@ -130,6 +133,7 @@
     <string name="remove_picture">Supprimer</string>
     <string name="press_again_exit">Appuie à nouveau pour quitter</string>
     <string name="select_dates">Choisis les dates</string>
+    <string name="send_message">Envoyer un message</string>
 
     // CONFIRM ACTIONS
     <string name="action_delete_account">Supprimer le compte</string>

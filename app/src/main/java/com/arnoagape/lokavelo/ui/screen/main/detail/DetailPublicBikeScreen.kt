@@ -1,6 +1,5 @@
 package com.arnoagape.lokavelo.ui.screen.main.detail
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -55,6 +54,7 @@ import com.arnoagape.lokavelo.ui.theme.LocalSpacing
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import com.arnoagape.lokavelo.ui.utils.toEuroString
 import java.time.LocalDate
+import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +64,7 @@ fun DetailPublicBikeScreen(
     startDate: LocalDate?,
     endDate: LocalDate?,
     onBack: () -> Unit,
-    onContactClick: () -> Unit
+    onContactClick: (String, Long, Long) -> Unit
 ) {
 
     val state by viewModel.state.collectAsState()
@@ -72,7 +72,6 @@ fun DetailPublicBikeScreen(
     LaunchedEffect(bikeId) {
         viewModel.setBikeId(bikeId)
         viewModel.setInitialDates(startDate, endDate)
-        Log.d("DETAIL_STATE", "stateStart=${state.startDate} stateEnd=${state.endDate}")
     }
 
     Scaffold(
@@ -98,8 +97,26 @@ fun DetailPublicBikeScreen(
 
         bottomBar = {
             SubmitButton(
-                enabled = true,
-                onClick = onContactClick,
+                enabled = state.bike != null,
+                onClick = {
+                    val bike = state.bike ?: return@SubmitButton
+
+                    val start = state.startDate
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .toInstant()
+                        .toEpochMilli()
+
+                    val end = state.endDate
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .toInstant()
+                        .toEpochMilli()
+
+                    onContactClick(
+                        bike.id,
+                        start,
+                        end
+                    )
+                },
                 isLoading = false,
                 submitText = stringResource(R.string.button_contact)
             )

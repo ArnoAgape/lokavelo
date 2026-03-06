@@ -71,7 +71,12 @@ sealed interface Screen {
         }
 
         data object Contact : Main {
-            override val route = "main_contact"
+            override val route = "contact/{bikeId}?start={start}&end={end}"
+            fun createRoute(
+                bikeId: String,
+                start: Long,
+                end: Long
+            ) = "contact/$bikeId?start=$start&end=$end"
         }
     }
 
