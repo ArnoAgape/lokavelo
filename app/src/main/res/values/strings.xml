@@ -48,6 +48,10 @@
     <string name="pricing_week">Week</string>
     <string name="pricing_month">Month</string>
     <string name="price_total">%1$s total</string>
+    <plurals name="price_per_day_times_days">
+        <item quantity="one">%1$s × %2$d jour</item>
+        <item quantity="other">%1$s × %2$d jours</item>
+    </plurals>
     <string name="discount">Discount: %1$d%%</string>
     <string name="deposit">Deposit</string>
     <string name="deposit_amount">Deposit amount (€)</string>

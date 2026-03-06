@@ -87,8 +87,8 @@ data class DetailPublicBikeState(
     val bike: Bike? = null,
     val owner: User? = null,
     val isLoading: Boolean = true,
-    val startDate: LocalDate? = null,
-    val endDate: LocalDate? = null,
+    val startDate: LocalDate = LocalDate.now(),
+    val endDate: LocalDate = LocalDate.now().plusDays(1),
     val rentals: List<Rental> = emptyList(),
     val error: Throwable? = null
 )

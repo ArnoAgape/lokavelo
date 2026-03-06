@@ -1,7 +1,6 @@
 package com.arnoagape.lokavelo.ui.screen.main.detail
 
 import android.util.Log
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -267,6 +266,12 @@ fun DetailPublicBikeContent(
                         value = bike.brand
                     )
 
+                    // Size
+                    DetailRow(
+                        stringResource(R.string.size),
+                        bike.size?.name ?: ""
+                    )
+
                     // Condition
                     DetailRow(
                         label = stringResource(R.string.condition),
@@ -292,62 +297,16 @@ fun DetailPublicBikeContent(
                 }
             }
 
+            // Pricing and dates
             item {
-                // Dates
-                DetailCard(title = stringResource(R.string.period)) {
+                DetailCard(title = stringResource(R.string.price_details)) {
 
-                    if (state.startDate != null && state.endDate != null) {
-
-                        DetailRow(
-                            label = stringResource(R.string.period),
-                            value = "${state.startDate} - ${state.endDate}"
-                        )
-
-                    } else {
-
-                        Text(
-                            text = stringResource(R.string.period),
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.clickable {
-                                showDatePicker = true
-                            }
-                        )
-                    }
-                }
-            }
-
-            // Pricing
-            item {
-                DetailCard(title = stringResource(R.string.pricing)) {
-
-                    Text(
-                        text = stringResource(
-                            R.string.price_per_day,
-                            bike.priceInCents.toEuroString()
-                        ),
-                        style = MaterialTheme.typography.titleMedium
+                    PriceBreakdownCard(
+                        pricePerDayInCents = bike.priceInCents,
+                        startDate = state.startDate,
+                        endDate = state.endDate
                     )
 
-                    Spacer(Modifier.height(8.dp))
-
-                    if (state.startDate != null && state.endDate != null) {
-
-                        PriceBreakdownCard(
-                            pricePerDayInCents = bike.priceInCents,
-                            startDate = state.startDate,
-                            endDate = state.endDate
-                        )
-
-                    } else {
-
-                        Text(
-                            (stringResource(R.string.select_dates)),
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.clickable {
-                                showDatePicker = true
-                            }
-                        )
-                    }
                 }
             }
 

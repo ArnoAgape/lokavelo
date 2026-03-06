@@ -37,7 +37,7 @@
     <string name="service_fee_percent">Frais de service (%1$s %%)</string>
     <string name="total_price_ttc">Montant total TTC</string>
     <string name="price_details">Détail du prix</string>
-    <string name="pricing">Tarifs</string>
+    <string name="pricing">Tarif</string>
     <string name="price_per_day">%1$s / jour</string>
     <string name="pricing_day_amount">Tarif par jour (€)</string>
     <string name="pricing_half_day_amount">Tarif demi-journée (€)</string>
@@ -48,6 +48,10 @@
     <string name="pricing_week">Semaine</string>
     <string name="pricing_month">Mois</string>
     <string name="price_total">%1$s au total</string>
+    <plurals name="price_per_day_times_days" tools:ignore="MissingQuantity">
+        <item quantity="one">%1$s × %2$d jour</item>
+        <item quantity="other">%1$s × %2$d jours</item>
+    </plurals>
     <string name="discount">Réduction : %1$d %%</string>
     <string name="deposit">Caution</string>
     <string name="deposit_amount">Montant de la caution (€)</string>

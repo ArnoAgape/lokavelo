@@ -6,13 +6,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.arnoagape.lokavelo.R
+import com.arnoagape.lokavelo.ui.screen.owner.detail.sections.DetailRow
 import com.arnoagape.lokavelo.ui.utils.toEuroString
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -39,30 +39,20 @@ fun PriceBreakdownCard(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
 
-        Text(
-            text = stringResource(
-                R.string.price_per_day,
-                pricePerDayInCents.toEuroString()
-            ),
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        Text(
-            text = "${startDate.format(dateFormatter)} - ${endDate.format(dateFormatter)}",
-            style = MaterialTheme.typography.bodyMedium
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        Text(
-            text = stringResource(R.string.price_details),
-            style = MaterialTheme.typography.titleMedium
+        DetailRow(
+            label = stringResource(R.string.period),
+            value = "${startDate.format(dateFormatter)} - ${endDate.format(dateFormatter)}"
         )
 
         Spacer(Modifier.height(4.dp))
 
         PriceRow(
-            label = "${pricePerDayInCents.toEuroString()} x $days jours",
+            label = pluralStringResource(
+                R.plurals.price_per_day_times_days,
+                days,
+                pricePerDayInCents.toEuroString(),
+                days
+            ),
             value = subtotal.toEuroString()
         )
 

@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.common.EventsEffect
+import com.arnoagape.lokavelo.ui.common.components.DateRangePickerDialog
 import com.arnoagape.lokavelo.ui.screen.main.map.components.BikePreviewCard
 import com.arnoagape.lokavelo.ui.screen.main.map.components.OSMMap
 import com.arnoagape.lokavelo.ui.screen.main.map.components.SearchBar
@@ -67,6 +68,8 @@ fun MapScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     var showAddressSheet by remember { mutableStateOf(false) }
+    var pendingBikeId by remember { mutableStateOf<String?>(null) }
+    var showDatePicker by remember { mutableStateOf(false) }
     var recenterTrigger by remember { mutableStateOf(false) }
     var selectedBikeId by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -168,6 +171,21 @@ fun MapScreen(
         }
     }
 
+    if (showDatePicker) {
+        DateRangePickerDialog(
+            onDismiss = { showDatePicker = false },
+            onDatesSelected = { start, end ->
+                viewModel.updateDates(start, end)
+                showDatePicker = false
+
+                pendingBikeId?.let {
+                    onBikeClick(it, start, end)
+                    pendingBikeId = null
+                }
+            }
+        )
+    }
+
     Box(Modifier.fillMaxSize()) {
 
         // Carte
@@ -226,11 +244,17 @@ fun MapScreen(
                 bike = bike,
                 filters = state.filters,
                 onBikeClick = {
-                    onBikeClick(
-                        bike.id,
-                        state.filters.startDate,
-                        state.filters.endDate
-                    )
+
+                    if (state.filters.startDate == null || state.filters.endDate == null) {
+                        pendingBikeId = bike.id
+                        showDatePicker = true
+                    } else {
+                        onBikeClick(
+                            bike.id,
+                            state.filters.startDate,
+                            state.filters.endDate
+                        )
+                    }
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
