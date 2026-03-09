@@ -7,9 +7,11 @@ data class Conversation(
     val renterId: String = "",
     val startDateMillis: Long = 0,
     val endDateMillis: Long = 0,
+    val participants: List<String> = emptyList(),
     val lastMessage: String = "",
-    val lastMessageAt: Long = 0,
-    val createdAt: Long = System.currentTimeMillis()
+    val lastMessageTime: Long = 0,
+    val lastSenderId: String = "",
+    val createdAt: Long = 0
 )
 
 data class Message(
@@ -17,5 +19,5 @@ data class Message(
     val conversationId: String = "",
     val senderId: String = "",
     val text: String = "",
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = 0
 )

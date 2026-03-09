@@ -92,12 +92,15 @@ sealed interface Screen {
     // ---------------- MESSAGING ----------------
     sealed interface Messaging : Screen {
 
-        data object MessagingHome : Messaging {
+        data object Home : Messaging {
             override val route = "messaging_home"
         }
 
-        data object MessagingDetail : Messaging {
-            override val route = "messaging_detail"
+        data object Detail : Messaging {
+            override val route = "messaging_detail/{conversationId}"
+
+            fun createRoute(conversationId: String) =
+                "messaging_detail/$conversationId"
         }
     }
 

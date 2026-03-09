@@ -40,8 +40,8 @@ fun BottomBar(
         )
 
         NavigationBarItem(
-            selected = currentScreen is Screen.Messaging.MessagingHome,
-            onClick = { onItemSelected(Screen.Messaging.MessagingHome) },
+            selected = currentScreen is Screen.Messaging.Home,
+            onClick = { onItemSelected(Screen.Messaging.Home) },
             icon = { Icon(Icons.AutoMirrored.Filled.Message, null) },
             label = { Text(stringResource(R.string.messaging)) }
         )

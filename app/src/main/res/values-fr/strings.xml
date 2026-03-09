@@ -25,6 +25,7 @@
         pendant toute la durée de la location</string>
     <string name="message_owner_hint">Envoie ton message au propriétaire du vélo
         en précisant ta demande</string>
+    <string name="messaging_conversation">Écris ton message ici</string>
 
     // MISC WORDS
     <string name="yes">Oui</string>
@@ -84,6 +85,7 @@
     <string name="period">Période</string>
     <string name="recenter">Recentrer</string>
     <string name="all">Tous</string>
+    <string name="conversation">Conversation</string>
 
     // SUCCESS
     <string name="success_user_updated">Infos mises à jour</string>

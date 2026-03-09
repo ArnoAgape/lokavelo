@@ -156,6 +156,7 @@ fun AddBikeScreen(
                 state.uiState !is AddBikeUiState.Loading
             ) {
                 SubmitButton(
+                    modifier = Modifier.imePadding(),
                     enabled = true,
                     onClick = {
                         viewModel.onAction(AddBikeEvent.Submit)

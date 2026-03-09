@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
@@ -32,7 +33,7 @@ class FirebaseConversationApi : ConversationApi {
             endDate.toEpochDay()
         )
 
-        val ref = firestore.collection("conversations").document()
+        val ref = firestore.collection("conversations").document(conversationId)
 
         val snapshot = ref.get().await()
 
@@ -48,7 +49,9 @@ class FirebaseConversationApi : ConversationApi {
             ownerId = ownerId,
             renterId = renterId,
             startDateMillis = startDate.toEpochDay(),
-            endDateMillis = endDate.toEpochDay()
+            endDateMillis = endDate.toEpochDay(),
+            participants = listOf(ownerId, renterId),
+            createdAt = System.currentTimeMillis()
         )
 
         ref.set(conversation).await()
@@ -67,6 +70,7 @@ class FirebaseConversationApi : ConversationApi {
             .map { snapshot ->
                 snapshot.toObjects(Message::class.java)
             }
+            .catch { emit(emptyList()) }
     }
 
     override suspend fun sendMessage(
@@ -74,12 +78,38 @@ class FirebaseConversationApi : ConversationApi {
         message: Message
     ) {
 
-        val ref = firestore
-            .collection("conversations")
-            .document(conversationId)
-            .collection("messages")
-            .document()
+        val conversationRef =
+            firestore.collection("conversations").document(conversationId)
 
-        ref.set(message.copy(id = ref.id)).await()
+        val messageRef =
+            conversationRef
+                .collection("messages")
+                .document()
+
+        val msg = message.copy(id = messageRef.id)
+
+        firestore.runBatch { batch ->
+
+            batch.set(messageRef, msg)
+
+            batch.update(
+                conversationRef,
+                mapOf(
+                    "lastMessage" to msg.text,
+                    "lastMessageTime" to msg.createdAt,
+                    "lastSenderId" to msg.senderId
+                )
+            )
+        }.await()
+    }
+
+    override fun observeUserConversations(userId: String): Flow<List<Conversation>> {
+
+        return firestore
+            .collection("conversations")
+            .whereArrayContains("participants", userId)
+            .orderBy("lastMessageTime", Query.Direction.DESCENDING)
+            .snapshots()
+            .map { it.toObjects(Conversation::class.java) }
     }
 }

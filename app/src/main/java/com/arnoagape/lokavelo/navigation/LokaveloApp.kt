@@ -24,6 +24,7 @@ import com.arnoagape.lokavelo.ui.screen.login.LoginViewModel
 import com.arnoagape.lokavelo.ui.screen.main.contact.ContactScreen
 import com.arnoagape.lokavelo.ui.screen.main.detail.DetailPublicBikeScreen
 import com.arnoagape.lokavelo.ui.screen.main.detail.DetailPublicBikeViewModel
+import com.arnoagape.lokavelo.ui.screen.messaging.detail.MessagingDetailScreen
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeScreen
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeViewModel
 import com.arnoagape.lokavelo.ui.screen.owner.detail.DetailBikeScreen
@@ -213,9 +214,35 @@ fun LokaveloApp() {
                 startDate = start,
                 endDate = end,
                 onConversationCreated = { conversationId ->
-                    navController.navigate("conversation/$conversationId")
+                    navController.navigate(Screen.Messaging.Detail.createRoute(conversationId))
+                    {
+                        popUpTo(Screen.Main.Contact.route) {
+                            inclusive = true
+                        }
+                    }
                 },
                 onBack = { navController.popBackStack() }
+            )
+        }
+
+        // ---------------- MESSAGING ----------------
+
+        composable(
+            route = Screen.Messaging.Detail.route,
+            arguments = listOf(
+                navArgument("conversationId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+
+            val conversationId =
+                backStackEntry.arguments?.getString("conversationId")
+                    ?: return@composable
+
+            MessagingDetailScreen(
+                conversationId = conversationId,
+                onBack = { navigateProtected(Screen.Messaging.Home.route) }
             )
         }
 
@@ -239,7 +266,7 @@ fun screenFromRoute(route: String?): Screen? {
 
         Screen.Owner.HomeBike.route -> Screen.Owner.HomeBike
         Screen.Main.Map.route -> Screen.Main.Map
-        Screen.Messaging.MessagingHome.route -> Screen.Messaging.MessagingHome
+        Screen.Messaging.Home.route -> Screen.Messaging.Home
         Screen.Account.AccountHome.route -> Screen.Account.AccountHome
 
         else -> null

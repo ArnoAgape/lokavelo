@@ -22,4 +22,6 @@ interface ConversationApi {
         message: Message
     )
 
+    fun observeUserConversations(userId: String): Flow<List<Conversation>>
+
 }

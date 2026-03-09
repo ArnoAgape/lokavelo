@@ -17,6 +17,7 @@ import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 
 @Composable
 fun SubmitButton(
+    modifier: Modifier = Modifier,
     isLoading: Boolean,
     enabled: Boolean,
     onClick: () -> Unit,
@@ -25,7 +26,7 @@ fun SubmitButton(
     Button(
         onClick = onClick,
         enabled = enabled && !isLoading,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
             .navigationBarsPadding(),
@@ -50,6 +51,7 @@ fun SubmitButton(
 private fun SubmitButtonPreview() {
     LokaveloTheme {
         SubmitButton(
+            modifier = Modifier,
             enabled = true,
             onClick = {},
             isLoading = false,

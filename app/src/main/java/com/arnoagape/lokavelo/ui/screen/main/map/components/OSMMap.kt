@@ -27,6 +27,7 @@ import org.osmdroid.views.overlay.Polygon
 import androidx.core.graphics.toColorInt
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.screen.main.map.SearchFilters
+import com.google.firebase.auth.FirebaseAuth
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.views.CustomZoomButtonsController

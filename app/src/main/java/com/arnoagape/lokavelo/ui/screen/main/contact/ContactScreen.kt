@@ -3,6 +3,7 @@ package com.arnoagape.lokavelo.ui.screen.main.contact
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -113,6 +114,7 @@ fun ContactContent(
 
         bottomBar = {
             SubmitButton(
+                modifier = Modifier.imePadding(),
                 isLoading = false,
                 enabled = isSendEnabled,
                 onClick = onSendClick,

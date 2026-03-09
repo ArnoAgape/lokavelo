@@ -57,6 +57,8 @@ class ContactViewModel @Inject constructor(
         val bike = bike.value ?: return
         val renterId = auth.currentUser?.uid ?: return
 
+        if (bike.ownerId == renterId) return
+
         viewModelScope.launch {
 
             val conversation = conversationRepository.getOrCreateConversation(
@@ -72,7 +74,8 @@ class ContactViewModel @Inject constructor(
                 message = Message(
                     conversationId = conversation.id,
                     senderId = renterId,
-                    text = text
+                    text = text,
+                    createdAt = System.currentTimeMillis()
                 )
             )
 

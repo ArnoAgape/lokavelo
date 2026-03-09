@@ -1,6 +1,7 @@
 package com.arnoagape.lokavelo.data.repository
 
 import com.arnoagape.lokavelo.data.service.conversation.ConversationApi
+import com.arnoagape.lokavelo.domain.model.Conversation
 import com.arnoagape.lokavelo.domain.model.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -34,4 +35,7 @@ class ConversationRepository @Inject constructor(
 
     suspend fun sendMessage(conversationId: String, message: Message) =
         conversationApi.sendMessage(conversationId, message)
+
+    fun observeUserConversations(userId: String): Flow<List<Conversation>> =
+        conversationApi.observeUserConversations(userId)
 }

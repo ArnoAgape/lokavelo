@@ -50,6 +50,7 @@ import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.AddressLineField
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.firebase.auth.FirebaseAuth
 import org.osmdroid.util.GeoPoint
 import java.time.LocalDate
 
@@ -75,6 +76,14 @@ fun MapScreen(
     var showDatePicker by remember { mutableStateOf(false) }
     var recenterTrigger by remember { mutableStateOf(false) }
     var selectedBikeId by rememberSaveable { mutableStateOf<String?>(null) }
+
+    // Filters bikes
+    val auth = FirebaseAuth.getInstance()
+    val currentUserId = auth.currentUser?.uid
+
+    val visibleBikes = state.filteredBikes.filter {
+        it.ownerId != currentUserId
+    }
 
     val selectedBike = state.filteredBikes.find { it.id == selectedBikeId }
     val geoPoint = userLocation?.let {
@@ -197,10 +206,11 @@ fun MapScreen(
                 CircularProgressIndicator()
             }
         } else {
+
             // Carte
             OSMMap(
                 userLocation = geoPoint,
-                bikes = state.filteredBikes,
+                bikes = visibleBikes,
                 filters = state.filters,
                 recenterTrigger = recenterTrigger,
                 onRecenterHandled = { recenterTrigger = false },
