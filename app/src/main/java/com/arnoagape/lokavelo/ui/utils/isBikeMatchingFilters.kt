@@ -28,5 +28,15 @@ fun isBikeMatchingFilters(
         if (distanceKm > filters.maxDistanceKm) return false
     }
 
+    // 🚲 Catégorie
+    if (filters.bikeCategory != null) {
+        if (bike.category != filters.bikeCategory) return false
+    }
+
+    // ⚡ Électrique
+    if (filters.electricOnly != null) {
+        if (bike.electric != filters.electricOnly) return false
+    }
+
     return true
 }

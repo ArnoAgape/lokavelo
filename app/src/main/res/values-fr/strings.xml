@@ -58,8 +58,11 @@
     <string name="discount">Réduction : %1$d %%</string>
     <string name="deposit">Caution</string>
     <string name="deposit_amount">Montant de la caution (€)</string>
-    <string name="brand">Marque</string>
+    <string name="brand">Modèle</string>
+    <string name="motorization">Motorisation</string>
     <string name="electric_bike">Électrique ?</string>
+    <string name="electric">Électrique</string>
+    <string name="muscular">Musculaire</string>
     <string name="condition">État</string>
     <string name="size">Taille</string>
     <string name="category">Catégorie</string>
@@ -80,6 +83,7 @@
     <string name="city_address">Ville ou adresse</string>
     <string name="period">Période</string>
     <string name="recenter">Recentrer</string>
+    <string name="all">Tous</string>
 
     // SUCCESS
     <string name="success_user_updated">Infos mises à jour</string>

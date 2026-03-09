@@ -59,7 +59,10 @@
     <string name="deposit">Deposit</string>
     <string name="deposit_amount">Deposit amount (€)</string>
     <string name="brand">Brand</string>
+    <string name="motorization">Motorization</string>
     <string name="electric_bike">Electric?</string>
+    <string name="electric">Electric</string>
+    <string name="muscular">Muscular</string>
     <string name="condition">Condition</string>
     <string name="size">Size</string>
     <string name="category">Category</string>
@@ -80,6 +83,7 @@
     <string name="city_address">City or address</string>
     <string name="period">Period</string>
     <string name="recenter">Recenter</string>
+    <string name="all">All</string>
 
     // SUCCESS
     <string name="success_user_updated">Details updated successfully</string>

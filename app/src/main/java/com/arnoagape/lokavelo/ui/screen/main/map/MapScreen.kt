@@ -1,5 +1,6 @@
 package com.arnoagape.lokavelo.ui.screen.main.map
 
+import android.Manifest
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -49,6 +50,7 @@ import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.AddressLineField
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import org.osmdroid.util.GeoPoint
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -76,12 +78,12 @@ fun MapScreen(
 
     val selectedBike = state.filteredBikes.find { it.id == selectedBikeId }
     val geoPoint = userLocation?.let {
-        org.osmdroid.util.GeoPoint(it.latitude, it.longitude)
+        GeoPoint(it.latitude, it.longitude)
     }
 
     val locationPermissionState =
         rememberPermissionState(
-            android.Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION
         )
 
     LaunchedEffect(locationPermissionState.status) {
@@ -219,6 +221,12 @@ fun MapScreen(
                 onAddressClick = { showAddressSheet = true },
                 onDatesSelected = { start, end ->
                     viewModel.updateDates(start, end)
+                },
+                onCategorySelected = { category ->
+                    viewModel.updateBikeCategory(category)
+                },
+                onElectricSelected = { isElectric ->
+                    viewModel.updateElectricFilter(isElectric)
                 }
             )
 

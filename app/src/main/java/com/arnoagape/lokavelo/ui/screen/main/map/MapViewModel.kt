@@ -9,6 +9,7 @@ import com.arnoagape.lokavelo.data.repository.GeocodingRepository
 import com.arnoagape.lokavelo.data.repository.LocationRepository
 import com.arnoagape.lokavelo.domain.model.AddressSuggestion
 import com.arnoagape.lokavelo.domain.model.Bike
+import com.arnoagape.lokavelo.domain.model.BikeCategory
 import com.arnoagape.lokavelo.ui.utils.NetworkUtils
 import com.arnoagape.lokavelo.ui.utils.isBikeMatchingFilters
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -158,6 +159,18 @@ class MapViewModel @Inject constructor(
         )
     }
 
+    fun updateBikeCategory(category: BikeCategory?) {
+        _filters.value = _filters.value.copy(
+            bikeCategory = category
+        )
+    }
+
+    fun updateElectricFilter(isElectric: Boolean?) {
+        _filters.value = _filters.value.copy(
+            electricOnly = isElectric
+        )
+    }
+
     fun clearLocationFilter() {
         _filters.value = _filters.value.copy(
             center = null,
@@ -171,7 +184,9 @@ data class SearchFilters(
     val center: GeoPoint? = null,
     val maxDistanceKm: Double? = null,
     val startDate: LocalDate? = null,
-    val endDate: LocalDate? = null
+    val endDate: LocalDate? = null,
+    val bikeCategory: BikeCategory? = null,
+    val electricOnly: Boolean? = null
 )
 
 data class HomeScreenState(
