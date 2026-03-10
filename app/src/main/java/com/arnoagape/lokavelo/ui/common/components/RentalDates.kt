@@ -21,55 +21,98 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+enum class RentalDatesLayout {
+    Vertical,
+    Inline
+}
+
 @Composable
 fun RentalDates(
     start: LocalDate,
     end: LocalDate,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    layout: RentalDatesLayout = RentalDatesLayout.Vertical
 ) {
 
     val formatter = remember {
         DateTimeFormatter.ofPattern("d MMM", Locale.getDefault())
     }
 
-    Column(modifier) {
+    when (layout) {
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        RentalDatesLayout.Vertical -> {
 
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = null,
-                modifier = Modifier.size(14.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Column(modifier) {
 
-            Spacer(Modifier.width(6.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
 
-            Text(
-                text = start.format(formatter),
-                style = MaterialTheme.typography.bodySmall
-            )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(Modifier.width(6.dp))
+
+                    Text(
+                        text = start.format(formatter),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+
+                Spacer(Modifier.height(2.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(Modifier.width(6.dp))
+
+                    Text(
+                        text = end.format(formatter),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                }
+            }
         }
 
-        Spacer(Modifier.height(2.dp))
+        RentalDatesLayout.Inline -> {
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = modifier,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier.size(14.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(Modifier.width(6.dp))
-
-            Text(
-                text = end.format(formatter),
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.primary
+                Text(
+                    text = start.format(formatter),
+                    style = MaterialTheme.typography.bodySmall
                 )
-            )
+
+                Spacer(Modifier.width(6.dp))
+
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.size(12.dp)
+                )
+
+                Spacer(Modifier.width(6.dp))
+
+                Text(
+                    text = end.format(formatter),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                )
+            }
         }
     }
 }

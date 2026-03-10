@@ -86,6 +86,7 @@
     <string name="recenter">Recentrer</string>
     <string name="all">Tous</string>
     <string name="conversation">Conversation</string>
+    <string name="deleted_user">Utilisateur supprimé</string>
 
     // SUCCESS
     <string name="success_user_updated">Infos mises à jour</string>

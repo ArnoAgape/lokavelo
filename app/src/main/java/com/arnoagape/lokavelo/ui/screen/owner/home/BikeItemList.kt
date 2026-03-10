@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.arnoagape.lokavelo.R
@@ -211,13 +212,13 @@ fun StatusBadge(isRented: Boolean) {
 }
 
 @Composable
-fun BikeImage(bike: Bike) {
+fun BikeImage(bike: Bike, size: Dp = 90.dp) {
     if (LocalInspectionMode.current) {
         Image(
             painter = painterResource(R.drawable.pic_bike),
             contentDescription = bike.title,
             modifier = Modifier
-                .size(90.dp)
+                .size(size)
                 .clip(RoundedCornerShape(12.dp)),
             contentScale = ContentScale.Crop
         )
@@ -226,7 +227,7 @@ fun BikeImage(bike: Bike) {
             model = bike.photoUrls.firstOrNull() ?: R.drawable.pic_bike,
             contentDescription = bike.title,
             modifier = Modifier
-                .size(90.dp)
+                .size(size)
                 .clip(RoundedCornerShape(12.dp)),
             contentScale = ContentScale.Crop
         )

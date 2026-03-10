@@ -46,7 +46,7 @@ fun MainScreen(
         bottomBar = {
             if (!isKeyboardVisible) {
                 BottomBar(
-                    currentScreen = screenFromRoute(currentRoute) ?: Screen.Owner.HomeBike,
+                    currentScreen = screenFromRoute(currentRoute) ?: Screen.Main.Map,
                     onItemSelected = { screen ->
                         tabNavController.navigate(screen.route) {
                             popUpTo(tabNavController.graph.startDestinationId) {

@@ -23,14 +23,15 @@ import javax.inject.Inject
 class MessagingHomeViewModel @Inject constructor(
     conversationRepository: ConversationRepository,
     private val bikeRepository: BikeRepository,
-    auth: FirebaseAuth
+    private val auth: FirebaseAuth
 ) : ViewModel() {
 
-    private val userId = auth.currentUser?.uid ?: ""
+    private val currentUserId = auth.currentUser?.uid ?: ""
+    val currentUserName = auth.currentUser?.displayName
 
     val conversationsScreen: StateFlow<List<ConversationItemScreen>> =
         conversationRepository
-            .observeUserConversations(userId)
+            .observeUserConversations(currentUserId)
             .flatMapLatest { conversations ->
 
                 if (conversations.isEmpty())
@@ -46,9 +47,10 @@ class MessagingHomeViewModel @Inject constructor(
                                 ConversationItemScreen(
                                     conversation = conversation,
                                     bike = bike,
+                                    displayName = currentUserName,
                                     lastMessage = conversation.lastMessage,
                                     lastMessageTime = conversation.lastMessageTime,
-                                    isOwner = conversation.ownerId == userId
+                                    isOwner = conversation.ownerId == currentUserId
                                 )
                             }
                     }
@@ -64,6 +66,7 @@ class MessagingHomeViewModel @Inject constructor(
 data class ConversationItemScreen(
     val conversation: Conversation,
     val bike: Bike?,
+    val displayName: String?,
     val lastMessage: String,
     val lastMessageTime: Long,
     val isOwner: Boolean

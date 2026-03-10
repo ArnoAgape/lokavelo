@@ -56,7 +56,7 @@ import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Message
 import com.arnoagape.lokavelo.ui.preview.PreviewData
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
-import com.arnoagape.lokavelo.ui.utils.toDayLabel
+import com.arnoagape.lokavelo.ui.utils.toDayLabelYear
 import com.arnoagape.lokavelo.ui.utils.toHourMinute
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -138,7 +138,7 @@ fun MessagingDetailContent(
 
                 val showDateSeparator =
                     previousMessage == null ||
-                            previousMessage.createdAt.toDayLabel() != message.createdAt.toDayLabel()
+                            previousMessage.createdAt.toDayLabelYear() != message.createdAt.toDayLabelYear()
 
                 if (showDateSeparator) {
                     DaySeparator(message.createdAt)
@@ -268,7 +268,9 @@ fun MessageBubble(
     ) {
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
             horizontalArrangement =
                 if (isMine) Arrangement.End else Arrangement.Start
         ) {
@@ -325,7 +327,7 @@ fun DaySeparator(
         ) {
 
             Text(
-                text = timestamp.toDayLabel(),
+                text = timestamp.toDayLabelYear(),
                 modifier = Modifier.padding(
                     horizontal = 12.dp,
                     vertical = 4.dp

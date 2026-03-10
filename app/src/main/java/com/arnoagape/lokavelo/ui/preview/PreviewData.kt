@@ -1,8 +1,10 @@
 package com.arnoagape.lokavelo.ui.preview
 
+import android.R.attr.phoneNumber
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.domain.model.Conversation
 import com.arnoagape.lokavelo.domain.model.Message
+import com.arnoagape.lokavelo.domain.model.User
 
 object PreviewData {
 
@@ -21,6 +23,16 @@ object PreviewData {
         renterId = "user1",
         lastMessage = "Le vélo est dispo 👍",
         lastMessageTime = System.currentTimeMillis()
+    )
+
+    val user = User(
+        id = "user1",
+        displayName = "John Doe",
+        photoUrl = null,
+        phoneNumber = "0606060606",
+        email = "johndoe@mail.fr",
+        address = "1 avenue de la République",
+        bio = "J'aime manger bio"
     )
 
     val messages = listOf(

@@ -242,7 +242,9 @@ fun LokaveloApp() {
 
             MessagingDetailScreen(
                 conversationId = conversationId,
-                onBack = { navigateProtected(Screen.Messaging.Home.route) }
+                onBack = {
+                    navController.popBackStack()
+                }
             )
         }
 

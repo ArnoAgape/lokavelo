@@ -48,8 +48,8 @@ class FirebaseConversationApi : ConversationApi {
             bikeId = bikeId,
             ownerId = ownerId,
             renterId = renterId,
-            startDateMillis = startDate.toEpochDay(),
-            endDateMillis = endDate.toEpochDay(),
+            startDateEpochDay = startDate.toEpochDay(),
+            endDateEpochDay = endDate.toEpochDay(),
             participants = listOf(ownerId, renterId),
             createdAt = System.currentTimeMillis()
         )

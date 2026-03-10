@@ -86,6 +86,7 @@
     <string name="recenter">Recenter</string>
     <string name="all">All</string>
     <string name="conversation">Conversation</string>
+    <string name="deleted_user">Deleted user</string>
 
     // SUCCESS
     <string name="success_user_updated">Details updated successfully</string>

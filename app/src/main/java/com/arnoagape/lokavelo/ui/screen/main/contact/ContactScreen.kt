@@ -35,6 +35,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
+import com.arnoagape.lokavelo.ui.preview.PreviewData
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.SubmitButton
 import com.arnoagape.lokavelo.ui.screen.owner.home.BikeItemRow
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
@@ -179,16 +180,8 @@ fun ContactContent(
 private fun ContactContentPreview() {
     LokaveloTheme {
 
-        val bike = Bike(
-            id = "1",
-            title = "Origine Trail Explore",
-            ownerId = "owner",
-            priceInCents = 2500,
-            photoUrls = emptyList()
-        )
-
         ContactContent(
-            bike = bike,
+            bike = PreviewData.bike,
             startDate = LocalDate.now(),
             endDate = LocalDate.now().plusDays(3),
             message = "",
