@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -32,24 +33,30 @@ class DetailPublicBikeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(DetailPublicBikeState())
 
     val state: StateFlow<DetailPublicBikeState> =
-        _bikeId
-            .filterNotNull()
-            .flatMapLatest { id ->
-                bikeRepository.observeBike(id)
-                    .filterNotNull()
-                    .map { bike ->
-                        val owner = userRepository.getUser(bike.ownerId)
-                        DetailPublicBikeState(
-                            bike = bike,
-                            owner = owner,
-                            isLoading = false
-                        )
-                    }
-            }
+        combine(
+            _bikeId
+                .filterNotNull()
+                .flatMapLatest { id ->
+                    bikeRepository.observeBike(id)
+                        .filterNotNull()
+                        .map { bike ->
+                            val owner = userRepository.getUser(bike.ownerId)
+                            Pair(bike, owner)
+                        }
+                },
+            _uiState
+        ) { (bike, owner), uiState ->
+            uiState.copy(
+                bike = bike,
+                owner = owner,
+                isLoading = false
+            )
+        }
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000),
-                DetailPublicBikeState())
+                DetailPublicBikeState()
+            )
 
     fun setBikeId(id: String) {
         _bikeId.value = id
