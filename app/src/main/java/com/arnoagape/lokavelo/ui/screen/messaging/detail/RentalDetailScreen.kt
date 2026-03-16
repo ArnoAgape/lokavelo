@@ -2,6 +2,8 @@ package com.arnoagape.lokavelo.ui.screen.messaging.detail
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -51,7 +54,7 @@ fun OwnerRentalRequestBanner(
             Spacer(Modifier.height(8.dp))
 
             RentalDates(
-                textStyle = MaterialTheme.typography.titleMedium,
+                textStyle = MaterialTheme.typography.bodyMedium,
                 layout = RentalDatesLayout.Inline,
                 start = rental.startDate.toLocalDate(),
                 end = rental.endDate.toLocalDate()
@@ -60,6 +63,7 @@ fun OwnerRentalRequestBanner(
             Spacer(Modifier.height(4.dp))
 
             Text(
+                style = MaterialTheme.typography.bodyMedium,
                 text = stringResource(
                     R.string.rental_owner_receives,
                     rental.basePriceInCents.toPriceString()
@@ -68,17 +72,45 @@ fun OwnerRentalRequestBanner(
 
             Spacer(Modifier.height(12.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
 
-                Button(onClick = onAcceptClick) {
+                Button(
+                    contentPadding = PaddingValues(
+                        horizontal = 12.dp,
+                        vertical = 6.dp
+                    ),
+                    modifier = Modifier.weight(1f),
+                    onClick = onAcceptClick
+                ) {
                     Text(stringResource(R.string.accept))
                 }
 
-                OutlinedButton(onClick = onDeclineClick) {
+                Button(
+                    contentPadding = PaddingValues(
+                        horizontal = 12.dp,
+                        vertical = 6.dp
+                    ),
+                    modifier = Modifier.weight(1f),
+                    onClick = onDeclineClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                ) {
                     Text(stringResource(R.string.decline))
                 }
 
-                OutlinedButton(onClick = onMakeOfferClick) {
+                OutlinedButton(
+                    contentPadding = PaddingValues(
+                        horizontal = 12.dp,
+                        vertical = 6.dp
+                    ),
+                    modifier = Modifier.weight(1f),
+                    onClick = onMakeOfferClick
+                ) {
                     Text(stringResource(R.string.make_offer))
                 }
             }
@@ -91,38 +123,31 @@ fun RenterWaitingBanner(
     rental: Rental
 ) {
 
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp),
-        shape = RoundedCornerShape(16.dp),
-        tonalElevation = 2.dp
-    ) {
+    RentalBannerSurface {
 
-        Column(Modifier.padding(16.dp)) {
+        Text(
+            text = stringResource(R.string.rental_request_sent),
+            style = MaterialTheme.typography.titleMedium
+        )
 
-            Text(
-                text = stringResource(R.string.rental_request_sent),
-                style = MaterialTheme.typography.titleMedium
+        Spacer(Modifier.height(8.dp))
+
+        RentalDates(
+            textStyle = MaterialTheme.typography.bodyMedium,
+            layout = RentalDatesLayout.Inline,
+            start = rental.startDate.toLocalDate(),
+            end = rental.endDate.toLocalDate()
+        )
+
+        Spacer(Modifier.height(4.dp))
+
+        Text(
+            style = MaterialTheme.typography.bodyMedium,
+            text = stringResource(
+                R.string.rental_price,
+                rental.priceTotalInCents.toPriceString()
             )
-
-            Spacer(Modifier.height(8.dp))
-
-            RentalDates(
-                layout = RentalDatesLayout.Inline,
-                start = rental.startDate.toLocalDate(),
-                end = rental.endDate.toLocalDate()
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            Text(
-                text = stringResource(
-                    R.string.rental_price,
-                    rental.priceTotalInCents.toPriceString()
-                )
-            )
-        }
+        )
     }
 }
 
@@ -133,6 +158,88 @@ fun RenterCounterOfferBanner(
     onDeclineClick: () -> Unit
 ) {
 
+    RentalBannerSurface {
+
+        Text(
+            text = stringResource(R.string.rental_new_offer),
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        RentalDates(
+            textStyle = MaterialTheme.typography.bodyMedium,
+            layout = RentalDatesLayout.Inline,
+            start = rental.startDate.toLocalDate(),
+            end = rental.endDate.toLocalDate()
+        )
+
+        Spacer(Modifier.height(4.dp))
+
+        Text(
+            style = MaterialTheme.typography.bodyMedium,
+            text = stringResource(
+                R.string.rental_price_offered,
+                rental.priceTotalInCents.toPriceString()
+            )
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        RentalActionButtons(
+            onAcceptClick = onAcceptClick,
+            onDeclineClick = onDeclineClick
+        )
+    }
+}
+
+@Composable
+fun OwnerRentalRequestCompactBanner(
+    onAcceptClick: () -> Unit,
+    onDeclineClick: () -> Unit,
+    onMakeOfferClick: () -> Unit
+) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+
+        RentalActionButtons(
+            showOffer = true,
+            onAcceptClick = onAcceptClick,
+            onDeclineClick = onDeclineClick,
+            onMakeOfferClick = onMakeOfferClick
+        )
+    }
+}
+
+@Composable
+fun RenterCounterOfferCompactBanner(
+    onAcceptClick: () -> Unit,
+    onDeclineClick: () -> Unit
+) {
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+
+        RentalActionButtons(
+            onAcceptClick = onAcceptClick,
+            onDeclineClick = onDeclineClick
+        )
+    }
+}
+
+@Composable
+private fun RentalBannerSurface(
+    content: @Composable ColumnScope.() -> Unit
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -140,42 +247,53 @@ fun RenterCounterOfferBanner(
         shape = RoundedCornerShape(16.dp),
         tonalElevation = 2.dp
     ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            content = content
+        )
+    }
+}
 
-        Column(Modifier.padding(16.dp)) {
+@Composable
+private fun RentalActionButtons(
+    showOffer: Boolean = false,
+    onAcceptClick: () -> Unit,
+    onDeclineClick: () -> Unit,
+    onMakeOfferClick: (() -> Unit)? = null
+) {
 
-            Text(
-                text = stringResource(R.string.rental_new_offer),
-                style = MaterialTheme.typography.titleMedium
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+
+        Button(
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+            onClick = onAcceptClick
+        ) {
+            Text(stringResource(R.string.accept))
+        }
+
+        Button(
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+            onClick = onDeclineClick,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer
             )
+        ) {
+            Text(stringResource(R.string.decline))
+        }
 
-            Spacer(Modifier.height(8.dp))
-
-            RentalDates(
-                layout = RentalDatesLayout.Inline,
-                start = rental.startDate.toLocalDate(),
-                end = rental.endDate.toLocalDate()
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            Text(
-                text = stringResource(
-                    R.string.rental_price_offered,
-                    rental.priceTotalInCents.toPriceString()
-                )
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-
-                Button(onClick = onAcceptClick) {
-                    Text(stringResource(R.string.accept))
-                }
-
-                OutlinedButton(onClick = onDeclineClick) {
-                    Text(stringResource(R.string.decline))
-                }
+        if (showOffer && onMakeOfferClick != null) {
+            OutlinedButton(
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                onClick = onMakeOfferClick
+            ) {
+                Text(stringResource(R.string.make_offer))
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.arnoagape.lokavelo.ui.screen.messaging.detail
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -31,8 +32,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,6 +59,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -195,29 +198,53 @@ fun MessagingDetailContent(
 
             // -------- BANNER --------
 
-            when (rentalState) {
+            AnimatedContent(
+                targetState = imeVisible,
+                label = "rentalBanner"
+            ) { keyboardVisible ->
 
-                is RentalStateUi.OwnerRequest ->
-                    OwnerRentalRequestBanner(
-                        rental = rentalState.rental,
-                        onAcceptClick = { showAcceptDialog = true },
-                        onDeclineClick = { showDeclineDialog = true },
-                        onMakeOfferClick = { showOfferDialog = true }
-                    )
+                when (rentalState) {
 
-                is RentalStateUi.RenterWaiting ->
-                    RenterWaitingBanner(
-                        rental = rentalState.rental
-                    )
+                    is RentalStateUi.OwnerRequest ->
 
-                is RentalStateUi.RenterCounterOffer ->
-                    RenterCounterOfferBanner(
-                        rental = rentalState.rental,
-                        onAcceptClick = onAccept,
-                        onDeclineClick = onDecline
-                    )
+                        if (keyboardVisible) {
+                            OwnerRentalRequestCompactBanner(
+                                onAcceptClick = { showAcceptDialog = true },
+                                onDeclineClick = { showDeclineDialog = true },
+                                onMakeOfferClick = { showOfferDialog = true }
+                            )
+                        } else {
+                            OwnerRentalRequestBanner(
+                                rental = rentalState.rental,
+                                onAcceptClick = { showAcceptDialog = true },
+                                onDeclineClick = { showDeclineDialog = true },
+                                onMakeOfferClick = { showOfferDialog = true }
+                            )
+                        }
 
-                RentalStateUi.None -> Unit
+                    is RentalStateUi.RenterWaiting ->
+                        if (!keyboardVisible) {
+                            RenterWaitingBanner(
+                                rental = rentalState.rental
+                            )
+                        }
+
+                    is RentalStateUi.RenterCounterOffer ->
+                        if (keyboardVisible) {
+                            RenterCounterOfferCompactBanner(
+                                onAcceptClick = onAccept,
+                                onDeclineClick = onDecline
+                            )
+                        } else {
+                            RenterCounterOfferBanner(
+                                rental = rentalState.rental,
+                                onAcceptClick = onAccept,
+                                onDeclineClick = onDecline
+                            )
+                        }
+
+                    RentalStateUi.None -> Unit
+                }
             }
         }
     }
@@ -229,13 +256,25 @@ fun MessagingDetailContent(
         AlertDialog(
             onDismissRequest = { showAcceptDialog = false },
             confirmButton = {
-                Button(
+                TextButton(
                     onClick = {
                         onAccept()
                         showAcceptDialog = false
                     }
                 ) {
-                    Text(stringResource(R.string.accept))
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(Modifier.width(6.dp))
+
+                    Text(
+                        text = stringResource(R.string.accept),
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             },
             dismissButton = {
@@ -260,6 +299,14 @@ fun MessagingDetailContent(
                         showDeclineDialog = false
                     }
                 ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error
+                    )
+
+                    Spacer(Modifier.width(6.dp))
+
                     Text(
                         stringResource(R.string.decline),
                         color = MaterialTheme.colorScheme.error
@@ -289,7 +336,7 @@ fun MessagingDetailContent(
             onDismissRequest = { showOfferDialog = false },
 
             confirmButton = {
-                Button(
+                TextButton(
                     onClick = {
                         val offer = offerText.toDoubleOrNull()
 
