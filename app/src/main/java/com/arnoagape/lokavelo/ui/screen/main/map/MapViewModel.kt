@@ -23,24 +23,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.timeout
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -56,6 +52,7 @@ class MapViewModel @Inject constructor(
 
     private val _userLocation = MutableStateFlow<Location?>(null)
     val userLocation: StateFlow<Location?> = _userLocation.asStateFlow()
+    private val _networkError = MutableStateFlow(false)
 
     private val bikesFlow: Flow<List<Bike>> =
         bikeRepository.observePublicBikes()
@@ -142,18 +139,20 @@ class MapViewModel @Inject constructor(
 
     val state: StateFlow<HomeScreenState> =
         combine(
-            filteredBikes,
-            selectedDays,
-            _filters,
-            suggestions,
-            maxBikePrice
-        ) { bikes, days, filters, suggestions, maxPrice ->
+            combine(filteredBikes, selectedDays, _filters) { bikes, days, filters ->
+                Triple(bikes, days, filters)
+            },
+            combine(suggestions, maxBikePrice, _networkError) { suggestions, maxPrice, networkError ->
+                Triple(suggestions, maxPrice, networkError)
+            }
+        ) { (bikes, days, filters), (suggestions, maxPrice, networkError) ->
             HomeScreenState(
                 filteredBikes = bikes,
                 selectedDays = days,
                 filters = filters,
                 suggestions = suggestions,
-                maxBikePrice = maxPrice
+                maxBikePrice = maxPrice,
+                networkError = networkError
             )
         }.stateIn(
             viewModelScope,
@@ -169,6 +168,19 @@ class MapViewModel @Inject constructor(
         viewModelScope.launch {
             _userLocation.value = locationRepository.getLastLocation()
         }
+    }
+
+    fun onBikeCardClicked(): Boolean {
+        return if (!networkUtils.isNetworkAvailable()) {
+            _networkError.value = true
+            false
+        } else {
+            true
+        }
+    }
+
+    fun clearNetworkError() {
+        _networkError.value = false
     }
 
     fun updateAddressFromSuggestion(suggestion: AddressSuggestion) {
@@ -244,5 +256,6 @@ data class HomeScreenState(
     val filteredBikes: List<Bike> = emptyList(),
     val selectedDays: Long = 1L,
     val suggestions: List<AddressSuggestion> = emptyList(),
-    val maxBikePrice: Float = 200f
+    val maxBikePrice: Float = 100f,
+    val networkError: Boolean = false
 )

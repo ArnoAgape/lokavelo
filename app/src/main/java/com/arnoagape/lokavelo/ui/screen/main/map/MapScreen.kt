@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.common.components.DateRangePickerDialog
+import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
+import com.arnoagape.lokavelo.ui.common.components.ErrorType
 import com.arnoagape.lokavelo.ui.screen.main.map.components.BikePreviewCard
 import com.arnoagape.lokavelo.ui.screen.main.map.components.OSMMap
 import com.arnoagape.lokavelo.ui.screen.main.map.components.SearchBar
@@ -260,26 +262,30 @@ fun MapScreen(
 
         // Cadre velo
         selectedBike?.let { bike ->
-
             BikePreviewCard(
                 bike = bike,
                 filters = state.filters,
                 onBikeClick = {
-
-                    if (state.filters.startDate == null || state.filters.endDate == null) {
-                        pendingBikeId = bike.id
-                        showDatePicker = true
-                    } else {
-                        onBikeClick(
-                            bike.id,
-                            state.filters.startDate,
-                            state.filters.endDate
-                        )
+                    if (viewModel.onBikeCardClicked()) {
+                        if (state.filters.startDate == null || state.filters.endDate == null) {
+                            pendingBikeId = bike.id
+                            showDatePicker = true
+                        } else {
+                            onBikeClick(bike.id, state.filters.startDate, state.filters.endDate)
+                        }
                     }
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
+            )
+        }
+
+        // Erreur réseau
+        if (state.networkError) {
+            ErrorOverlay(
+                type = ErrorType.NETWORK,
+                onRetry = { viewModel.clearNetworkError() }
             )
         }
     }
