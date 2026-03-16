@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -32,10 +34,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.timeout
+import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -49,14 +54,8 @@ class MapViewModel @Inject constructor(
     private val _events = Channel<MapEvent>(Channel.BUFFERED)
     val eventsFlow = _events.receiveAsFlow()
 
-    val userLocation: StateFlow<Location?> =
-        flow {
-            emit(locationRepository.getLastLocation())
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            null
-        )
+    private val _userLocation = MutableStateFlow<Location?>(null)
+    val userLocation: StateFlow<Location?> = _userLocation.asStateFlow()
 
     private val bikesFlow: Flow<List<Bike>> =
         bikeRepository.observePublicBikes()
@@ -162,9 +161,19 @@ class MapViewModel @Inject constructor(
             HomeScreenState()
         )
 
+    init {
+        refreshLocation()
+    }
+
+    fun refreshLocation() {
+        viewModelScope.launch {
+            _userLocation.value = locationRepository.getLastLocation()
+        }
+    }
+
     fun updateAddressFromSuggestion(suggestion: AddressSuggestion) {
         _filters.value = _filters.value.copy(
-            addressQuery = null,   // important
+            addressQuery = null,
             center = GeoPoint(
                 suggestion.lat,
                 suggestion.lon
@@ -194,7 +203,12 @@ class MapViewModel @Inject constructor(
         )
     }
 
-    fun updateFilters(bikeSize: BikeSize?, accessories: Set<BikeEquipment>, minPrice: Float, maxPrice: Float) {
+    fun updateFilters(
+        bikeSize: BikeSize?,
+        accessories: Set<BikeEquipment>,
+        minPrice: Float,
+        maxPrice: Float
+    ) {
         _filters.value = _filters.value.copy(
             bikeSize = bikeSize,
             accessories = accessories,

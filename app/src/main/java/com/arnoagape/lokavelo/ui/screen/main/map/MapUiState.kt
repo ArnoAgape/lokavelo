@@ -7,7 +7,6 @@ import com.arnoagape.lokavelo.domain.model.Bike
 sealed class MapUiState {
 
     object Loading : MapUiState()
-    object Empty : MapUiState()
     data class Success(val bikes: List<Bike>) : MapUiState()
 
     sealed class Error : MapUiState() {

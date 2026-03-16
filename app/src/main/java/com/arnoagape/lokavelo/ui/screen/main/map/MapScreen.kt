@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -97,7 +96,7 @@ fun MapScreen(
 
     LaunchedEffect(locationPermissionState.status) {
         if (locationPermissionState.status.isGranted) {
-            viewModel.userLocation
+            viewModel.refreshLocation()
         } else {
             locationPermissionState.launchPermissionRequest()
         }
@@ -200,28 +199,20 @@ fun MapScreen(
 
     Box(Modifier.fillMaxSize()) {
 
-
-        if (userLocation == null) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+        // Carte
+        OSMMap(
+            userLocation = geoPoint,
+            bikes = visibleBikes,
+            filters = state.filters,
+            recenterTrigger = recenterTrigger,
+            onRecenterHandled = { recenterTrigger = false },
+            onBikeClicked = { bike ->
+                selectedBikeId = bike.id
+            },
+            onMapTapped = {
+                selectedBikeId = null
             }
-        } else {
-
-            // Carte
-            OSMMap(
-                userLocation = geoPoint,
-                bikes = visibleBikes,
-                filters = state.filters,
-                recenterTrigger = recenterTrigger,
-                onRecenterHandled = { recenterTrigger = false },
-                onBikeClicked = { bike ->
-                    selectedBikeId = bike.id
-                },
-                onMapTapped = {
-                    selectedBikeId = null
-                }
-            )
-        }
+        )
 
         // Barre + Dates
         Column {

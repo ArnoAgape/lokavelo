@@ -59,33 +59,36 @@ fun ErrorOverlay(
     onRetry: () -> Unit = {}
 ) {
 
-    val (message, images) = when (type) {
+    val (message, images, imageAfterText) = when (type) {
 
-        ErrorType.NETWORK -> Pair(
+        ErrorType.NETWORK -> Triple(
             stringResource(R.string.error_no_network),
-            listOf(R.drawable.ic_bike_no_wifi)
+            listOf(R.drawable.ic_bike_no_wifi),
+            false
         )
 
-        ErrorType.EMPTY_BIKES -> Pair(
+        ErrorType.EMPTY_BIKES -> Triple(
             stringResource(R.string.no_bike),
-            listOf(
-                R.drawable.ic_bike_add_bike_arrow
-            )
+            listOf(R.drawable.ic_bike_add_bike_arrow),
+            true
         )
 
-        ErrorType.EMPTY_MESSAGES -> Pair(
+        ErrorType.EMPTY_MESSAGES -> Triple(
             stringResource(R.string.empty_messaging),
-            listOf(R.drawable.ic_bike_no_message)
+            listOf(R.drawable.ic_bike_no_message),
+            false
         )
 
-        ErrorType.EMPTY_RENTALS -> Pair(
+        ErrorType.EMPTY_RENTALS -> Triple(
             stringResource(R.string.empty_messaging),
-            listOf(R.drawable.ic_bike_no_message)
+            listOf(R.drawable.ic_bike_no_message),
+            false
         )
 
-        ErrorType.GENERIC -> Pair(
+        ErrorType.GENERIC -> Triple(
             stringResource(R.string.error_generic),
-            listOf(R.drawable.ic_bike_broken)
+            listOf(R.drawable.ic_bike_broken),
+            false
         )
     }
 
@@ -99,7 +102,17 @@ fun ErrorOverlay(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            images.forEachIndexed { index, imageRes ->
+            if (imageAfterText) {
+
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(Modifier.height(24.dp))
+            }
+
+            images.forEach { imageRes ->
 
                 Image(
                     painter = painterResource(imageRes),
@@ -108,15 +121,16 @@ fun ErrorOverlay(
                 )
 
                 Spacer(Modifier.height(24.dp))
+            }
 
-                if (index == 0) {
-                    Text(
-                        text = message,
-                        style = MaterialTheme.typography.titleMedium
-                    )
+            if (!imageAfterText) {
 
-                    Spacer(Modifier.height(24.dp))
-                }
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Spacer(Modifier.height(24.dp))
             }
 
             if (

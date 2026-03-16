@@ -27,6 +27,7 @@ import org.osmdroid.views.overlay.Polygon
 import androidx.core.graphics.toColorInt
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.screen.main.map.SearchFilters
+import com.google.android.datatransport.runtime.scheduling.persistence.EventStoreModule_PackageNameFactory.packageName
 import com.google.firebase.auth.FirebaseAuth
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.XYTileSource
@@ -73,13 +74,13 @@ fun OSMMap(
             modifier = Modifier.fillMaxSize(),
             factory = { context ->
 
-                Configuration.getInstance().userAgentValue = context.packageName
-                Configuration.getInstance().load(
-                    context,
-                    PreferenceManager.getDefaultSharedPreferences(context)
-                )
-
                 MapView(context).apply {
+
+                    Configuration.getInstance().userAgentValue = context.packageName
+                    Configuration.getInstance().load(
+                        context,
+                        PreferenceManager.getDefaultSharedPreferences(context)
+                    )
 
                     layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -91,12 +92,11 @@ fun OSMMap(
                     )
 
                     setTileSource(tileSource)
+                    setUseDataConnection(true)
                     setMultiTouchControls(true)
 
                     controller.setZoom(14.0)
-                    controller.setCenter(
-                        userLocation ?: GeoPoint(43.2965, 5.3698)
-                    )
+                    controller.setCenter(GeoPoint(43.2965, 5.3698))
 
                     val mapEventsReceiver = object : MapEventsReceiver {
 
