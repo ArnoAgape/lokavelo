@@ -3,6 +3,7 @@ package com.arnoagape.lokavelo.ui.utils
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
+import java.util.Currency
 import java.util.Locale
 
 private const val CENTS_IN_EURO = 100
@@ -26,8 +27,9 @@ fun Long.toEuroString(): String {
 
 fun Long.toPriceString(): String {
     val formatter = NumberFormat
-        .getNumberInstance(Locale.FRANCE)
+        .getCurrencyInstance(Locale.getDefault())
         .apply {
+            currency = Currency.getInstance("EUR")
             minimumFractionDigits = 0
             maximumFractionDigits = 2
         }

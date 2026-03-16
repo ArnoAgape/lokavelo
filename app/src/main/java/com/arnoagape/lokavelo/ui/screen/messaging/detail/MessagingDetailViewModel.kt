@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arnoagape.lokavelo.data.repository.BikeRepository
 import com.arnoagape.lokavelo.data.repository.ConversationRepository
+import com.arnoagape.lokavelo.data.repository.RentalRepository
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.domain.model.Conversation
 import com.arnoagape.lokavelo.domain.model.Message
+import com.arnoagape.lokavelo.domain.model.Rental
+import com.arnoagape.lokavelo.domain.model.RentalStatus
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MessagingDetailViewModel @Inject constructor(
     private val conversationRepository: ConversationRepository,
+    private val rentalRepository: RentalRepository,
     private val bikeRepository: BikeRepository,
     private val auth: FirebaseAuth
 ) : ViewModel() {
@@ -83,6 +87,77 @@ class MessagingDetailViewModel @Inject constructor(
             emptyList()
         )
 
+    val rental: StateFlow<Rental?> =
+        _conversationId
+            .filterNotNull()
+            .flatMapLatest { rentalRepository.observeRental(it) }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                null
+            )
+
+    val rentalState: StateFlow<RentalStateUi> =
+        rental
+            .map { rental ->
+
+                if (rental == null) return@map RentalStateUi.None
+
+                val isOwner = rental.ownerId == currentUserId
+
+                when {
+
+                    rental.status == RentalStatus.PENDING && isOwner ->
+                        RentalStateUi.OwnerRequest(rental)
+
+                    rental.status == RentalStatus.PENDING && !isOwner ->
+                        RentalStateUi.RenterWaiting(rental)
+
+                    rental.status == RentalStatus.COUNTER_OFFER && !isOwner ->
+                        RentalStateUi.RenterCounterOffer(rental)
+
+                    else -> RentalStateUi.None
+                }
+            }
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                RentalStateUi.None
+            )
+
+    fun acceptRental() {
+
+        val id = rental.value?.id ?: return
+
+        viewModelScope.launch {
+            rentalRepository.updateRentalStatus(
+                id,
+                RentalStatus.ACCEPTED
+            )
+        }
+    }
+
+    fun declineRental() {
+
+        val id = rental.value?.id ?: return
+
+        viewModelScope.launch {
+            rentalRepository.updateRentalStatus(
+                id,
+                RentalStatus.DECLINED
+            )
+        }
+    }
+
+    fun makeOffer(priceInCents: Long) {
+        viewModelScope.launch {
+            rentalRepository.makeOffer(
+                rentalId = rental.value!!.id,
+                newPrice = priceInCents
+            )
+        }
+    }
+
     fun setConversationId(id: String) {
         _conversationId.value = id
     }
@@ -91,6 +166,8 @@ class MessagingDetailViewModel @Inject constructor(
 
         val conversationId = _conversationId.value ?: return
         val senderId = auth.currentUser?.uid ?: return
+        val receiverId = conversation.value?.participants
+            ?.firstOrNull { it != senderId } ?: return
 
         viewModelScope.launch {
 
@@ -101,7 +178,8 @@ class MessagingDetailViewModel @Inject constructor(
                     senderId = senderId,
                     text = text,
                     createdAt = System.currentTimeMillis()
-                )
+                ),
+                receiverId = receiverId
             )
         }
     }

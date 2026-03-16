@@ -31,6 +31,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +41,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -56,6 +59,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -76,6 +80,7 @@ fun MessagingDetailScreen(
 
     val viewModel: MessagingDetailViewModel = hiltViewModel()
     val messages by viewModel.messages.collectAsStateWithLifecycle()
+    val rentalState by viewModel.rentalState.collectAsStateWithLifecycle()
     val otherUserName by viewModel.otherUserName.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
 
@@ -85,7 +90,7 @@ fun MessagingDetailScreen(
         viewModel.setConversationActive(conversationId)
     }
 
-    // ⭐ Auto scroll au dernier message
+    // Auto scroll au dernier message
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.lastIndex)
@@ -102,6 +107,10 @@ fun MessagingDetailScreen(
         messages = messages,
         currentUserId = viewModel.currentUserId,
         otherUserName = otherUserName,
+        rentalState = rentalState,
+        onAccept = { viewModel.acceptRental() },
+        onDecline = { viewModel.declineRental() },
+        onOffer = { viewModel.makeOffer(it) },
         listState = listState,
         onSend = { viewModel.sendMessage(it) },
         onBack = onBack
@@ -114,12 +123,20 @@ fun MessagingDetailContent(
     messages: List<Message>,
     otherUserName: String?,
     currentUserId: String?,
+    rentalState: RentalStateUi,
+    onAccept: () -> Unit,
+    onDecline: () -> Unit,
+    onOffer: (Long) -> Unit,
     listState: LazyListState,
     onSend: (String) -> Unit,
     onBack: () -> Unit
 ) {
 
     val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+
+    var showAcceptDialog by remember { mutableStateOf(false) }
+    var showDeclineDialog by remember { mutableStateOf(false) }
+    var showOfferDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(imeVisible, messages.size) {
         if (imeVisible && messages.isNotEmpty()) {
@@ -128,54 +145,190 @@ fun MessagingDetailContent(
     }
 
     Scaffold(
-
         topBar = {
             MessagingTopBar(
                 displayName = otherUserName,
                 onBack = onBack
             )
         },
-
         bottomBar = {
-            MessageInputBar(
-                onSend = onSend
-            )
+            MessageInputBar(onSend = onSend)
         }
-
     ) { padding ->
 
-        LazyColumn(
-            state = listState,
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+                .padding(padding)
         ) {
 
-            itemsIndexed(
-                items = messages,
-                key = { _, message -> message.id }
-            ) { index, message ->
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
 
-                val previousMessage = messages.getOrNull(index - 1)
+                itemsIndexed(
+                    items = messages,
+                    key = { _, message -> message.id }
+                ) { index, message ->
 
-                val showDateSeparator =
-                    previousMessage == null ||
-                            previousMessage.createdAt.toDayLabelYear() != message.createdAt.toDayLabelYear()
+                    val previousMessage = messages.getOrNull(index - 1)
 
-                if (showDateSeparator) {
-                    DaySeparator(message.createdAt)
+                    val showDateSeparator =
+                        previousMessage == null ||
+                                previousMessage.createdAt.toDayLabelYear() != message.createdAt.toDayLabelYear()
+
+                    if (showDateSeparator) {
+                        DaySeparator(message.createdAt)
+                    }
+
+                    val previousSender = previousMessage?.senderId
+
+                    MessageBubble(
+                        message = message,
+                        isMine = message.senderId == currentUserId,
+                        isGrouped = previousSender == message.senderId
+                    )
                 }
+            }
 
-                val previousSender = previousMessage?.senderId
+            // -------- BANNER --------
 
-                MessageBubble(
-                    message = message,
-                    isMine = message.senderId == currentUserId,
-                    isGrouped = previousSender == message.senderId
-                )
+            when (rentalState) {
+
+                is RentalStateUi.OwnerRequest ->
+                    OwnerRentalRequestBanner(
+                        rental = rentalState.rental,
+                        onAcceptClick = { showAcceptDialog = true },
+                        onDeclineClick = { showDeclineDialog = true },
+                        onMakeOfferClick = { showOfferDialog = true }
+                    )
+
+                is RentalStateUi.RenterWaiting ->
+                    RenterWaitingBanner(
+                        rental = rentalState.rental
+                    )
+
+                is RentalStateUi.RenterCounterOffer ->
+                    RenterCounterOfferBanner(
+                        rental = rentalState.rental,
+                        onAcceptClick = onAccept,
+                        onDeclineClick = onDecline
+                    )
+
+                RentalStateUi.None -> Unit
             }
         }
+    }
+
+    // ---------------- ACCEPT
+
+    if (showAcceptDialog) {
+
+        AlertDialog(
+            onDismissRequest = { showAcceptDialog = false },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onAccept()
+                        showAcceptDialog = false
+                    }
+                ) {
+                    Text(stringResource(R.string.accept))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showAcceptDialog = false }
+                ) { Text(stringResource(R.string.cancel)) }
+            },
+            title = { Text(stringResource(R.string.confirm_accept_rental)) }
+        )
+    }
+
+    // ---------------- DECLINE
+
+    if (showDeclineDialog) {
+
+        AlertDialog(
+            onDismissRequest = { showDeclineDialog = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDecline()
+                        showDeclineDialog = false
+                    }
+                ) {
+                    Text(
+                        stringResource(R.string.decline),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDeclineDialog = false }
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+            title = {
+                Text(stringResource(R.string.confirm_decline_rental))
+            }
+        )
+    }
+
+    // ---------------- MAKE OFFER
+
+    if (showOfferDialog) {
+
+        var offerText by remember { mutableStateOf("") }
+
+        AlertDialog(
+            onDismissRequest = { showOfferDialog = false },
+
+            confirmButton = {
+                Button(
+                    onClick = {
+                        val offer = offerText.toDoubleOrNull()
+
+                        if (offer != null) {
+                            onOffer((offer * 100).toLong())
+                        }
+                    }
+                ) {
+                    Text(stringResource(R.string.validate))
+                }
+            },
+
+            dismissButton = {
+                TextButton(
+                    onClick = { showOfferDialog = false }
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+
+            title = {
+                Text(stringResource(R.string.make_offer))
+            },
+
+            text = {
+
+                OutlinedTextField(
+                    value = offerText,
+                    onValueChange = { offerText = it },
+                    label = {
+                        Text(stringResource(R.string.offer_amount))
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal
+                    ),
+                    singleLine = true
+                )
+            }
+        )
     }
 }
 
@@ -394,7 +547,11 @@ private fun MessagingContentPreview() {
             listState = rememberLazyListState(),
             onSend = {},
             onBack = {},
-            otherUserName = "Arno"
+            otherUserName = "Arno",
+            rentalState = RentalStateUi.OwnerRequest(PreviewData.rental),
+            onAccept = {},
+            onDecline = {},
+            onOffer = {}
         )
     }
 }

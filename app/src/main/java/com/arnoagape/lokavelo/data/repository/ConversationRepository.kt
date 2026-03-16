@@ -39,8 +39,8 @@ class ConversationRepository @Inject constructor(
     fun observeMessages(conversationId: String): Flow<List<Message>> =
         conversationApi.observeMessages(conversationId)
 
-    suspend fun sendMessage(conversationId: String, message: Message) =
-        conversationApi.sendMessage(conversationId, message)
+    suspend fun sendMessage(conversationId: String, message: Message, receiverId: String) =
+        conversationApi.sendMessage(conversationId, message, receiverId)
 
     fun observeUserConversations(userId: String): Flow<List<Conversation>> =
         conversationApi.observeUserConversations(userId)

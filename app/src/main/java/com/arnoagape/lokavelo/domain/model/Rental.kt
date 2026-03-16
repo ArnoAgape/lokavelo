@@ -10,6 +10,8 @@ data class Rental(
     val startDate: Instant = Instant.now(),
     val endDate: Instant = Instant.now(),
     val priceTotalInCents: Long = 0,
+    val basePriceInCents: Long = 0,
+    val serviceFeeInCents: Long = 0,
     val depositInCents: Long? = null,
     val status: RentalStatus = RentalStatus.PENDING,
     val createdAt: Instant = Instant.now()

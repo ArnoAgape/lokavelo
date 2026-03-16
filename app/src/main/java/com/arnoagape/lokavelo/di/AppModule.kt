@@ -37,5 +37,5 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideRentalApi(firebaseRentalApi: FirebaseRentalApi): RentalApi = firebaseRentalApi
+    fun provideRentalApi(): RentalApi = FirebaseRentalApi()
 }

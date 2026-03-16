@@ -5,13 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.data.repository.BikeRepository
 import com.arnoagape.lokavelo.data.repository.ConversationRepository
+import com.arnoagape.lokavelo.data.repository.RentalRepository
 import com.arnoagape.lokavelo.data.repository.UserRepository
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.domain.model.Conversation
 import com.arnoagape.lokavelo.domain.model.Message
+import com.arnoagape.lokavelo.domain.model.Rental
+import com.arnoagape.lokavelo.domain.model.RentalStatus
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.utils.NetworkUtils
-import com.google.firebase.auth.FirebaseAuth
+import com.arnoagape.lokavelo.ui.utils.calculateRentalPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -21,11 +24,14 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -33,23 +39,14 @@ import javax.inject.Inject
 class ContactViewModel @Inject constructor(
     private val bikeRepository: BikeRepository,
     private val conversationRepository: ConversationRepository,
-    userRepository: UserRepository,
-    private val auth: FirebaseAuth,
+    private val rentalRepository: RentalRepository,
+    private val userRepository: UserRepository,
     private val networkUtils: NetworkUtils
 ) : ViewModel() {
 
     private val _events = Channel<Event>(Channel.BUFFERED)
     val eventsFlow = _events.receiveAsFlow()
     private val _bikeId = MutableStateFlow<String?>(null)
-    private val currentUserId = requireNotNull(auth.currentUser?.uid)
-
-    val currentUser =
-        userRepository.observeUser(currentUserId)
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                null
-            )
     private val _conversationId = MutableStateFlow<String?>(null)
 
     val conversation: StateFlow<Conversation?> =
@@ -89,6 +86,8 @@ class ContactViewModel @Inject constructor(
 
         viewModelScope.launch {
 
+            if (text.isBlank()) return@launch
+
             if (!networkUtils.isNetworkAvailable()) {
                 _events.send(
                     Event.ShowMessage(R.string.error_no_network)
@@ -97,29 +96,60 @@ class ContactViewModel @Inject constructor(
             }
 
             val bike = bike.value ?: return@launch
-            val renterId = auth.currentUser?.uid ?: return@launch
-            val renterName = currentUser.value?.displayName ?: "Utilisateur"
+            val renter = userRepository.observeCurrentUser().first() ?: return@launch
 
-            if (bike.ownerId == renterId) return@launch
+            if (bike.ownerId == renter.id) return@launch
 
             val conversation = conversationRepository.getOrCreateConversation(
                 bikeId = bike.id,
                 ownerId = bike.ownerId,
                 ownerName = bike.ownerName,
-                renterId = renterId,
-                renterName = renterName,
+                renterId = renter.id,
+                renterName = renter.displayName ?: "Utilisateur",
                 startDate = startDate,
                 endDate = endDate
+            )
+
+            val days = maxOf(
+                1,
+                ChronoUnit.DAYS.between(startDate, endDate).toInt()
+            )
+            val basePrice = calculateRentalPrice(
+                dayPrice = bike.priceInCents,
+                twoDaysPrice = bike.priceTwoDaysInCents,
+                weekPrice = bike.priceWeekInCents,
+                monthPrice = bike.priceMonthInCents,
+                days = days
+            )
+
+            val serviceFee = (basePrice * 0.10).toLong()
+
+            val totalPrice = basePrice + serviceFee
+
+            rentalRepository.createRental(
+                Rental(
+                    id = conversation.id,
+                    bikeId = bike.id,
+                    ownerId = bike.ownerId,
+                    renterId = renter.id,
+                    startDate = startDate.atStartOfDay().toInstant(ZoneOffset.UTC),
+                    endDate = endDate.atStartOfDay().toInstant(ZoneOffset.UTC),
+                    basePriceInCents = basePrice,
+                    serviceFeeInCents = serviceFee,
+                    priceTotalInCents = totalPrice,
+                    status = RentalStatus.PENDING
+                )
             )
 
             conversationRepository.sendMessage(
                 conversationId = conversation.id,
                 message = Message(
                     conversationId = conversation.id,
-                    senderId = renterId,
+                    senderId = renter.id,
                     text = text,
                     createdAt = System.currentTimeMillis()
-                )
+                ),
+                receiverId = bike.ownerId
             )
 
             _openConversation.emit(conversation.id)

@@ -92,6 +92,17 @@
     <string name="filters">Filters</string>
     <string name="reset">Reset</string>
     <string name="apply">Apply</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+    <string name="make_offer">Offer</string>
+    <string name="offer_amount">Montant proposé (€)</string>
+    <string name="rental_request">Rental request</string>
+    <string name="rental_owner_receives">You would receive %1$s</string>
+    <string name="rental_price">Rental price %1$s</string>
+    <string name="rental_you_receive">You will receive %1$s</string>
+    <string name="rental_new_offer">A new offer has been proposed</string>
+    <string name="rental_price_offered">Offered price %1$s</string>
+    <string name="rental_request_sent">Rental request sent</string>
 
     // SUCCESS
     <string name="success_user_updated">Details updated successfully</string>
@@ -165,6 +176,10 @@
         You’re about to delete your account. An email will be sent to confirm the deletion. Continue?</string>
     <string name="unsaved_changes">Leave this screen?</string>
     <string name="confirm_unsaved_changes">You have unsaved changes. Are you sure you want to leave this page?</string>
+    <string name="confirm_accept_rental">Accept this rental?</string>
+    <string name="confirm_accept_rental_message">Do you want to accept this rental request?</string>
+    <string name="confirm_decline_rental">Decline this rental?</string>
+    <string name="confirm_decline_rental_message">Do you want to decline this rental request?</string>
 
     // CONTENT_DESCRIPTION
     <string name="cd_remove">Click here to erase</string>
@@ -187,6 +202,7 @@
 
     // RENTAL STATUS
     <string name="rental_status_pending">Pending</string>
+    <string name="rental_status_counter_offer">New offer</string>
     <string name="rental_status_accepted">Accepted</string>
     <string name="rental_status_declined">Declined</string>
     <string name="rental_status_cancelled">Cancelled</string>

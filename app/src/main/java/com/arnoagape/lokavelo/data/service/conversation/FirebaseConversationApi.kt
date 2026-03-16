@@ -45,6 +45,7 @@ class FirebaseConversationApi : ConversationApi {
                 ?: error("Conversation mapping failed")
         }
 
+        val now = System.currentTimeMillis()
 
         val conversation = Conversation(
             id = conversationId,
@@ -56,7 +57,8 @@ class FirebaseConversationApi : ConversationApi {
             startDateEpochDay = startDate.toEpochDay(),
             endDateEpochDay = endDate.toEpochDay(),
             participants = listOf(ownerId, renterId),
-            createdAt = System.currentTimeMillis()
+            createdAt = System.currentTimeMillis(),
+            lastMessageTime = now
         )
 
         ref.set(conversation).await()
@@ -69,7 +71,20 @@ class FirebaseConversationApi : ConversationApi {
             .collection("conversations")
             .document(conversationId)
             .snapshots()
-            .map { it.toObject(Conversation::class.java) }
+            .map { snapshot ->
+
+                val conversation =
+                    snapshot.toObject(Conversation::class.java)
+                        ?: return@map null
+
+                val unreadMap = snapshot.data?.extractUnreadMap() ?: emptyMap()
+
+                conversation.copy(
+                    id = snapshot.id,
+                    unreadCount = unreadMap
+                )
+            }
+            .catch { emit(null) }
     }
 
     override fun observeMessages(conversationId: String): Flow<List<Message>> {
@@ -88,7 +103,8 @@ class FirebaseConversationApi : ConversationApi {
 
     override suspend fun sendMessage(
         conversationId: String,
-        message: Message
+        message: Message,
+        receiverId: String
     ) {
 
         val conversationRef =
@@ -100,12 +116,6 @@ class FirebaseConversationApi : ConversationApi {
                 .document()
 
         val msg = message.copy(id = messageRef.id)
-
-        val conversationSnapshot = conversationRef.get().await()
-        val conversation = conversationSnapshot.toObject(Conversation::class.java)
-            ?: error("Conversation not found")
-
-        val receiverId = conversation.participants.firstOrNull { it != msg.senderId } ?: return
 
         firestore.runBatch { batch ->
 
@@ -130,7 +140,20 @@ class FirebaseConversationApi : ConversationApi {
             .whereArrayContains("participants", userId)
             .orderBy("lastMessageTime", Query.Direction.DESCENDING)
             .snapshots()
-            .map { it.toObjects(Conversation::class.java) }
+            .map { snapshot ->
+                snapshot.documents.mapNotNull { doc ->
+
+                    val conversation = doc.toObject(Conversation::class.java)
+                        ?: return@mapNotNull null
+
+                    val unreadMap = doc.data?.extractUnreadMap() ?: emptyMap()
+
+                    conversation.copy(
+                        id = doc.id,
+                        unreadCount = unreadMap
+                    )
+                }
+            }
     }
 
     override fun observeUnreadCount(userId: String): Flow<Int> {
@@ -165,3 +188,8 @@ class FirebaseConversationApi : ConversationApi {
                 .update("activeConversationId", FieldValue.delete())
     }
 }
+
+private fun Map<String, Any>.extractUnreadMap(): Map<String, Int> =
+    filterKeys { it.startsWith("unread_") }
+        .mapKeys { it.key.removePrefix("unread_") }
+        .mapValues { (_, value) -> (value as? Number)?.toInt() ?: 0 }

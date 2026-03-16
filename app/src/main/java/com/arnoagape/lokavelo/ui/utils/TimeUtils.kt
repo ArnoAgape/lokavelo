@@ -35,3 +35,6 @@ fun Instant.toDateString(): String {
 
     return formatter.format(this)
 }
+
+fun Instant.toLocalDate(): LocalDate =
+    atZone(ZoneId.systemDefault()).toLocalDate()

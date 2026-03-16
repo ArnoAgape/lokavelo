@@ -1,10 +1,12 @@
 package com.arnoagape.lokavelo.ui.preview
 
-import android.R.attr.phoneNumber
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.domain.model.Conversation
 import com.arnoagape.lokavelo.domain.model.Message
+import com.arnoagape.lokavelo.domain.model.Rental
+import com.arnoagape.lokavelo.domain.model.RentalStatus
 import com.arnoagape.lokavelo.domain.model.User
+import java.time.Instant
 
 object PreviewData {
 
@@ -54,5 +56,20 @@ object PreviewData {
             text = "Super ! Je peux venir demain ?",
             createdAt = 3
         )
+    )
+
+    val rental = Rental(
+        id = "rental1",
+        bikeId = "bike1",
+        ownerId = "owner1",
+        renterId = "user1",
+        startDate = Instant.parse("2026-06-12T10:00:00Z"),
+        endDate = Instant.parse("2026-06-15T10:00:00Z"),
+        priceTotalInCents = 7550,
+        basePriceInCents = 5000,
+        serviceFeeInCents = 10,
+        depositInCents = 20000,
+        status = RentalStatus.PENDING,
+        createdAt = Instant.now()
     )
 }

@@ -5,6 +5,7 @@ import com.arnoagape.lokavelo.R
 
 enum class RentalStatus {
     PENDING,
+    COUNTER_OFFER,
     ACCEPTED,
     DECLINED,
     CANCELLED,
@@ -16,6 +17,7 @@ enum class RentalStatus {
 fun RentalStatus.labelRes(): Int =
     when (this) {
         RentalStatus.PENDING -> R.string.rental_status_pending
+        RentalStatus.COUNTER_OFFER -> R.string.rental_status_counter_offer
         RentalStatus.ACCEPTED -> R.string.rental_status_accepted
         RentalStatus.DECLINED -> R.string.rental_status_declined
         RentalStatus.CANCELLED -> R.string.rental_status_cancelled

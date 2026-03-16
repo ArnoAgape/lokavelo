@@ -92,6 +92,17 @@
     <string name="filters">Filtres</string>
     <string name="reset">Réinitialiser</string>
     <string name="apply">Appliquer</string>
+    <string name="accept">Accepter</string>
+    <string name="decline">Refuser</string>
+    <string name="make_offer">Offre</string>
+    <string name="offer_amount">Montant proposé (€)</string>
+    <string name="rental_request">Demande de location</string>
+    <string name="rental_owner_receives">Vous recevrez %1$s</string>
+    <string name="rental_price">Prix de location %1$s</string>
+    <string name="rental_you_receive">Tu recevras %1$s</string>
+    <string name="rental_new_offer">Nouvelle offre proposée</string>
+    <string name="rental_price_offered">Prix proposé %1$s</string>
+    <string name="rental_request_sent">Offre envoyée</string>
 
     // SUCCESS
     <string name="success_user_updated">Infos mises à jour</string>
@@ -163,6 +174,10 @@
     <string name="unsaved_changes">Quitter l’écran ?</string>
     <string name="confirm_unsaved_changes">Si tu quittes maintenant, tes modifications seront perdues.
         Souhaites-tu continuer ?</string>
+    <string name="confirm_accept_rental">Accepter la location ?</string>
+    <string name="confirm_accept_rental_message">Veux-tu accepter cette demande de location ?</string>
+    <string name="confirm_decline_rental">Refuser la location ?</string>
+    <string name="confirm_decline_rental_message">Veux-tu refuser cette demande de location ?</string>
 
     // CONTENT_DESCRIPTION
     <string name="cd_remove">Clique ici pour effacer</string>
@@ -185,6 +200,7 @@
 
     // RENTAL STATUS
     <string name="rental_status_pending">En attente</string>
+    <string name="rental_status_counter_offer">Nouvelle offre</string>
     <string name="rental_status_accepted">Acceptée</string>
     <string name="rental_status_declined">Refusée</string>
     <string name="rental_status_cancelled">Annulée</string>

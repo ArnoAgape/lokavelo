@@ -217,6 +217,7 @@ fun RentalStatusBadge(status: RentalStatus) {
 
     val backgroundColor = when (status) {
         RentalStatus.PENDING -> MaterialTheme.colorScheme.tertiaryContainer
+        RentalStatus.COUNTER_OFFER -> MaterialTheme.colorScheme.tertiaryContainer
         RentalStatus.ACCEPTED -> lightBlue
         RentalStatus.ACTIVE -> lightBlue
         RentalStatus.COMPLETED -> lightGreen
@@ -226,6 +227,7 @@ fun RentalStatusBadge(status: RentalStatus) {
 
     val textColor = when (status) {
         RentalStatus.PENDING -> MaterialTheme.colorScheme.onTertiaryContainer
+        RentalStatus.COUNTER_OFFER -> MaterialTheme.colorScheme.onTertiaryContainer
         RentalStatus.ACCEPTED -> lightBlueText
         RentalStatus.ACTIVE -> lightBlueText
         RentalStatus.COMPLETED -> lightGreenText

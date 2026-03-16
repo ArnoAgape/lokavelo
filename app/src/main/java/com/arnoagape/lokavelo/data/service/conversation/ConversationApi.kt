@@ -23,7 +23,8 @@ interface ConversationApi {
 
     suspend fun sendMessage(
         conversationId: String,
-        message: Message
+        message: Message,
+        receiverId: String
     )
 
     fun observeUserConversations(userId: String): Flow<List<Conversation>>

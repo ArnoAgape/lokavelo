@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -31,7 +32,8 @@ fun RentalDates(
     start: LocalDate,
     end: LocalDate,
     modifier: Modifier = Modifier,
-    layout: RentalDatesLayout = RentalDatesLayout.Vertical
+    layout: RentalDatesLayout = RentalDatesLayout.Vertical,
+    textStyle: TextStyle = MaterialTheme.typography.bodySmall
 ) {
 
     val formatter = remember {
@@ -57,7 +59,7 @@ fun RentalDates(
 
                     Text(
                         text = start.format(formatter),
-                        style = MaterialTheme.typography.bodySmall
+                        style = textStyle
                     )
                 }
 
@@ -76,7 +78,7 @@ fun RentalDates(
 
                     Text(
                         text = end.format(formatter),
-                        style = MaterialTheme.typography.bodySmall.copy(
+                        style = textStyle.copy(
                             color = MaterialTheme.colorScheme.primary
                         )
                     )
@@ -93,7 +95,7 @@ fun RentalDates(
 
                 Text(
                     text = start.format(formatter),
-                    style = MaterialTheme.typography.bodySmall
+                    style = textStyle
                 )
 
                 Spacer(Modifier.width(6.dp))
@@ -108,7 +110,7 @@ fun RentalDates(
 
                 Text(
                     text = end.format(formatter),
-                    style = MaterialTheme.typography.bodySmall.copy(
+                    style = textStyle.copy(
                         color = MaterialTheme.colorScheme.primary
                     )
                 )
