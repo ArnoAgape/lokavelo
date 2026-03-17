@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -39,16 +38,17 @@ import java.time.ZoneId
 fun MainScreen(
     rootNavController: NavController,
     navigateProtected: (Screen) -> Unit,
-    isSignedIn: Boolean
+    isSignedIn: Boolean,
+    mapViewModel: MapViewModel,
+    homeBikeVm: HomeBikeViewModel,
+    messagingVm: MessagingHomeViewModel
 ) {
 
     val tabNavController = rememberNavController()
     val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     val currentRoute = tabNavController.currentBackStackEntryAsState().value?.destination?.route
 
-    val messagingViewModel: MessagingHomeViewModel = hiltViewModel()
-
-    val unreadMessages by messagingViewModel.unreadCount.collectAsStateWithLifecycle()
+    val unreadMessages by messagingVm.unreadCount.collectAsStateWithLifecycle()
 
     Scaffold(
         bottomBar = {
@@ -124,10 +124,8 @@ fun MainScreen(
 
             composable(Screen.Owner.HomeBike.route) {
 
-                val vm: HomeBikeViewModel = hiltViewModel()
-
                 HomeBikeScreen(
-                    viewModel = vm,
+                    viewModel = homeBikeVm,
                     onBikeClick = { bike ->
                         rootNavController.navigate(
                             Screen.Owner.DetailBike.createRoute(bike.id)
@@ -182,10 +180,8 @@ fun MainScreen(
 
             composable(Screen.Main.Map.route) {
 
-                val vm: MapViewModel = hiltViewModel()
-
                 MapScreen(
-                    viewModel = vm,
+                    viewModel = mapViewModel,
                     onBikeClick = { bikeId, startDate, endDate ->
 
                         val start = startDate
@@ -214,6 +210,7 @@ fun MainScreen(
             composable(Screen.Messaging.Home.route) {
 
                 MessagingHomeScreen(
+                    viewModel = messagingVm,
                     onConversationClick = { conversationId ->
                         rootNavController.navigate(
                             Screen.Messaging.Detail.createRoute(conversationId)

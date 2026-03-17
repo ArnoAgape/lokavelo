@@ -203,9 +203,9 @@ class MapViewModel @Inject constructor(
         )
     }
 
-    fun updateBikeCategory(category: BikeCategory?) {
+    fun updateBikeCategory(categories: Set<BikeCategory>) {
         _filters.value = _filters.value.copy(
-            bikeCategory = category
+            bikeCategories = categories
         )
     }
 
@@ -216,13 +216,13 @@ class MapViewModel @Inject constructor(
     }
 
     fun updateFilters(
-        bikeSize: BikeSize?,
+        bikeSizes: Set<BikeSize>,
         accessories: Set<BikeEquipment>,
         minPrice: Float,
         maxPrice: Float
     ) {
         _filters.value = _filters.value.copy(
-            bikeSize = bikeSize,
+            bikeSizes = bikeSizes,
             accessories = accessories,
             minPrice = minPrice,
             maxPrice = maxPrice
@@ -243,9 +243,9 @@ data class SearchFilters(
     val maxDistanceKm: Double? = null,
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,
-    val bikeCategory: BikeCategory? = null,
+    val bikeCategories: Set<BikeCategory> = emptySet(),
     val electricOnly: Boolean? = null,
-    val bikeSize: BikeSize? = null,
+    val bikeSizes: Set<BikeSize> = emptySet(),
     val accessories: Set<BikeEquipment> = emptySet(),
     val minPrice: Float = 0f,
     val maxPrice: Float = 100f,

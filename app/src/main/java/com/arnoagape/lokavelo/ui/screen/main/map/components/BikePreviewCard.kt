@@ -19,11 +19,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
+import com.arnoagape.lokavelo.ui.preview.PreviewData
 import com.arnoagape.lokavelo.ui.screen.main.map.SearchFilters
+import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
+import com.arnoagape.lokavelo.ui.utils.AppConstants.SERVICE_FEE_RATE
 import com.arnoagape.lokavelo.ui.utils.calculateRentalPrice
 import com.arnoagape.lokavelo.ui.utils.toEuroString
 import java.time.temporal.ChronoUnit
@@ -55,17 +59,18 @@ fun BikePreviewCard(
             .toInt()
             .coerceAtLeast(1)
 
-        val total = calculateRentalPrice(
+        val totalWithFees = (calculateRentalPrice(
             dayPrice = bike.priceInCents,
             days = days,
             twoDaysPrice = bike.priceTwoDaysInCents,
             weekPrice = bike.priceWeekInCents,
             monthPrice = bike.priceMonthInCents
-        )
+        ) * (1 + SERVICE_FEE_RATE)).toLong()
 
         stringResource(
-            R.string.price_total,
-            total.toEuroString()
+            R.string.price_total_with_daily,
+            bike.priceInCents.toEuroString(),
+            totalWithFees.toEuroString()
         )
     }
 
@@ -100,7 +105,7 @@ fun BikePreviewCard(
                     text = bike.title,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1
+                    maxLines = 2
                 )
 
                 Text(
@@ -115,5 +120,17 @@ fun BikePreviewCard(
                 )
             }
         }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun BikePreviewCardPreview() {
+    LokaveloTheme {
+        BikePreviewCard(
+            bike = PreviewData.bike,
+            filters = SearchFilters(),
+            onBikeClick = {}
+        )
     }
 }

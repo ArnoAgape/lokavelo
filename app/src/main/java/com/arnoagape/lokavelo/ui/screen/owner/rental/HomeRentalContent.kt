@@ -1,28 +1,29 @@
 package com.arnoagape.lokavelo.ui.screen.owner.rental
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.domain.model.Rental
 import com.arnoagape.lokavelo.domain.model.RentalStatus
+import com.arnoagape.lokavelo.domain.model.priority
 import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
 import com.arnoagape.lokavelo.ui.common.components.ErrorType
 import com.arnoagape.lokavelo.ui.common.components.SelectItemRow
@@ -54,33 +55,40 @@ fun HomeRentalContent(
                 isRefreshing = state.isRefreshing,
                 onRefresh = onRefresh
             ) {
+                val allRentals = (ui.pending + ui.active + ui.history)
+                    .sortedBy { it.rental.status.priority() }
+
+                val activeRentals = allRentals.filter {
+                    it.rental.status != RentalStatus.COMPLETED &&
+                            it.rental.status != RentalStatus.DECLINED &&
+                            it.rental.status != RentalStatus.CANCELLED
+                }
+
+                val historyRentals = allRentals - activeRentals.toSet()
+
+                var showHistory by remember { mutableStateOf(false) }
+
                 LazyColumn(
                     contentPadding = PaddingValues(top = 10.dp)
                 ) {
 
-                    if (ui.pending.isNotEmpty()) {
+                    items(activeRentals, key = { it.rental.id }) {
+                        RentalItem(it) { onRentalClick(it.rental) }
+                    }
+
+                    if (historyRentals.isNotEmpty()) {
                         item {
-                            SectionHeader(R.string.rental_request)
-                        }
-                        items(ui.pending, key = { it.rental.id }) {
-                            RentalItem(it) { onRentalClick(it.rental) }
+                            TextButton(onClick = { showHistory = !showHistory }) {
+                                Text(
+                                    if (showHistory) "Masquer l’historique"
+                                    else "Afficher l’historique"
+                                )
+                            }
                         }
                     }
 
-                    if (ui.active.isNotEmpty()) {
-                        item {
-                            SectionHeader(R.string.rental_status_active)
-                        }
-                        items(ui.active, key = { it.rental.id }) {
-                            RentalItem(it) { onRentalClick(it.rental) }
-                        }
-                    }
-
-                    if (ui.history.isNotEmpty()) {
-                        item {
-                            SectionHeader(R.string.rental_section_history)
-                        }
-                        items(ui.history, key = { it.rental.id }) {
+                    if (showHistory) {
+                        items(historyRentals, key = { it.rental.id }) {
                             RentalItem(it) { onRentalClick(it.rental) }
                         }
                     }
@@ -139,15 +147,6 @@ fun RentalItem(
             }
         )
     }
-}
-
-@Composable
-fun SectionHeader(@StringRes titleRes: Int) {
-    Text(
-        text = stringResource(titleRes),
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(16.dp)
-    )
 }
 
 @PreviewLightDark

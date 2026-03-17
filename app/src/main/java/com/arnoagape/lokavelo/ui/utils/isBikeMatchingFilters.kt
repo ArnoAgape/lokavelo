@@ -29,8 +29,8 @@ fun isBikeMatchingFilters(
     }
 
     // 🚲 Catégorie
-    if (filters.bikeCategory != null) {
-        if (bike.category != filters.bikeCategory) return false
+    if (filters.bikeCategories.isNotEmpty()) {
+        if (bike.category !in filters.bikeCategories) return false
     }
 
     // ⚡ Électrique
@@ -39,8 +39,8 @@ fun isBikeMatchingFilters(
     }
 
     // 📐 Taille
-    if (filters.bikeSize != null) {
-        if (bike.size != null && bike.size != filters.bikeSize) return false
+    if (filters.bikeSizes.isNotEmpty()) {
+        if (bike.size !in filters.bikeSizes) return false
     }
 
     // 🎒 Accessoires — le vélo doit posséder TOUS les accessoires sélectionnés

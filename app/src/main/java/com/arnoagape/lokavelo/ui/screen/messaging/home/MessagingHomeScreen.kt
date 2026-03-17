@@ -29,7 +29,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
@@ -47,10 +46,10 @@ import com.arnoagape.lokavelo.ui.utils.toLocalDateFromEpochDay
 
 @Composable
 fun MessagingHomeScreen(
+    viewModel: MessagingHomeViewModel,
     onConversationClick: (String) -> Unit
 ) {
 
-    val viewModel: MessagingHomeViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     MessagingHomeContent(

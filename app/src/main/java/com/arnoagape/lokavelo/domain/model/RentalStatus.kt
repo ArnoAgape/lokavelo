@@ -24,3 +24,14 @@ fun RentalStatus.labelRes(): Int =
         RentalStatus.ACTIVE -> R.string.rental_status_active
         RentalStatus.COMPLETED -> R.string.rental_status_completed
     }
+
+fun RentalStatus.priority(): Int =
+    when (this) {
+        RentalStatus.PENDING -> 0
+        RentalStatus.COUNTER_OFFER -> 1
+        RentalStatus.ACCEPTED,
+        RentalStatus.ACTIVE -> 2
+        RentalStatus.COMPLETED -> 3
+        RentalStatus.DECLINED,
+        RentalStatus.CANCELLED -> 4
+    }

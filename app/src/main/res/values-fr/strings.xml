@@ -50,11 +50,11 @@
     <string name="pricing_two_days">Deux jours</string>
     <string name="pricing_week">Semaine</string>
     <string name="pricing_month">Mois</string>
-    <string name="price_total">%1$s au total</string>
     <plurals name="price_per_day_times_days" tools:ignore="MissingQuantity">
         <item quantity="one">%1$s × %2$d jour</item>
         <item quantity="other">%1$s × %2$d jours</item>
     </plurals>
+    <string name="price_total_with_daily">%1$s / jour · Total %2$s</string>
     <string name="discount_pricing">Réduction</string>
     <string name="discount">Réduction : %1$d %%</string>
     <string name="deposit">Caution</string>
@@ -67,6 +67,7 @@
     <string name="condition">État</string>
     <string name="size">Taille</string>
     <string name="category">Catégorie</string>
+    <string name="categories">%d catégories</string>
     <string name="accessories">Accessoires</string>
     <string name="zip_code">Code postal</string>
     <string name="address_line">Adresse</string>

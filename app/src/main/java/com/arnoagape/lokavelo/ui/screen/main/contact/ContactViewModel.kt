@@ -13,6 +13,7 @@ import com.arnoagape.lokavelo.domain.model.Message
 import com.arnoagape.lokavelo.domain.model.Rental
 import com.arnoagape.lokavelo.domain.model.RentalStatus
 import com.arnoagape.lokavelo.ui.common.Event
+import com.arnoagape.lokavelo.ui.utils.AppConstants.SERVICE_FEE_RATE
 import com.arnoagape.lokavelo.ui.utils.NetworkUtils
 import com.arnoagape.lokavelo.ui.utils.calculateRentalPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -122,7 +123,7 @@ class ContactViewModel @Inject constructor(
                 days = days
             )
 
-            val serviceFee = (basePrice * 0.10).toLong()
+            val serviceFee = (basePrice * SERVICE_FEE_RATE).toLong()
 
             val totalPrice = basePrice + serviceFee
 

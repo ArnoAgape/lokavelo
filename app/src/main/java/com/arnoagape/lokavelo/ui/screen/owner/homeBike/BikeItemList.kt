@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -216,35 +217,41 @@ fun StatusBadge(isRented: Boolean) {
 fun RentalStatusBadge(status: RentalStatus) {
 
     val backgroundColor = when (status) {
-        RentalStatus.PENDING -> MaterialTheme.colorScheme.tertiaryContainer
+        RentalStatus.PENDING,
         RentalStatus.COUNTER_OFFER -> MaterialTheme.colorScheme.tertiaryContainer
-        RentalStatus.ACCEPTED -> lightBlue
+
+        RentalStatus.ACCEPTED,
         RentalStatus.ACTIVE -> lightBlue
+
         RentalStatus.COMPLETED -> lightGreen
-        RentalStatus.DECLINED -> MaterialTheme.colorScheme.errorContainer
+
+        RentalStatus.DECLINED,
         RentalStatus.CANCELLED -> MaterialTheme.colorScheme.errorContainer
     }
 
     val textColor = when (status) {
-        RentalStatus.PENDING -> MaterialTheme.colorScheme.onTertiaryContainer
+        RentalStatus.PENDING,
         RentalStatus.COUNTER_OFFER -> MaterialTheme.colorScheme.onTertiaryContainer
-        RentalStatus.ACCEPTED -> lightBlueText
+
+        RentalStatus.ACCEPTED,
         RentalStatus.ACTIVE -> lightBlueText
+
         RentalStatus.COMPLETED -> lightGreenText
-        RentalStatus.DECLINED -> MaterialTheme.colorScheme.onErrorContainer
+
+        RentalStatus.DECLINED,
         RentalStatus.CANCELLED -> MaterialTheme.colorScheme.onErrorContainer
     }
 
-    Box(
-        modifier = Modifier
-            .padding(top = 4.dp)
-            .background(backgroundColor, RoundedCornerShape(50))
-            .padding(horizontal = 10.dp, vertical = 4.dp)
+    Surface(
+        color = backgroundColor,
+        shape = RoundedCornerShape(50),
+        tonalElevation = 1.dp
     ) {
         Text(
             text = stringResource(status.labelRes()),
-            style = MaterialTheme.typography.labelSmall,
-            color = textColor
+            style = MaterialTheme.typography.labelMedium,
+            color = textColor,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
         )
     }
 }

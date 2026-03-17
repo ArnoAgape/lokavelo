@@ -72,10 +72,10 @@ fun MapScreen(
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    var showAddressSheet by remember { mutableStateOf(false) }
-    var pendingBikeId by remember { mutableStateOf<String?>(null) }
-    var showDatePicker by remember { mutableStateOf(false) }
-    var recenterTrigger by remember { mutableStateOf(false) }
+    var showAddressSheet by rememberSaveable { mutableStateOf(false) }
+    var pendingBikeId by rememberSaveable { mutableStateOf<String?>(null) }
+    var showDatePicker by rememberSaveable { mutableStateOf(false) }
+    var recenterTrigger by rememberSaveable { mutableStateOf(false) }
     var selectedBikeId by rememberSaveable { mutableStateOf<String?>(null) }
 
     // Filters bikes

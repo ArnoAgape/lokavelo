@@ -50,11 +50,11 @@
     <string name="pricing_two_days">Two days</string>
     <string name="pricing_week">Week</string>
     <string name="pricing_month">Month</string>
-    <string name="price_total">%1$s total</string>
     <plurals name="price_per_day_times_days">
         <item quantity="one">%1$s × %2$d jour</item>
         <item quantity="other">%1$s × %2$d jours</item>
     </plurals>
+    <string name="price_total_with_daily">%1$s / day · Total %2$s</string>
     <string name="discount_pricing">Discount</string>
     <string name="discount">Discount: %1$d%%</string>
     <string name="deposit">Deposit</string>
@@ -67,6 +67,7 @@
     <string name="condition">Condition</string>
     <string name="size">Size</string>
     <string name="category">Category</string>
+    <string name="categories">%d categories</string>
     <string name="accessories">Accessories</string>
     <string name="zip_code">Zip Code</string>
     <string name="address_line">Address</string>
