@@ -1,17 +1,25 @@
 package com.arnoagape.lokavelo.ui.screen.owner.rental
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
+import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.domain.model.Rental
 import com.arnoagape.lokavelo.domain.model.RentalStatus
@@ -46,15 +54,35 @@ fun HomeRentalContent(
                 isRefreshing = state.isRefreshing,
                 onRefresh = onRefresh
             ) {
-                LazyColumn {
-                    items(ui.pending, key = { it.rental.id }) { rentalWithBike ->
-                        RentalItem(rentalWithBike = rentalWithBike, onClick = { onRentalClick(rentalWithBike.rental) })
+                LazyColumn(
+                    contentPadding = PaddingValues(top = 10.dp)
+                ) {
+
+                    if (ui.pending.isNotEmpty()) {
+                        item {
+                            SectionHeader(R.string.rental_request)
+                        }
+                        items(ui.pending, key = { it.rental.id }) {
+                            RentalItem(it) { onRentalClick(it.rental) }
+                        }
                     }
-                    items(ui.active, key = { it.rental.id }) { rentalWithBike ->
-                        RentalItem(rentalWithBike = rentalWithBike, onClick = { onRentalClick(rentalWithBike.rental) })
+
+                    if (ui.active.isNotEmpty()) {
+                        item {
+                            SectionHeader(R.string.rental_status_active)
+                        }
+                        items(ui.active, key = { it.rental.id }) {
+                            RentalItem(it) { onRentalClick(it.rental) }
+                        }
                     }
-                    items(ui.history, key = { it.rental.id }) { rentalWithBike ->
-                        RentalItem(rentalWithBike = rentalWithBike, onClick = { onRentalClick(rentalWithBike.rental) })
+
+                    if (ui.history.isNotEmpty()) {
+                        item {
+                            SectionHeader(R.string.rental_section_history)
+                        }
+                        items(ui.history, key = { it.rental.id }) {
+                            RentalItem(it) { onRentalClick(it.rental) }
+                        }
                     }
                 }
             }
@@ -87,7 +115,6 @@ fun RentalItem(
     rentalWithBike: RentalWithBike,
     onClick: () -> Unit
 ) {
-
     val rental = rentalWithBike.rental
     val bike = rentalWithBike.bike
 
@@ -99,7 +126,6 @@ fun RentalItem(
         onClick = onClick,
         onLongClick = {}
     ) {
-
         BikeItemRow(
             bike = bike,
             startDate = rental.startDate
@@ -113,6 +139,15 @@ fun RentalItem(
             }
         )
     }
+}
+
+@Composable
+fun SectionHeader(@StringRes titleRes: Int) {
+    Text(
+        text = stringResource(titleRes),
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(16.dp)
+    )
 }
 
 @PreviewLightDark

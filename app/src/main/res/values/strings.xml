@@ -99,6 +99,8 @@
     <string name="rental_request">Rental request</string>
     <string name="rental_owner_receives">You would receive %1$s</string>
     <string name="rental_price">Rental price %1$s</string>
+    <string name="rental_section_pending">Requests</string>
+    <string name="rental_section_history">History</string>
     <string name="rental_you_receive">You will receive %1$s</string>
     <string name="rental_new_offer">A new offer has been proposed</string>
     <string name="rental_price_offered">Offered price %1$s</string>

@@ -99,6 +99,8 @@
     <string name="rental_request">Demande de location</string>
     <string name="rental_owner_receives">Vous recevrez %1$s</string>
     <string name="rental_price">Prix de location %1$s</string>
+    <string name="rental_section_pending">Demandes</string>
+    <string name="rental_section_history">Historique</string>
     <string name="rental_you_receive">Tu recevras %1$s</string>
     <string name="rental_new_offer">Nouvelle offre proposée</string>
     <string name="rental_price_offered">Prix proposé %1$s</string>
