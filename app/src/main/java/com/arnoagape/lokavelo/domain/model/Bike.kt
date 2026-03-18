@@ -25,6 +25,7 @@ data class Bike(
     val depositInCents: Long? = null,
     val location: BikeLocation = BikeLocation(),
     val available: Boolean = true,
+    val minDaysRental: Int = 1,
     val rentalStart: Instant? = null,
     val rentalEnd: Instant? = null,
     val viewCount: Int = 0,
@@ -53,6 +54,7 @@ data class Bike(
             ownerId = ownerId,
             ownerName = ownerName,
             available = available,
+            minDaysRental = minDaysRental,
             rentalStart = rentalStart,
             rentalEnd = rentalEnd
         )
@@ -87,6 +89,7 @@ data class Bike(
                 ownerId = dto.ownerId,
                 ownerName = dto.ownerName,
                 available = dto.available,
+                minDaysRental = dto.minDaysRental,
                 rentalStart = dto.rentalStart,
                 rentalEnd = dto.rentalEnd
             )

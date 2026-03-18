@@ -30,6 +30,8 @@ sealed interface AddBikeEvent {
     data class AddPhoto(val uri: Uri) : AddBikeEvent
     data class RemovePhoto(val id: String) : AddBikeEvent
     data class ReplacePhoto(val id: String, val newUri: Uri) : AddBikeEvent
+    data class AvailableChanged(val available: Boolean) : AddBikeEvent
+    data class MinDaysRentalChanged(val minDaysRentalText: String) : AddBikeEvent
 
     data object Submit : AddBikeEvent
 }

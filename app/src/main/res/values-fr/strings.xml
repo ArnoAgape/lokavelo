@@ -19,6 +19,7 @@
     <string name="subtitle_characteristics">Ajoute les détails de ton vélo</string>
     <string name="subtitle_title_description">Ajoute un titre et une description qui définissent
         bien ton annonce</string>
+    <string name="subtitle_additional_section">Paramètres de ton annonce</string>
     <string name="subtitle_location">L’adresse exacte ne sera pas visible publiquement</string>
     <string name="subtitle_pricing">Généralement entre 1 € et 25 € par jour</string>
     <string name="subtitle_deposit">Ce montant sera bloqué sur la carte bancaire du locataire
@@ -29,6 +30,7 @@
     <string name="hint_title">Ex : Gravel équipé voyage</string>
     <string name="hint_brand">Ex : Origine Trail Explore</string>
     <string name="hint_description">Décris ton vélo, ses équipements et conditions</string>
+    <string name="hint_min_days_rental">3</string>
 
     // MISC WORDS
     <string name="yes">Oui</string>
@@ -36,6 +38,9 @@
     <string name="bikes">Vélos</string>
     <string name="pictures">Photos</string>
     <string name="characteristics">Caractéristiques</string>
+    <string name="additional_section">Options de l’annonce</string>
+    <string name="min_duration_rental">Durée minimum de location (jours)</string>
+    <string name="min_duration_rental_detail">Durée minimum de location</string>
     <string name="title_description">Titre &amp; Description</string>
     <string name="title">Titre</string>
     <string name="description">Description</string>
@@ -57,6 +62,10 @@
         <item quantity="one">%1$s × %2$d jour</item>
         <item quantity="other">%1$s × %2$d jours</item>
     </plurals>
+    <plurals name="days" tools:ignore="MissingQuantity">
+        <item quantity="one">%d jour</item>
+        <item quantity="other">%d jours</item>
+    </plurals>
     <string name="price_total_with_daily">%1$s / jour · Total %2$s</string>
     <string name="discount_pricing">Réduction</string>
     <string name="discount">Réduction : %1$d %%</string>
@@ -66,6 +75,7 @@
     <string name="motorization">Motorisation</string>
     <string name="electric_bike">Électrique ?</string>
     <string name="electric">Électrique</string>
+    <string name="available_bike">Disponible actuellement ?</string>
     <string name="muscular">Musculaire</string>
     <string name="condition">État</string>
     <string name="size">Taille</string>
@@ -86,6 +96,7 @@
     <string name="no_deposit">Aucune caution</string>
     <string name="no_brand">Aucune marque</string>
     <string name="required">Obligatoire</string>
+    <string name="number_only">Nombre uniquement, 1 minimum</string>
     <string name="current_position">Position actuelle</string>
     <string name="city_address">Ville ou adresse</string>
     <string name="period">Période</string>

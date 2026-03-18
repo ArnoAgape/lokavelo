@@ -30,6 +30,7 @@ data class BikeDto(
     val depositInCents: Long? = null,
     val location: BikeLocation? = null,
     val available: Boolean = true,
+    val minDaysRental: Int = 1,
     val rentalStart: Instant? = null,
     val rentalEnd: Instant? = null
 ) : Serializable

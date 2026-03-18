@@ -288,6 +288,16 @@ class AddBikeViewModel @Inject constructor(
                     current.copy(photos = updated)
                 }
 
+            is AddBikeEvent.AvailableChanged ->
+                _state.update {
+                    it.copy(form = it.form.copy(available = event.available))
+                }
+
+            is AddBikeEvent.MinDaysRentalChanged ->
+                _state.update {
+                    it.copy(form = it.form.copy(minDaysRentalText = event.minDaysRentalText))
+                }
+
             AddBikeEvent.Submit ->
                 onPublishClicked()
         }
@@ -302,6 +312,7 @@ class AddBikeViewModel @Inject constructor(
         val descriptionError = current.description.isBlank()
         val categoryError = current.category == null
         val conditionError = current.condition == null
+        val minDaysRentalError = current.minDaysRentalText.toIntOrNull()?.let { it < 1 } ?: true
 
         val price = current.priceText.toCentsOrNull()
         val priceError = price == null || price <= 0
@@ -323,7 +334,8 @@ class AddBikeViewModel @Inject constructor(
                     streetError = streetError,
                     postalCodeError = postalCodeError,
                     cityError = cityError,
-                    photosError = photosError
+                    photosError = photosError,
+                    minDaysRentalError = minDaysRentalError
                 )
             )
         }
@@ -336,7 +348,8 @@ class AddBikeViewModel @Inject constructor(
                 streetError ||
                 postalCodeError ||
                 cityError ||
-                photosError)
+                photosError ||
+                minDaysRentalError)
     }
 
     private fun onPublishClicked() {

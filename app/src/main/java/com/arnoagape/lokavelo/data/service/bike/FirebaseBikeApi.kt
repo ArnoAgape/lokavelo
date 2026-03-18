@@ -248,5 +248,7 @@ private fun Bike.toUpdateMap(ownerName: String, photoUrls: List<String>): Map<St
         "size" to size,
         "condition" to condition,
         "accessories" to accessories,
-        "photoUrls" to photoUrls
+        "photoUrls" to photoUrls,
+        "available" to available,
+        "minDaysRental" to minDaysRental
     )

@@ -62,6 +62,7 @@ import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.CharacteristicsSe
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.DepositSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.LocationSection
 import com.arnoagape.lokavelo.ui.common.components.photo.PhotosSection
+import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.AdditionalSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.PricingSection
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.SubmitButton
 import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.TitleDescriptionSection
@@ -427,6 +428,20 @@ private fun AddBikeContent(
                 onDepositChange = {
                     onAction(AddBikeEvent.DepositChanged(it))
                 }
+            )
+        }
+
+        item {
+            AdditionalSection(
+                availability = state.form.available,
+                minDaysRental = state.form.minDaysRentalText,
+                onAvailabilityChange = {
+                    onAction(AddBikeEvent.AvailableChanged(it))
+                },
+                minDaysRentalChange = {
+                    onAction(AddBikeEvent.MinDaysRentalChanged(it))
+                },
+                minDaysRentalError = state.form.minDaysRentalError,
             )
         }
 

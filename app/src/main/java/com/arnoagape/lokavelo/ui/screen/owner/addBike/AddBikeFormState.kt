@@ -23,6 +23,8 @@ data class AddBikeFormState(
     val brand: String = "",
     val condition: BikeCondition? = null,
     val accessories: List<BikeEquipment> = emptyList(),
+    val available: Boolean = true,
+    val minDaysRentalText: String = "",
 
     val photosError: Boolean = false,
     val titleError: Boolean = false,
@@ -34,6 +36,7 @@ data class AddBikeFormState(
     val streetError: Boolean = false,
     val postalCodeError: Boolean = false,
     val cityError: Boolean = false,
+    val minDaysRentalError: Boolean = false,
 
     val isTwoDaysManuallyEdited: Boolean = false,
     val isWeekManuallyEdited: Boolean = false,
@@ -43,7 +46,6 @@ data class AddBikeFormState(
     fun toBikeOrNull(): Bike? {
 
         val price = priceText.toCentsOrNull() ?: return null
-        if (price <= 0) return null
 
         val twoDays = twoDaysPriceText.toCentsOrNull()
             ?: (price * 2 * 90 / 100)
@@ -54,6 +56,10 @@ data class AddBikeFormState(
             ?: (price * 30 * 50 / 100)
 
         val deposit = depositText.toCentsOrNull()
+
+        val minDaysRental = minDaysRentalText.toIntOrNull() ?: return null
+
+        if (price <= 0) return null
 
         return Bike(
             title = title,
@@ -69,7 +75,9 @@ data class AddBikeFormState(
             category = category,
             brand = brand,
             condition = condition,
-            accessories = accessories
+            accessories = accessories,
+            available = available,
+            minDaysRental = minDaysRental
         )
     }
 

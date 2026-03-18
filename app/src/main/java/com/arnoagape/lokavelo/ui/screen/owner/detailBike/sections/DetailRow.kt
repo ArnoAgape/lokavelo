@@ -2,18 +2,20 @@ package com.arnoagape.lokavelo.ui.screen.owner.detailBike.sections
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 
 @Composable
-fun DetailRow(label: String, value: String) {
+fun DetailRow(
+    label: String,
+    value: String,
+    labelWeight: Float = 1f,
+    valueWeight: Float = 1f
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.Top
@@ -21,11 +23,7 @@ fun DetailRow(label: String, value: String) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .width(120.dp)
-                .weight(1.5f)
+            modifier = Modifier.weight(labelWeight)
         )
 
         Text(
@@ -33,7 +31,7 @@ fun DetailRow(label: String, value: String) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.End,
-            modifier = Modifier.weight(3f)
+            modifier = Modifier.weight(valueWeight)
         )
     }
 }

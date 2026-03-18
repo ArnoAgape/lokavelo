@@ -349,6 +349,16 @@ class EditBikeViewModel @Inject constructor(
                     current.copy(photos = updated)
                 }
 
+            is EditBikeEvent.AvailableChanged ->
+                _state.update {
+                    it.copy(form = it.form.copy(available = event.available))
+                }
+
+            is EditBikeEvent.MinDaysRentalChanged ->
+                _state.update {
+                    it.copy(form = it.form.copy(minDaysRentalText = event.minDaysRental))
+                }
+
             EditBikeEvent.Submit ->
                 onPublishClicked()
         }
@@ -364,6 +374,7 @@ class EditBikeViewModel @Inject constructor(
         val descriptionError = current.description.isBlank()
         val categoryError = current.category == null
         val conditionError = current.condition == null
+        val minDaysRentalError = current.minDaysRentalText.toIntOrNull()?.let { it < 1 } ?: true
 
         val price = current.priceText.toCentsOrNull()
         val priceError = price == null || price <= 0
@@ -383,7 +394,8 @@ class EditBikeViewModel @Inject constructor(
                     streetError = streetError,
                     postalCodeError = postalCodeError,
                     cityError = cityError,
-                    photosError = photosError
+                    photosError = photosError,
+                    minDaysRentalError = minDaysRentalError
                 )
             )
         }
@@ -396,7 +408,8 @@ class EditBikeViewModel @Inject constructor(
                 streetError ||
                 postalCodeError ||
                 cityError ||
-                photosError)
+                photosError ||
+                minDaysRentalError)
     }
 
     private fun onPublishClicked() {
@@ -458,17 +471,18 @@ class EditBikeViewModel @Inject constructor(
                     bike = finalBike
                 )
             }.onSuccess {
-
+                _state.update { it.copy(isSaving = false) }
                 _events.trySend(
                     Event.ShowSuccessMessage(R.string.success_bike_edited)
                 )
 
             }.onFailure { throwable ->
-
                 Log.e("EditBike", "Error while editing bike", throwable)
-
                 _state.update {
-                    it.copy(uiState = EditBikeUiState.Error.Generic())
+                    it.copy(
+                        isSaving = false,
+                        uiState = EditBikeUiState.Error.Generic()
+                    )
                 }
 
                 _events.trySend(Event.ShowMessage(R.string.error_generic))

@@ -24,6 +24,8 @@ data class EditBikeFormState(
     val brand: String = "",
     val condition: BikeCondition? = null,
     val accessories: List<BikeEquipment> = emptyList(),
+    val available: Boolean = true,
+    val minDaysRentalText: String = "1",
 
     val photosError: Boolean = false,
     val titleError: Boolean = false,
@@ -35,6 +37,7 @@ data class EditBikeFormState(
     val streetError: Boolean = false,
     val postalCodeError: Boolean = false,
     val cityError: Boolean = false,
+    val minDaysRentalError: Boolean = false,
 
     val isTwoDaysManuallyEdited: Boolean = false,
     val isWeekManuallyEdited: Boolean = false,
@@ -53,11 +56,9 @@ data class EditBikeFormState(
         val month = monthPriceText.toCentsOrNull()
             ?: (price * 30 * 50 / 100)
 
-        val deposit = depositText
-            .replace(",", ".")
-            .toDoubleOrNull()
-            ?.times(100)
-            ?.toLong()
+        val deposit = depositText.toCentsOrNull()
+
+        val minDaysRental = minDaysRentalText.toIntOrNull() ?: return null
 
         if (price <= 0) return null
 
@@ -75,7 +76,9 @@ data class EditBikeFormState(
             category = category,
             brand = brand,
             condition = condition,
-            accessories = accessories
+            accessories = accessories,
+            available = available,
+            minDaysRental = minDaysRental
         )
     }
 
@@ -95,7 +98,9 @@ data class EditBikeFormState(
                 category = bike.category,
                 brand = bike.brand,
                 condition = bike.condition,
-                accessories = bike.accessories
+                accessories = bike.accessories,
+                available = bike.available,
+                minDaysRentalText = bike.minDaysRental.toString()
             )
         }
     }

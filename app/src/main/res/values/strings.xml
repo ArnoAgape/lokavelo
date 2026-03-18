@@ -18,7 +18,8 @@
     <string name="subtitle_add_3_pictures">Add up to 3 pictures</string>
     <string name="subtitle_characteristics">Fill in the details of your bike</string>
     <string name="subtitle_title_description">Add a title and a description that define well
-        your post</string>
+        your ad</string>
+    <string name="subtitle_additional_section">Customize the settings of the ad</string>
     <string name="subtitle_location">The exact address won’t be visible publicly</string>
     <string name="subtitle_pricing">Usually between €1 and €25 per day</string>
     <string name="subtitle_deposit">This amount will be blocked on the renter’s credit card
@@ -29,6 +30,7 @@
     <string name="hint_title">E.g., Travel-ready gravel bike</string>
     <string name="hint_brand">E.g., Origine Trail Explore</string>
     <string name="hint_description">Describe your bike, its equipment, and its condition</string>
+    <string name="hint_min_days_rental">3</string>
 
     // MISC WORDS
     <string name="yes">Yes</string>
@@ -36,6 +38,9 @@
     <string name="bikes">Bikes</string>
     <string name="pictures">Pictures</string>
     <string name="characteristics">Characteristics</string>
+    <string name="additional_section">Options</string>
+    <string name="min_duration_rental">Minimum rental period (days)</string>
+    <string name="min_duration_rental_detail">Minimum rental period</string>
     <string name="title_description">Title &amp; Description</string>
     <string name="title">Title</string>
     <string name="description">Description</string>
@@ -54,8 +59,12 @@
     <string name="pricing_week">Week</string>
     <string name="pricing_month">Month</string>
     <plurals name="price_per_day_times_days">
-        <item quantity="one">%1$s × %2$d jour</item>
-        <item quantity="other">%1$s × %2$d jours</item>
+        <item quantity="one">%1$s × %2$d day</item>
+        <item quantity="other">%1$s × %2$d days</item>
+    </plurals>
+    <plurals name="days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
     </plurals>
     <string name="price_total_with_daily">%1$s / day · Total %2$s</string>
     <string name="discount_pricing">Discount</string>
@@ -66,6 +75,7 @@
     <string name="motorization">Motorization</string>
     <string name="electric_bike">Electric?</string>
     <string name="electric">Electric</string>
+    <string name="available_bike">Currently available?</string>
     <string name="muscular">Muscular</string>
     <string name="condition">Condition</string>
     <string name="size">Size</string>
@@ -86,6 +96,7 @@
     <string name="no_deposit">No deposit</string>
     <string name="no_brand">No brand</string>
     <string name="required">Required</string>
+    <string name="number_only">Number only, 1 minimum</string>
     <string name="current_position">Current position</string>
     <string name="city_address">City or address</string>
     <string name="period">Period</string>

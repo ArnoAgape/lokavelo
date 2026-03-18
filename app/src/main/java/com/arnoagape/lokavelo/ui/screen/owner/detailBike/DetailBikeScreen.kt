@@ -59,6 +59,7 @@ import com.arnoagape.lokavelo.ui.screen.owner.detailBike.sections.DetailCard
 import com.arnoagape.lokavelo.ui.screen.owner.detailBike.sections.DetailRow
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
+import com.arnoagape.lokavelo.ui.utils.toDaysString
 import com.arnoagape.lokavelo.ui.utils.toEuroString
 
 /**
@@ -257,6 +258,7 @@ fun DetailItem(
     bike: Bike
 ) {
     val spacing = LocalSpacing.current
+    val context = LocalContext.current
 
     LazyColumn(
         modifier = modifier
@@ -346,7 +348,12 @@ fun DetailItem(
         // Address
         item {
             DetailCard(title = stringResource(R.string.location)) {
-                DetailRow(stringResource(R.string.address_line), bike.location.street)
+                DetailRow(
+                    label = stringResource(R.string.address_line),
+                    value = bike.location.street,
+                    labelWeight = 1f,
+                    valueWeight = 2f
+                )
                 DetailRow(stringResource(R.string.zip_code), bike.location.postalCode)
                 DetailRow(stringResource(R.string.city), bike.location.city)
             }
@@ -385,6 +392,18 @@ fun DetailItem(
                     bike.depositInCents
                         ?.toEuroString()
                         ?: stringResource(R.string.no_deposit)
+                )
+            }
+        }
+
+        // Additional options
+        item {
+            DetailCard(title = stringResource(R.string.additional_section)) {
+                DetailRow(
+                    label = stringResource(R.string.min_duration_rental_detail),
+                    value = bike.minDaysRental.toDaysString(context),
+                    labelWeight = 2f,
+                    valueWeight = 1f
                 )
             }
         }
