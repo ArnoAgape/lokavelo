@@ -23,9 +23,11 @@
     <string name="subtitle_pricing">Usually between €1 and €25 per day</string>
     <string name="subtitle_deposit">This amount will be blocked on the renter’s credit card
         for the entire duration of the rental</string>
-    <string name="message_owner_hint">Send your message to the bike owner,
+    <string name="hint_message_owner">Send your message to the bike owner,
         specifying your request</string>
-    <string name="messaging_conversation">Write your message here</string>
+    <string name="hint_messaging_conversation">Write your message here</string>
+    <string name="hint_title">E.g., Travel-ready gravel bike</string>
+    <string name="hint_description">Describe your bike, its equipment, and its condition</string>
 
     // MISC WORDS
     <string name="yes">Yes</string>

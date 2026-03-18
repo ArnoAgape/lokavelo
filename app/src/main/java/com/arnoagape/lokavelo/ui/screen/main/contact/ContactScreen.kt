@@ -211,7 +211,7 @@ fun ContactContent(
                 ),
                 placeholder = {
                     Text(
-                        text = stringResource(R.string.message_owner_hint),
+                        text = stringResource(R.string.hint_message_owner),
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                     )
                 },

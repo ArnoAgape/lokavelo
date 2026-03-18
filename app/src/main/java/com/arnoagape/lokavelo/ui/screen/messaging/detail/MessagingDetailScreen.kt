@@ -453,7 +453,7 @@ fun MessageInputBar(
             modifier = Modifier.weight(1f),
             placeholder = {
                 Text(
-                    stringResource(R.string.messaging_conversation),
+                    stringResource(R.string.hint_messaging_conversation),
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                 )
             },

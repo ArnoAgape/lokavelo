@@ -30,7 +30,7 @@ fun Long.toPriceString(): String {
         .getCurrencyInstance(Locale.getDefault())
         .apply {
             currency = Currency.getInstance("EUR")
-            minimumFractionDigits = 0
+            minimumFractionDigits = 2
             maximumFractionDigits = 2
         }
 

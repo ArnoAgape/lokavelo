@@ -23,9 +23,11 @@
     <string name="subtitle_pricing">Généralement entre 1 € et 25 € par jour</string>
     <string name="subtitle_deposit">Ce montant sera bloqué sur la carte bancaire du locataire
         pendant toute la durée de la location</string>
-    <string name="message_owner_hint">Envoie ton message au propriétaire du vélo
+    <string name="hint_message_owner">Envoie ton message au propriétaire du vélo
         en précisant ta demande</string>
-    <string name="messaging_conversation">Écris ton message ici</string>
+    <string name="hint_messaging_conversation">Écris ton message ici</string>
+    <string name="hint_title">Ex : Gravel équipé voyage</string>
+    <string name="hint_description">Décris ton vélo, ses équipements et conditions</string>
 
     // MISC WORDS
     <string name="yes">Oui</string>

@@ -13,7 +13,7 @@ import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.components.photo.PhotoItem
 import com.arnoagape.lokavelo.ui.utils.NetworkUtils
 import com.arnoagape.lokavelo.ui.utils.toCentsOrNull
-import com.arnoagape.lokavelo.ui.utils.toPriceString
+import com.arnoagape.lokavelo.ui.utils.toPriceText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -212,9 +212,9 @@ class EditBikeViewModel @Inject constructor(
                                 isWeekManuallyEdited = false,
                                 isMonthManuallyEdited = false,
 
-                                twoDaysPriceText = half.toPriceString(),
-                                weekPriceText = week.toPriceString(),
-                                monthPriceText = month.toPriceString()
+                                twoDaysPriceText = half.toPriceText(),
+                                weekPriceText = week.toPriceText(),
+                                monthPriceText = month.toPriceText()
                             )
                         )
                     } else {
