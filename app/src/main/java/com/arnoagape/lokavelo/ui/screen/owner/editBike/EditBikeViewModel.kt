@@ -361,6 +361,7 @@ class EditBikeViewModel @Inject constructor(
         val photosError = totalPhotos == 0
 
         val titleError = current.title.isBlank()
+        val descriptionError = current.description.isBlank()
         val categoryError = current.category == null
         val conditionError = current.condition == null
 
@@ -375,6 +376,7 @@ class EditBikeViewModel @Inject constructor(
             it.copy(
                 form = current.copy(
                     titleError = titleError,
+                    descriptionError = descriptionError,
                     categoryError = categoryError,
                     conditionError = conditionError,
                     priceError = priceError,
@@ -387,6 +389,7 @@ class EditBikeViewModel @Inject constructor(
         }
 
         return !(titleError ||
+                descriptionError ||
                 categoryError ||
                 conditionError ||
                 priceError ||

@@ -18,7 +18,7 @@ fun Long.toEuroString(): String {
     val formatter = NumberFormat
         .getCurrencyInstance(Locale.FRANCE)
         .apply {
-            minimumFractionDigits = 0
+            minimumFractionDigits = 2
             maximumFractionDigits = 2
         }
 

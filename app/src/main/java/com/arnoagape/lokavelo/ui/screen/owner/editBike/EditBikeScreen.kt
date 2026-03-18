@@ -103,8 +103,6 @@ fun EditBikeScreen(
                 context.vibrateError()
                 val result = snackbarHostState.showSnackbar(
                     message = resources.getString(event.message),
-                    actionLabel = resources.getString(R.string.try_again),
-                    withDismissAction = true,
                     duration = SnackbarDuration.Short
                 )
                 if (result == SnackbarResult.ActionPerformed) {

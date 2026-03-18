@@ -115,7 +115,7 @@ fun BikePreviewCard(
 
                 Text(
                     text = priceText,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
             }

@@ -1,5 +1,6 @@
 package com.arnoagape.lokavelo.ui.screen.main.contact
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,6 +49,7 @@ import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.SubmitButton
 import com.arnoagape.lokavelo.ui.screen.owner.homeBike.BikeItemRow
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import com.arnoagape.lokavelo.ui.utils.vibrateError
+import com.arnoagape.lokavelo.ui.utils.vibrateMessageSent
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,12 +75,19 @@ fun ContactScreen(
                 context.vibrateError()
                 snackbarHostState.showSnackbar(
                     message = resources.getString(event.message),
-                    withDismissAction = true,
                     duration = SnackbarDuration.Short
                 )
             }
 
-            else -> {}
+            is Event.ShowSuccessMessage -> {
+                context.vibrateMessageSent()
+
+                Toast.makeText(
+                    context,
+                    resources.getString(event.message),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 

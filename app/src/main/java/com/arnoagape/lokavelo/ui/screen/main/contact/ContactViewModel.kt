@@ -153,6 +153,10 @@ class ContactViewModel @Inject constructor(
                 receiverId = bike.ownerId
             )
 
+            _events.trySend(
+                Event.ShowSuccessMessage(R.string.success_message_sent)
+            )
+
             _openConversation.emit(conversation.id)
         }
     }

@@ -115,6 +115,7 @@
     <string name="success_bike_added">Vélo ajouté avec succès :)</string>
     <string name="success_bike_edited">Vélo modifié avec succès :)</string>
     <string name="success_bike_deleted">Vélo supprimé avec succès :)</string>
+    <string name="success_message_sent">Message envoyé avec succès</string>
 
     // ERROR
     <string name="error_no_network">Aucune connexion internet</string>

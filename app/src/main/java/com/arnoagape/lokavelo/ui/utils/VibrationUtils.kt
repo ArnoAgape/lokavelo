@@ -47,3 +47,25 @@ fun Context.vibrateError() {
         vibrator.vibrate(400)
     }
 }
+
+fun Context.vibrateMessageSent() {
+    val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val manager = getSystemService(VibratorManager::class.java)
+        manager.defaultVibrator
+    } else {
+        @Suppress("DEPRECATION")
+        getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val effect = VibrationEffect.createWaveform(
+            longArrayOf(0, 30, 40, 30), // très léger
+            intArrayOf(0, 80, 0, 80),   // amplitude douce
+            -1
+        )
+        vibrator.vibrate(effect)
+    } else {
+        @Suppress("DEPRECATION")
+        vibrator.vibrate(longArrayOf(0, 30, 40, 30), -1)
+    }
+}

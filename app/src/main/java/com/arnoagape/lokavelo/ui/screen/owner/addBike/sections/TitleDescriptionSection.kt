@@ -58,7 +58,7 @@ fun TitleDescriptionSection(
                 isError = descriptionError,
                 modifier = Modifier.fillMaxWidth(),
                 supportingText = {
-                    if (titleError) {
+                    if (descriptionError) {
                         Text(stringResource(R.string.required))
                     }
                 },
