@@ -39,6 +39,22 @@ class FirebaseRentalApi : RentalApi {
             }
     }
 
+    override fun observeUserRentals(): Flow<List<Rental>> {
+
+        val userId = auth.currentUser?.uid
+            ?: throw IllegalStateException("User not authenticated")
+
+        return firestore
+            .collection("rentals")
+            .whereEqualTo("renterId", userId)
+            .snapshots()
+            .map { snapshot ->
+                snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(Rental::class.java)?.copy(id = doc.id)
+                }
+            }
+    }
+
     override fun observeRental(conversationId: String): Flow<Rental?> {
 
         return firestore

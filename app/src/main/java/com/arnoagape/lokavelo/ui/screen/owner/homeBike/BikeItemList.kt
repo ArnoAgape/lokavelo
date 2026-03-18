@@ -93,6 +93,7 @@ fun BikeItem(
 fun BikeItemRow(
     bike: Bike,
     modifier: Modifier = Modifier,
+    priceOverride: Long? = null,
     startDate: LocalDate? = null,
     endDate: LocalDate? = null,
     badge: (@Composable () -> Unit)? = null
@@ -127,50 +128,44 @@ fun BikeItemRow(
                 badge?.invoke()
             }
 
-            val totalPrice = if (startDate != null && endDate != null) {
-                val days = ChronoUnit.DAYS
-                    .between(startDate, endDate)
-                    .toInt()
-                    .coerceAtLeast(1)
+            val priceToDisplay = when {
+                priceOverride != null -> priceOverride
 
-                calculateRentalPrice(
-                    dayPrice = bike.priceInCents,
-                    days = days,
-                    twoDaysPrice = bike.priceTwoDaysInCents,
-                    weekPrice = bike.priceWeekInCents,
-                    monthPrice = bike.priceMonthInCents
-                )
-            } else null
+                startDate != null && endDate != null -> {
+                    val days = ChronoUnit.DAYS
+                        .between(startDate, endDate)
+                        .toInt()
+                        .coerceAtLeast(1)
 
-            val formattedPrice = remember(bike.priceInCents) {
-                val priceInEuros = bike.priceInCents / 100.0
-                NumberFormat
-                    .getCurrencyInstance(Locale.FRANCE)
-                    .format(priceInEuros)
-            }
-
-            if (totalPrice != null) {
-
-                val formattedTotal = remember(totalPrice) {
-                    val euros = totalPrice / 100.0 * 1.1
-                    NumberFormat.getCurrencyInstance(Locale.FRANCE).format(euros)
+                    calculateRentalPrice(
+                        dayPrice = bike.priceInCents,
+                        days = days,
+                        twoDaysPrice = bike.priceTwoDaysInCents,
+                        weekPrice = bike.priceWeekInCents,
+                        monthPrice = bike.priceMonthInCents
+                    )
                 }
 
-                Text(
-                    text = formattedTotal,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                else -> bike.priceInCents
+            }
 
-            } else {
+            val formattedPrice = remember(priceToDisplay) {
+                NumberFormat
+                    .getCurrencyInstance(Locale.FRANCE)
+                    .format(priceToDisplay / 100.0)
+            }
 
-                Text(
-                    text = stringResource(
+            Text(
+                text = if (startDate != null && endDate != null || priceOverride != null) {
+                    formattedPrice
+                } else {
+                    stringResource(
                         R.string.price_per_day,
                         formattedPrice
-                    ),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+                    )
+                },
+                style = MaterialTheme.typography.bodyMedium
+            )
 
             if (startDate != null && endDate != null) {
                 RentalDates(

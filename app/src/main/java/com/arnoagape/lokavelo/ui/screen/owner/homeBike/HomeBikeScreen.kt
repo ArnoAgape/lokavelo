@@ -47,10 +47,13 @@ import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.EventsEffect
+import com.arnoagape.lokavelo.ui.common.SelectionState
 import com.arnoagape.lokavelo.ui.common.components.ConfirmDeleteDialog
 import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
 import com.arnoagape.lokavelo.ui.common.components.ErrorType
+import com.arnoagape.lokavelo.ui.preview.PreviewData
 import com.arnoagape.lokavelo.ui.screen.owner.rental.HomeRentalContent
+import com.arnoagape.lokavelo.ui.screen.owner.rental.HomeRentalUiState
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -197,13 +200,18 @@ fun HomeBikeScreen(
                 onEnterSelectionMode = { viewModel.enterSelectionMode() }
             )
 
-            1 -> HomeRentalContent(
-                modifier = Modifier.padding(padding),
-                state = rentalState,
-                onRefresh = { viewModel.refreshRentals() },
-                onRentalClick = { TODO() },
-            )
+            1 ->
+                state.currentUser?.id?.let { userId ->
+                    HomeRentalContent(
+                        modifier = Modifier.padding(padding),
+                        currentUserId = userId,
+                        state = rentalState,
+                        onRefresh = { viewModel.refreshRentals() },
+                        onRentalClick = { TODO() },
+                    )
+                }
         }
+
         val count = state.selection.selectedIds.size
         ConfirmDeleteDialog(
             show = showDeleteDialog,
@@ -223,7 +231,7 @@ fun HomeBikeScreen(
 @Composable
 fun HomeBikeContent(
     modifier: Modifier = Modifier,
-    state: HomeBikeScreenState,
+    state: HomeState,
     onBikeClick: (Bike) -> Unit,
     onRefresh: () -> Unit,
     onEnterSelectionMode: () -> Unit,
@@ -231,7 +239,7 @@ fun HomeBikeContent(
 ) {
     val refreshState = rememberPullToRefreshState()
 
-    when (val ui = state.uiState) {
+    when (val ui = state.bikesState) {
 
         is HomeBikeUiState.Success -> {
             PullToRefreshBox(
@@ -284,15 +292,14 @@ fun HomeBikeContent(
 fun HomeBikeScreenPreview() {
     LokaveloTheme {
 
-        val sampleBikes = listOf(
-            Bike(id = "1", title = "Vélo gravel Origine", priceInCents = 2500),
-            Bike(id = "2", title = "Vélo VTT Rockrider", priceInCents = 1000),
-            Bike(id = "3", title = "Vélo randonneuse Riverside", priceInCents = 2000)
-        )
-
-        val previewState = HomeBikeScreenState(
-            uiState = HomeBikeUiState.Success(sampleBikes),
-            isRefreshing = false
+        val previewState = HomeState(
+            bikesState = HomeBikeUiState.Success(PreviewData.bikes),
+            isRefreshing = false,
+            rentalState = HomeRentalUiState.Empty,
+            currentUser = null,
+            selection = SelectionState(),
+            searchQuery = "",
+            isSearchActive = false
         )
 
         HomeBikeContent(

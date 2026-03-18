@@ -5,6 +5,7 @@ import com.arnoagape.lokavelo.domain.model.Rental
 import com.arnoagape.lokavelo.domain.model.RentalStatus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,6 +22,18 @@ class RentalRepository @Inject constructor(
 
     suspend fun createRental(rental: Rental) = rentalApi.createRental(rental)
     fun observeOwnerRentals(): Flow<List<Rental>> = rentalApi.observeOwnerRentals()
+
+    private fun observeUserRentals(): Flow<List<Rental>> = rentalApi.observeUserRentals()
+
+    fun observeAllMyRentals(): Flow<List<Rental>> {
+        return combine(
+            observeOwnerRentals(),
+            observeUserRentals()
+        ) { owner, renter ->
+            (owner + renter)
+                .distinctBy { it.id } // sécurité anti doublon
+        }
+    }
 
     fun observeRental(conversationId: String): Flow<Rental?> =
         rentalApi.observeRental(conversationId)

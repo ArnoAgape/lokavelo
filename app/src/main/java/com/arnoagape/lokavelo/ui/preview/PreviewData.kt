@@ -18,6 +18,30 @@ object PreviewData {
         photoUrls = emptyList()
     )
 
+    val bikes = listOf(
+        Bike(
+            id = "bike1",
+            title = "Origine Trail Explore",
+            ownerId = "owner1",
+            priceInCents = 2000,
+            photoUrls = emptyList()
+        ),
+        Bike(
+            id = "bike2",
+            title = "Scott Sub 30",
+            ownerId = "owner1",
+            priceInCents = 1500,
+            photoUrls = emptyList()
+        ),
+        Bike(
+            id = "bike3",
+            title = "Riverside Touring 920",
+            ownerId = "owner1",
+            priceInCents = 2200,
+            photoUrls = emptyList()
+        ),
+    )
+
     val conversation = Conversation(
         id = "conv1",
         bikeId = "bike1",

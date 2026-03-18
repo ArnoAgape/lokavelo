@@ -10,6 +10,8 @@ interface RentalApi {
 
     fun observeOwnerRentals(): Flow<List<Rental>>
 
+    fun observeUserRentals(): Flow<List<Rental>>
+
     fun observeRental(conversationId: String): Flow<Rental?>
 
     suspend fun updateRentalStatus(

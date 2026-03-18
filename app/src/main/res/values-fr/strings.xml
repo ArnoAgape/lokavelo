@@ -27,6 +27,7 @@
         en précisant ta demande</string>
     <string name="hint_messaging_conversation">Écris ton message ici</string>
     <string name="hint_title">Ex : Gravel équipé voyage</string>
+    <string name="hint_brand">Ex : Origine Trail Explore</string>
     <string name="hint_description">Décris ton vélo, ses équipements et conditions</string>
 
     // MISC WORDS

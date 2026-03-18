@@ -27,6 +27,7 @@
         specifying your request</string>
     <string name="hint_messaging_conversation">Write your message here</string>
     <string name="hint_title">E.g., Travel-ready gravel bike</string>
+    <string name="hint_brand">E.g., Origine Trail Explore</string>
     <string name="hint_description">Describe your bike, its equipment, and its condition</string>
 
     // MISC WORDS

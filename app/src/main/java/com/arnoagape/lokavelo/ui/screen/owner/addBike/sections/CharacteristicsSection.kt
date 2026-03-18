@@ -44,6 +44,8 @@ import com.arnoagape.lokavelo.domain.model.BikeSize
 import com.arnoagape.lokavelo.domain.model.labelRes
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
 
+private const val BRAND_MAX_LENGTH = 40
+
 @Composable
 fun CharacteristicsSection(
     category: BikeCategory?,
@@ -101,7 +103,31 @@ fun CharacteristicsSection(
                     capitalization = KeyboardCapitalization.Sentences,
                     imeAction = ImeAction.Next
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = {
+                    Text(
+                        stringResource(R.string.hint_brand),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                    )
+                },
+                supportingText = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Text(
+                            text = "${brand.length}/$BRAND_MAX_LENGTH",
+                            color = when {
+                                brand.length > BRAND_MAX_LENGTH * 0.9 ->
+                                    MaterialTheme.colorScheme.error
+
+                                else -> MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                        )
+                    }
+                }
             )
 
             Dropdown(
@@ -134,7 +160,7 @@ fun CharacteristicsSection(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T>Dropdown(
+fun <T> Dropdown(
     selected: T?,
     items: List<T>,
     label: String,
