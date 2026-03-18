@@ -29,8 +29,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.domain.model.Rental
 import com.arnoagape.lokavelo.domain.model.RentalStatus
@@ -103,7 +105,9 @@ fun HomeRentalContent(
                             ) {
 
                                 Text(
-                                    text = if (showHistory) "Historique masqué" else "Voir l’historique",
+                                    text =
+                                        if (showHistory) stringResource(R.string.hide_history)
+                                        else stringResource(R.string.show_history),
                                     style = MaterialTheme.typography.labelLarge,
                                     color = MaterialTheme.colorScheme.primary
                                 )

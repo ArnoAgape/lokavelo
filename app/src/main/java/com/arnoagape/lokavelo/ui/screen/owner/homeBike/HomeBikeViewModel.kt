@@ -16,6 +16,7 @@ import com.arnoagape.lokavelo.ui.screen.owner.rental.HomeRentalUiState
 import com.arnoagape.lokavelo.ui.utils.NetworkUtils
 import com.arnoagape.lokavelo.ui.utils.normalizeForSearch
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -36,6 +38,7 @@ import javax.inject.Inject
  * ViewModel responsible for the owner home bike screen.
  * Handles bike listing and user actions related to a bike.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeBikeViewModel @Inject constructor(
     private val bikeRepository: BikeRepository,
@@ -58,19 +61,23 @@ class HomeBikeViewModel @Inject constructor(
             )
 
     private val rentalsFlow: Flow<List<RentalWithBike>> =
-        combine(
-            rentalRepository.observeAllMyRentals(),
-            bikesFlow
-        ) { rentals, bikes ->
+        rentalRepository.observeAllMyRentals()
+            .flatMapLatest { rentals ->
 
-            val bikeMap = bikes.associateBy { it.id }
+                val bikeIds = rentals.map { it.bikeId }.distinct()
 
-            rentals.mapNotNull { rental ->
-                bikeMap[rental.bikeId]?.let { bike ->
-                    RentalWithBike(rental, bike)
-                }
+                bikeRepository.observeBikesByIds(bikeIds)
+                    .map { bikes ->
+
+                        val bikeMap = bikes.associateBy { it.id }
+
+                        rentals.mapNotNull { rental ->
+                            bikeMap[rental.bikeId]?.let { bike ->
+                                RentalWithBike(rental, bike)
+                            }
+                        }
+                    }
             }
-        }
 
     private val _selection = MutableStateFlow(SelectionState())
     private val _isRefreshing = MutableStateFlow(false)

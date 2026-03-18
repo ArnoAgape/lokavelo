@@ -8,8 +8,8 @@ import com.arnoagape.lokavelo.data.service.rental.FirebaseRentalApi
 import com.arnoagape.lokavelo.data.service.rental.RentalApi
 import com.arnoagape.lokavelo.data.service.user.FirebaseUserApi
 import com.arnoagape.lokavelo.data.service.user.UserApi
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
@@ -21,21 +21,21 @@ import javax.inject.Singleton
  */
 @Module
 @InstallIn(SingletonComponent::class)
-class AppModule {
+abstract class ApiBindingModule {
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideBikeApi(firebaseBikeApi: FirebaseBikeApi): BikeApi = firebaseBikeApi
+    abstract fun bindBikeApi(impl: FirebaseBikeApi): BikeApi
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideUserApi(): UserApi = FirebaseUserApi()
+    abstract fun bindUserApi(impl: FirebaseUserApi): UserApi
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideConversationApi(): ConversationApi = FirebaseConversationApi()
+    abstract fun bindConversationApi(impl: FirebaseConversationApi): ConversationApi
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRentalApi(): RentalApi = FirebaseRentalApi()
+    abstract fun bindRentalApi(impl: FirebaseRentalApi): RentalApi
 }

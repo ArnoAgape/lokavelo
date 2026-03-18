@@ -4,88 +4,43 @@ import com.arnoagape.lokavelo.domain.model.Rental
 import com.arnoagape.lokavelo.domain.model.RentalStatus
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.snapshots
+import jakarta.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 
-class FirebaseRentalApi : RentalApi {
+private const val RENTALS_COLLECTION = "rentals"
 
-    private val auth = FirebaseAuth.getInstance()
-    private val firestore = FirebaseFirestore.getInstance()
+class FirebaseRentalApi @Inject constructor(
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
+) : RentalApi {
+
+    private val rentalsCollection by lazy { firestore.collection(RENTALS_COLLECTION) }
+
+    private fun requireUserId(): String =
+        auth.currentUser?.uid ?: throw IllegalStateException("User not authenticated")
+
+    // ─────────────────────────────────────────────
+    // Write
+    // ─────────────────────────────────────────────
 
     override suspend fun createRental(rental: Rental) {
-
-        firestore
-            .collection("rentals")
-            .document(rental.id) // conversationId
-            .set(rental)
-            .await()
+        rentalsCollection.document(rental.id).set(rental).await()
     }
 
-    override fun observeOwnerRentals(): Flow<List<Rental>> {
-
-        val userId = auth.currentUser?.uid
-            ?: throw IllegalStateException("User not authenticated")
-
-        return firestore
-            .collection("rentals")
-            .whereEqualTo("ownerId", userId)
-            .snapshots()
-            .map { snapshot ->
-                snapshot.documents.mapNotNull { doc ->
-                    doc.toObject(Rental::class.java)?.copy(id = doc.id)
-                }
-            }
-    }
-
-    override fun observeUserRentals(): Flow<List<Rental>> {
-
-        val userId = auth.currentUser?.uid
-            ?: throw IllegalStateException("User not authenticated")
-
-        return firestore
-            .collection("rentals")
-            .whereEqualTo("renterId", userId)
-            .snapshots()
-            .map { snapshot ->
-                snapshot.documents.mapNotNull { doc ->
-                    doc.toObject(Rental::class.java)?.copy(id = doc.id)
-                }
-            }
-    }
-
-    override fun observeRental(conversationId: String): Flow<Rental?> {
-
-        return firestore
-            .collection("rentals")
-            .document(conversationId)
-            .snapshots()
-            .map { snapshot ->
-                snapshot.toObject(Rental::class.java)?.copy(id = snapshot.id)
-            }
-    }
-
-    override suspend fun updateRentalStatus(
-        rentalId: String,
-        status: RentalStatus
-    ) {
-
-        firestore
-            .collection("rentals")
-            .document(rentalId)
+    override suspend fun updateRentalStatus(rentalId: String, status: RentalStatus) {
+        rentalsCollection.document(rentalId)
             .update("status", status.name)
             .await()
     }
 
-    override suspend fun makeOffer(
-        rentalId: String,
-        newPrice: Long
-    ) {
-
-        firestore
-            .collection("rentals")
-            .document(rentalId)
+    override suspend fun makeOffer(rentalId: String, newPrice: Long) {
+        rentalsCollection.document(rentalId)
             .update(
                 mapOf(
                     "priceTotalInCents" to newPrice,
@@ -94,4 +49,36 @@ class FirebaseRentalApi : RentalApi {
             )
             .await()
     }
+
+    // ─────────────────────────────────────────────
+    // Observe
+    // ─────────────────────────────────────────────
+
+    override fun observeOwnerRentals(): Flow<List<Rental>> =
+        rentalsCollection
+            .whereEqualTo("ownerId", requireUserId())
+            .snapshots()
+            .map { it.documents.toRentalList() }
+            .flowOn(Dispatchers.IO)
+
+    override fun observeUserRentals(): Flow<List<Rental>> =
+        rentalsCollection
+            .whereEqualTo("renterId", requireUserId())
+            .snapshots()
+            .map { it.documents.toRentalList() }
+            .flowOn(Dispatchers.IO)
+
+    override fun observeRental(conversationId: String): Flow<Rental?> =
+        rentalsCollection
+            .document(conversationId)
+            .snapshots()
+            .map { it.toObject(Rental::class.java)?.copy(id = it.id) }
+            .flowOn(Dispatchers.IO)
 }
+
+// ─────────────────────────────────────────────
+// Extensions
+// ─────────────────────────────────────────────
+
+private fun List<DocumentSnapshot>.toRentalList(): List<Rental> =
+    mapNotNull { doc -> doc.toObject(Rental::class.java)?.copy(id = doc.id) }

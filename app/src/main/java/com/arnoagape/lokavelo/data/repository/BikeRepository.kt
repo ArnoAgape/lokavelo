@@ -27,6 +27,8 @@ class BikeRepository @Inject constructor(
     private val userRepository: UserRepository
 ) {
 
+    fun observeBikesByIds(ids: List<String>): Flow<List<Bike>> = bikeApi.observeBikesByIds(ids)
+
     fun observeOwnerBikes(): Flow<List<Bike>> =
         userRepository.observeCurrentUser()
             .filterNotNull()

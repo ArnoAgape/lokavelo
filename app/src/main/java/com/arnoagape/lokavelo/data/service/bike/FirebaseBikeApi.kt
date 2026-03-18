@@ -1,17 +1,15 @@
 package com.arnoagape.lokavelo.data.service.bike
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
-import androidx.exifinterface.media.ExifInterface
 import com.arnoagape.lokavelo.data.compression.ImageCompressor
 import com.arnoagape.lokavelo.data.dto.BikeDto
 import com.arnoagape.lokavelo.domain.model.Bike
+import com.arnoagape.lokavelo.ui.utils.normalizeImage
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.dataObjects
@@ -21,79 +19,112 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import java.util.UUID
 
+private const val TAG = "FirebaseBikeApi"
+private const val BIKES_COLLECTION = "bikes"
+private const val MAX_PHOTOS = 3
+private const val FIRESTORE_IN_CLAUSE_LIMIT = 10
+
 class FirebaseBikeApi @Inject constructor(
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore,
+    private val storage: FirebaseStorage,
     private val compressor: ImageCompressor,
     @param:ApplicationContext private val context: Context
 ) : BikeApi {
 
-    private val auth = FirebaseAuth.getInstance()
-    private val firestore = FirebaseFirestore.getInstance()
-    private val bikesCollection = firestore.collection("bikes")
+    private val bikesCollection by lazy { firestore.collection(BIKES_COLLECTION) }
 
     private fun requireUserId(): String =
         auth.currentUser?.uid ?: throw IllegalStateException("No authenticated user")
 
-    override fun observeBikesForOwner(ownerId: String): Flow<List<Bike>> {
-        return bikesCollection
+    private val currentOwnerName: String
+        get() = auth.currentUser?.displayName ?: "Utilisateur"
+
+    // ─────────────────────────────────────────────
+    // Observe
+    // ─────────────────────────────────────────────
+
+    override fun observeBikesByIds(ids: List<String>): Flow<List<Bike>> {
+        if (ids.isEmpty()) return flowOf(emptyList())
+
+        val flows = ids
+            .chunked(FIRESTORE_IN_CLAUSE_LIMIT)
+            .map { chunk ->
+                firestore.collection(BIKES_COLLECTION)
+                    .whereIn(FieldPath.documentId(), chunk)
+                    .snapshots()
+                    .map { snapshot ->
+                        snapshot.documents.mapNotNull { doc ->
+                            doc.toObject(BikeDto::class.java)
+                                ?.let { Bike.fromDto(it).copy(id = doc.id) }
+                        }
+                    }
+            }
+
+        return combine(flows) { results ->
+            results.asList().flatten().distinctBy { it.id }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun observeBikesForOwner(ownerId: String): Flow<List<Bike>> =
+        bikesCollection
             .whereEqualTo("ownerId", ownerId)
             .orderBy("createdAt", Query.Direction.DESCENDING)
             .dataObjects<BikeDto>()
-            .map { it.map(Bike::fromDto) }
+            .map { dtos -> dtos.map(Bike::fromDto) }
             .flowOn(Dispatchers.IO)
-    }
 
-    override fun observeAllBikes(): Flow<List<Bike>> {
-
-        return bikesCollection
+    override fun observeAllBikes(): Flow<List<Bike>> =
+        bikesCollection
             .whereEqualTo("available", true)
             .dataObjects<BikeDto>()
-            .map { it.map(Bike::fromDto) }
+            .map { dtos -> dtos.map(Bike::fromDto) }
             .flowOn(Dispatchers.IO)
-    }
 
-    override fun observeBikeForPublic(bikeId: String): Flow<Bike?> {
-
-        return bikesCollection
+    override fun observeBikeForPublic(bikeId: String): Flow<Bike?> =
+        bikesCollection
             .document(bikeId)
             .snapshots()
-            .map { snapshot ->
-                snapshot.toObject(BikeDto::class.java)
-                    ?.let { Bike.fromDto(it) }
-            }
+            .map { snapshot -> snapshot.toObject(BikeDto::class.java)?.let(Bike::fromDto) }
             .flowOn(Dispatchers.IO)
-    }
+
+    override fun getBikeById(bikeId: String): Flow<Bike?> =
+        bikesCollection
+            .document(bikeId)
+            .snapshots()
+            .map { snapshot -> snapshot.toObject(BikeDto::class.java)?.let(Bike::fromDto) }
+            .flowOn(Dispatchers.IO)
+
+    // ─────────────────────────────────────────────
+    // Write
+    // ─────────────────────────────────────────────
 
     override suspend fun addBike(localUris: List<Uri>, bike: Bike): List<String> {
-
-        require(localUris.size <= 3) {
-            "Maximum 3 photos allowed"
-        }
+        require(localUris.size <= MAX_PHOTOS) { "Maximum $MAX_PHOTOS photos allowed" }
 
         val ownerId = requireUserId()
         val bikeRef = bikesCollection.document()
-        val bikeId = bikeRef.id
 
         val uploadedUrls = uploadBikePictures(
             ownerId = ownerId,
-            bikeId = bikeId,
+            bikeId = bikeRef.id,
             uris = localUris
         )
 
         val finalBike = bike.copy(
-            id = bikeId,
+            id = bikeRef.id,
             ownerId = ownerId,
-            ownerName = auth.currentUser?.displayName ?: "Utilisateur",
+            ownerName = currentOwnerName,
             photoUrls = uploadedUrls
         )
-        Log.d("SAVE", "Full DTO = $finalBike")
 
         bikeRef.set(finalBike.toDto()).await()
 
@@ -104,244 +135,118 @@ class FirebaseBikeApi @Inject constructor(
         localUris: List<Uri>,
         bike: Bike
     ): Result<Unit> = withContext(Dispatchers.IO) {
+        runCatching {
+            val docRef = bikesCollection.document(bike.id)
 
-        try {
-            val ownerId = requireUserId()
-            val currentUser = FirebaseAuth.getInstance().currentUser
-            val ownerName = currentUser?.displayName ?: "Utilisateur"
-            val bikeId = bike.id
+            val existingBike = docRef.get().await()
+                .toObject(BikeDto::class.java)
+                ?.let(Bike::fromDto)
+                ?: error("Bike ${bike.id} not found")
 
-            val docRef = bikesCollection.document(bikeId)
-
-            // 1️⃣ Récupérer état actuel Firestore
-            val snapshot = docRef.get().await()
-            val existingBike = snapshot.toObject(BikeDto::class.java)
-                ?.let { Bike.fromDto(it) }
-                ?: return@withContext Result.failure(
-                    IllegalStateException("Bike not found")
-                )
-
-            val oldUrls = existingBike.photoUrls
-
-            // 2️⃣ URLs à supprimer
-            val deletedUrls = oldUrls - bike.photoUrls.toSet()
-
+            // Supprimer les photos retirées
+            val deletedUrls = existingBike.photoUrls - bike.photoUrls.toSet()
             deleteBikePicturesByUrls(deletedUrls)
 
-            // 3️⃣ Upload nouvelles photos
+            // Uploader les nouvelles photos locales
             val uploadedUrls = if (localUris.isNotEmpty()) {
-                uploadBikePictures(ownerId, bikeId, localUris)
+                uploadBikePictures(requireUserId(), bike.id, localUris)
             } else emptyList()
 
-            // 4️⃣ Liste finale propre
             val finalUrls = bike.photoUrls + uploadedUrls
 
-            // 5️⃣ Mise à jour Firestore
-            docRef.update(
-                mapOf(
-                    "title" to bike.title,
-                    "description" to bike.description,
-                    "ownerName" to ownerName,
-                    "ownerId" to bike.ownerId,
-                    "location" to bike.location,
-                    "priceInCents" to bike.priceInCents,
-                    "priceTwoDaysInCents" to bike.priceTwoDaysInCents,
-                    "priceWeekInCents" to bike.priceWeekInCents,
-                    "priceMonthInCents" to bike.priceMonthInCents,
-                    "depositInCents" to bike.depositInCents,
-                    "electric" to bike.electric,
-                    "category" to bike.category,
-                    "brand" to bike.brand,
-                    "size" to bike.size,
-                    "condition" to bike.condition,
-                    "accessories" to bike.accessories,
-                    "photoUrls" to finalUrls
-                )
-            ).await()
-
-            Result.success(Unit)
-
-        } catch (e: Exception) {
-            Log.e("FirebaseBikeApi", "Edit failed", e)
-            Result.failure(e)
-        }
+            docRef.update(bike.toUpdateMap(currentOwnerName, finalUrls)).await()
+            Unit
+        }.onFailure { Log.e(TAG, "editBike failed", it) }
     }
 
-    /**
-     * Retrieves a single medicine by its identifier.
-     *
-     * Data collection and mapping are executed on an IO thread.
-     */
-    override fun getBikeById(bikeId: String): Flow<Bike?> {
+    // ─────────────────────────────────────────────
+    // Delete
+    // ─────────────────────────────────────────────
 
-        return bikesCollection.document(bikeId)
-            .snapshots()
-            .map { snapshot ->
-                snapshot.toObject(BikeDto::class.java)
-                    ?.let { Bike.fromDto(it) }
-            }
-            .flowOn(Dispatchers.IO)
-    }
-
-    /*override fun getBikesByCategory(
-        category: BikeCategory,
-        categoryId: String
-    ): Flow<List<Bike>> {
-
-        bikesCollection
-            .whereEqualTo("categoryId", categoryId)
-            .orderBy("nameLowercase")
-        return
-            .dataObjects<BikeDto>()
-            .map { dto ->
-                sort.sort(dto.map { Bike.fromDto(it) })
-            }
-            .flowOn(Dispatchers.IO)
-    }*/
-
-    /**
-     * Deletes multiple medicines from Firestore.
-     *
-     * Each deletion is a network operation executed on an IO thread.
-     */
     override suspend fun deleteBikes(ids: Set<String>): Result<Unit> =
         withContext(Dispatchers.IO) {
-            try {
+            runCatching {
                 val ownerId = requireUserId()
+
                 ids.forEach { id ->
-                    if (id.isBlank()) error("Bike ID empty")
-                    bikesCollection.document(id).delete()
-                }
-                ids.forEach { id ->
-                    deleteBikeFolder(ownerId, id)
+                    require(id.isNotBlank()) { "Bike ID must not be blank" }
+                    bikesCollection.document(id).delete().await() // ✅ await() ajouté
                 }
 
-                Result.success(Unit)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
+                ids.forEach { id -> deleteBikeFolder(ownerId, id) }
+            }.onFailure { Log.e(TAG, "deleteBikes failed", it) }
         }
 
-    /**
-     * Uploads a bike photo to Firebase Storage.
-     * Validates MIME type and returns the public download URL.
-     */
+    // ─────────────────────────────────────────────
+    // Storage helpers
+    // ─────────────────────────────────────────────
+
     private suspend fun uploadBikePictures(
         ownerId: String,
         bikeId: String,
         uris: List<Uri>
-    ): List<String> {
+    ): List<String> = uris.mapNotNull { uri ->
+        runCatching {
+            val normalizedUri = normalizeImage(context, uri)
+            val compressedFile = compressor.compress(normalizedUri)
+            val fileName = "${UUID.randomUUID()}.jpg"
 
-        return uris.mapNotNull { uri ->
+            val ref = storage.reference
+                .child("bikePictures")
+                .child("user_$ownerId")
+                .child("bike_$bikeId")
+                .child(fileName)
 
-            try {
-
-                // 🔥 1️⃣ Normalisation EXIF
-                val normalizedUri = normalizeImage(context, uri)
-
-                // 🔥 2️⃣ Compression
-                val compressedFile = compressor.compress(normalizedUri)
-
-                val fileName = "${UUID.randomUUID()}.jpg"
-
-                val storageRef = FirebaseStorage.getInstance()
-                    .reference
-                    .child("bikePictures")
-                    .child("user_$ownerId")
-                    .child("bike_$bikeId")
-                    .child(fileName)
-
-                storageRef.putFile(compressedFile.toUri()).await()
-
-                storageRef.downloadUrl.await().toString()
-
-            } catch (e: Exception) {
-                Log.e("FirebaseUpload", "Error while uploading", e)
-                null
-            }
+            ref.putFile(compressedFile.toUri()).await()
+            ref.downloadUrl.await().toString()
+        }.getOrElse {
+            Log.e(TAG, "Upload failed for $uri", it)
+            null
         }
     }
 
-    /**
-     * Deletes a photo from Firebase Storage.
-     * Validates MIME type and returns the public download URL.
-     */
     private suspend fun deleteBikeFolder(ownerId: String, bikeId: String) {
-
-        val folderRef = FirebaseStorage.getInstance()
-            .reference
+        val folderRef = storage.reference
             .child("bikePictures")
             .child("user_$ownerId")
             .child("bike_$bikeId")
 
-        val list = folderRef.listAll().await()
-
-        list.items.forEach { it.delete().await() }
+        folderRef.listAll().await().items.forEach { it.delete().await() }
     }
 
     private suspend fun deleteBikePicturesByUrls(urls: List<String>) {
         urls.forEach { url ->
-            try {
-                val ref = FirebaseStorage.getInstance()
-                    .getReferenceFromUrl(url)
-
-                ref.delete().await()
-            } catch (e: Exception) {
-                Log.e("FirebaseDelete", "Error deleting photo: $url", e)
-            }
+            runCatching {
+                storage.getReferenceFromUrl(url).delete().await()
+            }.onFailure { Log.e(TAG, "Failed to delete photo: $url", it) }
         }
     }
-
 }
 
-fun normalizeImage(
-    context: Context,
-    uri: Uri
-): Uri {
+// ─────────────────────────────────────────────
+// Extension — mapping vers Firestore
+// ─────────────────────────────────────────────
 
-    val original = context.contentResolver.openInputStream(uri)?.use {
-        BitmapFactory.decodeStream(it)
-    } ?: throw IllegalStateException("Decode failed")
-
-    val orientation = context.contentResolver.openInputStream(uri)?.use {
-        ExifInterface(it).getAttributeInt(
-            ExifInterface.TAG_ORIENTATION,
-            ExifInterface.ORIENTATION_NORMAL
-        )
-    } ?: ExifInterface.ORIENTATION_NORMAL
-
-    val matrix = Matrix().apply {
-        when (orientation) {
-            ExifInterface.ORIENTATION_ROTATE_90 -> postRotate(90f)
-            ExifInterface.ORIENTATION_ROTATE_180 -> postRotate(180f)
-            ExifInterface.ORIENTATION_ROTATE_270 -> postRotate(270f)
-        }
-    }
-
-    val corrected = Bitmap.createBitmap(
-        original,
-        0,
-        0,
-        original.width,
-        original.height,
-        matrix,
-        true
+/**
+ * Construit la map de mise à jour Firestore pour un vélo existant.
+ */
+private fun Bike.toUpdateMap(ownerName: String, photoUrls: List<String>): Map<String, Any?> =
+    mapOf(
+        "title" to title,
+        "description" to description,
+        "ownerName" to ownerName,
+        "ownerId" to ownerId,
+        "location" to location,
+        "priceInCents" to priceInCents,
+        "priceTwoDaysInCents" to priceTwoDaysInCents,
+        "priceWeekInCents" to priceWeekInCents,
+        "priceMonthInCents" to priceMonthInCents,
+        "depositInCents" to depositInCents,
+        "electric" to electric,
+        "category" to category,
+        "brand" to brand,
+        "size" to size,
+        "condition" to condition,
+        "accessories" to accessories,
+        "photoUrls" to photoUrls
     )
-
-    if (corrected != original) {
-        original.recycle()
-    }
-
-    val file = File(
-        context.cacheDir,
-        "normalized_${System.currentTimeMillis()}.jpg"
-    )
-
-    FileOutputStream(file).use {
-        corrected.compress(Bitmap.CompressFormat.JPEG, 95, it)
-    }
-
-    corrected.recycle()
-
-    return file.toUri()
-}

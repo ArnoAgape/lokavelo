@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface BikeApi {
 
+    fun observeBikesByIds(ids: List<String>): Flow<List<Bike>>
     fun observeBikesForOwner(ownerId: String): Flow<List<Bike>>
     fun observeAllBikes(): Flow<List<Bike>>
     fun observeBikeForPublic(bikeId: String): Flow<Bike?>
