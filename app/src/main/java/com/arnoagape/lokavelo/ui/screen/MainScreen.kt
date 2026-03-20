@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.navigation
+package com.arnoagape.lokavelo.ui.screen
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +17,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.arnoagape.lokavelo.navigation.BottomBar
+import com.arnoagape.lokavelo.navigation.Screen
+import com.arnoagape.lokavelo.navigation.screenFromRoute
+import com.arnoagape.lokavelo.navigation.stringArg
 import com.arnoagape.lokavelo.ui.screen.account.home.AccountHomeScreen
 import com.arnoagape.lokavelo.ui.screen.account.profile.ProfileScreen
 import com.arnoagape.lokavelo.ui.screen.account.settings.help.HelpSettingsScreen
@@ -49,6 +53,7 @@ fun MainScreen(
     val currentRoute = tabNavController.currentBackStackEntryAsState().value?.destination?.route
 
     val unreadMessages by messagingVm.unreadCount.collectAsStateWithLifecycle()
+    val pendingLocations by homeBikeVm.pendingCount.collectAsStateWithLifecycle()
 
     Scaffold(
         bottomBar = {
@@ -56,6 +61,7 @@ fun MainScreen(
                 BottomBar(
                     currentScreen = screenFromRoute(currentRoute) ?: Screen.Main.Map,
                     unreadMessages = unreadMessages,
+                    pendingLocations = pendingLocations,
                     onItemSelected = { screen ->
 
                         val requiresAuth = screen is Screen.Owner.HomeBike

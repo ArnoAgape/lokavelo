@@ -80,8 +80,8 @@ fun ErrorOverlay(
         )
 
         ErrorType.EMPTY_RENTALS -> Triple(
-            stringResource(R.string.empty_messaging),
-            listOf(R.drawable.ic_bike_no_message),
+            stringResource(R.string.empty_current_rentals),
+            listOf(R.drawable.ic_bike_no_rentals),
             false
         )
 

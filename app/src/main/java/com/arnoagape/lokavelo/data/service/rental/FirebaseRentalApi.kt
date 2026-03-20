@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 
 private const val RENTALS_COLLECTION = "rentals"
+private const val USERS_COLLECTION = "users"
 
 class FirebaseRentalApi @Inject constructor(
     private val auth: FirebaseAuth,
@@ -21,6 +22,7 @@ class FirebaseRentalApi @Inject constructor(
 ) : RentalApi {
 
     private val rentalsCollection by lazy { firestore.collection(RENTALS_COLLECTION) }
+    private val usersCollection by lazy { firestore.collection(USERS_COLLECTION)}
 
     private fun requireUserId(): String =
         auth.currentUser?.uid ?: throw IllegalStateException("User not authenticated")
@@ -31,6 +33,13 @@ class FirebaseRentalApi @Inject constructor(
 
     override suspend fun createRental(rental: Rental) {
         rentalsCollection.document(rental.id).set(rental).await()
+    }
+
+    override suspend fun markRentalsAsRead(ownerId: String) {
+        usersCollection
+            .document(ownerId)
+            .update("pendingRentalsUnread", 0)
+            .await()
     }
 
     override suspend fun updateRentalStatus(rentalId: String, status: RentalStatus) {

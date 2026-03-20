@@ -6,6 +6,7 @@ import com.arnoagape.lokavelo.domain.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.snapshots
@@ -101,6 +102,17 @@ class FirebaseUserApi @Inject constructor(
             ?.let { User.fromDto(it.copy(id = userId)) }
     }
 
+    override fun observePendingRentalsUnread(userId: String): Flow<Int> =
+        callbackFlow {
+            val listener = firestore.collection(USERS_COLLECTION)
+                .document(userId)
+                .addSnapshotListener { snapshot, _ ->
+                    val count = snapshot?.getLong("pendingRentalsUnread")?.toInt() ?: 0
+                    trySend(count)
+                }
+            awaitClose { listener.remove() }
+        }
+
     // ─────────────────────────────────────────────
     // Write
     // ─────────────────────────────────────────────
@@ -114,6 +126,23 @@ class FirebaseUserApi @Inject constructor(
                 .await()
             Unit
         }
+    }
+
+    override suspend fun markRentalsAsRead(userId: String) {
+        firestore.collection(USERS_COLLECTION)
+            .document(userId)
+            .update("pendingRentalsUnread", 0)
+            .await()
+    }
+
+    override suspend fun incrementPendingRentalsUnread(ownerId: String) {
+        firestore.collection(USERS_COLLECTION)
+            .document(ownerId)
+            .set(
+                mapOf("pendingRentalsUnread" to FieldValue.increment(1)),
+                SetOptions.merge()
+            )
+            .await()
     }
 
     /**

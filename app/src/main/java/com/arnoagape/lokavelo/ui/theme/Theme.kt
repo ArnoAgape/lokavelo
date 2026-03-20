@@ -30,6 +30,8 @@ private val DarkColorScheme = darkColorScheme(
 
     tertiary = Blue,
     onTertiary = Color.White,
+    onTertiaryContainer = Color(0xFFE3F2FD),
+    tertiaryContainer = Color(0xFF1E4F7A),
 
     background = DarkBlue,
     onBackground = Color(0xFFEAF4FB),
@@ -50,6 +52,8 @@ private val LightColorScheme = lightColorScheme(
 
     tertiary = Blue20,
     onTertiary = Color.Black,
+    onTertiaryContainer = Color(0xFF0B3C5D),
+    tertiaryContainer = Color(0xFFCFE9FF),
 
     background = Color(0xFFF4F9FD),
     onBackground = DarkBlue,

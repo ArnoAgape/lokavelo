@@ -15,6 +15,7 @@ import com.arnoagape.lokavelo.ui.common.SelectionState
 import com.arnoagape.lokavelo.ui.screen.owner.rental.HomeRentalUiState
 import com.arnoagape.lokavelo.ui.utils.NetworkUtils
 import com.arnoagape.lokavelo.ui.utils.normalizeForSearch
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -42,10 +44,13 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeBikeViewModel @Inject constructor(
     private val bikeRepository: BikeRepository,
-    userRepository: UserRepository,
+    private val userRepository: UserRepository,
     rentalRepository: RentalRepository,
+    auth: FirebaseAuth,
     private val networkUtils: NetworkUtils
 ) : ViewModel() {
+
+    private val currentUserId = auth.currentUser?.uid
 
     private val _events = Channel<Event>(Channel.BUFFERED)
     val eventsFlow = _events.receiveAsFlow()
@@ -197,6 +202,31 @@ class HomeBikeViewModel @Inject constructor(
                     isSearchActive = false
                 )
             )
+
+    val pendingCount: StateFlow<Int> =
+        if (currentUserId == null) {
+            flowOf(0).stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                0
+            )
+        } else {
+            userRepository
+                .observePendingRentalsUnread(currentUserId)
+                .stateIn(
+                    viewModelScope,
+                    SharingStarted.WhileSubscribed(5000),
+                    0
+                )
+        }
+
+    // Resets badge
+    fun markRentalsAsRead() {
+        viewModelScope.launch {
+            val userId = currentUserId ?: return@launch
+            userRepository.markRentalsAsRead(userId)
+        }
+    }
 
     // Rent/Owner Tab
     fun selectTab(index: Int) {

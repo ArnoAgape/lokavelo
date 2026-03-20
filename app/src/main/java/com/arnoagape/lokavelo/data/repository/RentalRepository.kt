@@ -21,6 +21,8 @@ class RentalRepository @Inject constructor(
 ) {
 
     suspend fun createRental(rental: Rental) = rentalApi.createRental(rental)
+
+    suspend fun markRentalsAsRead(ownerId: String) = rentalApi.markRentalsAsRead(ownerId)
     fun observeOwnerRentals(): Flow<List<Rental>> = rentalApi.observeOwnerRentals()
 
     private fun observeUserRentals(): Flow<List<Rental>> = rentalApi.observeUserRentals()

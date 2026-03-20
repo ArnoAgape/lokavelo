@@ -171,12 +171,6 @@ fun RentalItem(
 
     val isOwner = rental.ownerId == currentUserId
 
-    val displayedPrice = if (isOwner) {
-        rental.basePriceInCents
-    } else {
-        rental.priceTotalInCents
-    }
-
     SelectItemRow(
         id = rental.id,
         isSelectionMode = false,
@@ -187,13 +181,13 @@ fun RentalItem(
     ) {
         BikeItemRow(
             bike = bike,
-            priceOverride = displayedPrice,
             startDate = rental.startDate
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate(),
             endDate = rental.endDate
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate(),
+            showServiceFee = !isOwner,
             badge = {
                 RentalStatusBadge(rental.status)
             }

@@ -22,6 +22,7 @@ import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 fun BottomBar(
     currentScreen: Screen,
     unreadMessages: Int,
+    pendingLocations: Int,
     onItemSelected: (Screen) -> Unit
 ) {
     NavigationBar(
@@ -38,7 +39,19 @@ fun BottomBar(
         NavigationBarItem(
             selected = currentScreen is Screen.Owner.HomeBike,
             onClick = { onItemSelected(Screen.Owner.HomeBike) },
-            icon = { Icon(Icons.AutoMirrored.Filled.DirectionsBike, null) },
+            icon = {
+                BadgedBox(
+                    badge = {
+                        if (pendingLocations > 0) {
+                            Badge {
+                                Text(pendingLocations.toString())
+                            }
+                        }
+                    }
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.DirectionsBike, null)
+                }
+            },
             label = { Text(stringResource(R.string.rentals)) }
         )
 
@@ -77,6 +90,7 @@ private fun BottomBarPreview() {
         BottomBar(
             currentScreen = Screen.Owner.HomeBike,
             unreadMessages = 3,
+            pendingLocations = 1,
             onItemSelected = {}
         )
     }

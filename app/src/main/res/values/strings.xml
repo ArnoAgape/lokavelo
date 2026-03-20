@@ -45,6 +45,8 @@
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="location">Location</string>
+    <string name="my_rentals">My locations</string>
+    <string name="my_bikes">My bikes</string>
     <string name="service_fee_percent">Service fees (%1$s %%)</string>
     <string name="total_price_ttc">Total price incl. tax</string>
     <string name="price_details">Price details</string>
@@ -90,7 +92,7 @@
     <string name="browse_gallery">Browse gallery</string>
     <string name="no_bike">Tap here to rent out your bike</string>
     <string name="empty_messaging">No new messages</string>
-    <string name="empty_rentals">No rentals</string>
+    <string name="empty_current_rentals">No current rentals</string>
     <string name="finished">Finished</string>
     <string name="no_accessories">No accessories</string>
     <string name="no_deposit">No deposit</string>

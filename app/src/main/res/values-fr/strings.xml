@@ -45,6 +45,8 @@
     <string name="title">Titre</string>
     <string name="description">Description</string>
     <string name="location">Localisation</string>
+    <string name="my_rentals">Mes locations</string>
+    <string name="my_bikes">Mes vélos</string>
     <string name="service_fee_percent">Frais de service (%1$s %%)</string>
     <string name="total_price_ttc">Montant total TTC</string>
     <string name="price_details">Détail du prix</string>
@@ -90,7 +92,7 @@
     <string name="browse_gallery">Choisis dans la galerie</string>
     <string name="no_bike">Appuie ici pour mettre en location ton vélo</string>
     <string name="empty_messaging">Aucun nouveau message</string>
-    <string name="empty_rentals">Aucune location</string>
+    <string name="empty_current_rentals">Aucune location en cours</string>
     <string name="finished">Terminé</string>
     <string name="no_accessories">Aucun accessoire</string>
     <string name="no_deposit">Aucune caution</string>

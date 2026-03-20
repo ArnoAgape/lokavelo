@@ -1,5 +1,6 @@
 package com.arnoagape.lokavelo.ui.screen.main.contact
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arnoagape.lokavelo.R
@@ -141,6 +142,8 @@ class ContactViewModel @Inject constructor(
                     status = RentalStatus.PENDING
                 )
             )
+
+            userRepository.incrementPendingRentalsUnread(bike.ownerId)
 
             conversationRepository.sendMessage(
                 conversationId = conversation.id,

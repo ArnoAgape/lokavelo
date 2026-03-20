@@ -13,6 +13,9 @@ interface UserApi {
     suspend fun getCurrentUser(): User?
     fun observeCurrentUser(): Flow<User?>
     fun observeUser(userId: String): Flow<User?>
+    fun observePendingRentalsUnread(userId: String): Flow<Int>
+    suspend fun markRentalsAsRead(userId: String)
+    suspend fun incrementPendingRentalsUnread(ownerId: String)
     suspend fun getUser(userId: String): User?
     suspend fun updateUser(user: User): Result<Unit>
     suspend fun ensureUserInFirestore(): Result<Unit>

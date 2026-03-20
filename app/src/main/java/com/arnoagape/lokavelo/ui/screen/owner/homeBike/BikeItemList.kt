@@ -42,12 +42,14 @@ import com.arnoagape.lokavelo.ui.theme.lightBlue
 import com.arnoagape.lokavelo.ui.theme.lightBlueText
 import com.arnoagape.lokavelo.ui.theme.lightGreen
 import com.arnoagape.lokavelo.ui.theme.lightGreenText
+import com.arnoagape.lokavelo.ui.utils.AppConstants.SERVICE_FEE_RATE
 import com.arnoagape.lokavelo.ui.utils.calculateRentalPrice
 import java.text.NumberFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import kotlin.math.roundToLong
 
 @Composable
 fun BikeItem(
@@ -96,6 +98,7 @@ fun BikeItemRow(
     priceOverride: Long? = null,
     startDate: LocalDate? = null,
     endDate: LocalDate? = null,
+    showServiceFee: Boolean = true,
     badge: (@Composable () -> Unit)? = null
 ) {
 
@@ -137,13 +140,20 @@ fun BikeItemRow(
                         .toInt()
                         .coerceAtLeast(1)
 
-                    calculateRentalPrice(
+                    val basePrice = calculateRentalPrice(
                         dayPrice = bike.priceInCents,
                         days = days,
                         twoDaysPrice = bike.priceTwoDaysInCents,
                         weekPrice = bike.priceWeekInCents,
                         monthPrice = bike.priceMonthInCents
                     )
+
+                    if (showServiceFee) {
+                        val serviceFee = (basePrice * SERVICE_FEE_RATE).roundToLong()
+                        basePrice + serviceFee
+                    } else {
+                        basePrice
+                    }
                 }
 
                 else -> bike.priceInCents

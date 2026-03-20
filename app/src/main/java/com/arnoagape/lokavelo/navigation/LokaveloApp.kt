@@ -22,6 +22,7 @@ import androidx.navigation.navArgument
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.screen.login.LoginScreen
 import com.arnoagape.lokavelo.ui.screen.login.LoginViewModel
+import com.arnoagape.lokavelo.ui.screen.MainScreen
 import com.arnoagape.lokavelo.ui.screen.main.contact.ContactScreen
 import com.arnoagape.lokavelo.ui.screen.main.detail.DetailPublicBikeScreen
 import com.arnoagape.lokavelo.ui.screen.main.detail.DetailPublicBikeViewModel

@@ -2,8 +2,10 @@ package com.arnoagape.lokavelo.ui.screen.owner.homeBike
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +15,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Badge
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -65,6 +68,7 @@ fun HomeBikeScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val rentalState by viewModel.rentalState.collectAsStateWithLifecycle()
+    val pendingCount by viewModel.pendingCount.collectAsStateWithLifecycle()
 
     val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
     val showDeleteDialog by viewModel.showDeleteDialog.collectAsStateWithLifecycle()
@@ -167,12 +171,27 @@ fun HomeBikeScreen(
                     Tab(
                         selected = selectedTab == 0,
                         onClick = { viewModel.selectTab(0) },
-                        text = { Text("Mes vélos") }
+                        text = { Text(stringResource(R.string.my_bikes)) }
                     )
                     Tab(
                         selected = selectedTab == 1,
-                        onClick = { viewModel.selectTab(1) },
-                        text = { Text("Mes locations") }
+                        onClick = {
+                            viewModel.selectTab(1)
+                            viewModel.markRentalsAsRead()
+                        },
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text("Mes locations")
+                                if (pendingCount > 0) {
+                                    Badge {
+                                        Text(pendingCount.toString())
+                                    }
+                                }
+                            }
+                        }
                     )
                 }
             }

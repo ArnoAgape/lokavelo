@@ -8,6 +8,8 @@ interface RentalApi {
 
     suspend fun createRental(rental: Rental)
 
+    suspend fun markRentalsAsRead(ownerId: String)
+
     fun observeOwnerRentals(): Flow<List<Rental>>
 
     fun observeUserRentals(): Flow<List<Rental>>
