@@ -6,6 +6,7 @@ import com.arnoagape.lokavelo.domain.model.BikeCondition
 import com.arnoagape.lokavelo.domain.model.BikeEquipment
 import com.arnoagape.lokavelo.domain.model.BikeLocation
 import com.arnoagape.lokavelo.domain.model.BikeSize
+import com.arnoagape.lokavelo.ui.utils.clean
 import com.arnoagape.lokavelo.ui.utils.toCentsOrNull
 import com.arnoagape.lokavelo.ui.utils.toPriceText
 
@@ -46,6 +47,12 @@ data class EditBikeFormState(
 
     fun toUpdatedBikeOrNull(original: Bike): Bike? {
 
+        val cleanTitle = title.clean()
+        val cleanDescription = description.clean()
+        val cleanBrand = brand.clean()
+
+        if (cleanTitle.isBlank() || cleanDescription.isBlank()) return null
+
         val price = priceText.toCentsOrNull() ?: return null
 
         val twoDays = twoDaysPriceText.toCentsOrNull()
@@ -63,8 +70,8 @@ data class EditBikeFormState(
         if (price <= 0) return null
 
         return original.copy(
-            title = title,
-            description = description,
+            title = cleanTitle,
+            description = cleanDescription,
             location = location,
             priceInCents = price,
             priceTwoDaysInCents = twoDays,
@@ -74,7 +81,7 @@ data class EditBikeFormState(
             electric = electric,
             size = size,
             category = category,
-            brand = brand,
+            brand = cleanBrand,
             condition = condition,
             accessories = accessories,
             available = available,

@@ -132,9 +132,9 @@ fun MainScreen(
 
                 HomeBikeScreen(
                     viewModel = homeBikeVm,
-                    onBikeClick = { bike ->
+                    onBikeClick = { item ->
                         rootNavController.navigate(
-                            Screen.Owner.DetailBike.createRoute(bike.id)
+                            Screen.Owner.DetailBike.createRoute(item.bike.id)
                         )
                     },
                     onAddBikeClick = { navigateProtected(Screen.Owner.AddBike) }

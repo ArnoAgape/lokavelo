@@ -44,11 +44,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
-import com.arnoagape.lokavelo.domain.model.BikeCategory
-import com.arnoagape.lokavelo.domain.model.BikeCondition
-import com.arnoagape.lokavelo.domain.model.BikeEquipment
-import com.arnoagape.lokavelo.domain.model.BikeLocation
-import com.arnoagape.lokavelo.domain.model.BikeSize
 import com.arnoagape.lokavelo.domain.model.labelRes
 import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.common.components.ConfirmDeleteDialog
@@ -59,6 +54,7 @@ import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
 import com.arnoagape.lokavelo.ui.common.components.photo.PhotoItem
 import com.arnoagape.lokavelo.ui.common.components.photo.PhotosContent
 import com.arnoagape.lokavelo.ui.common.components.photo.ZoomableImageViewer
+import com.arnoagape.lokavelo.ui.preview.PreviewData
 import com.arnoagape.lokavelo.ui.screen.owner.detailBike.sections.AccessoriesRow
 import com.arnoagape.lokavelo.ui.screen.owner.detailBike.sections.DetailCard
 import com.arnoagape.lokavelo.ui.screen.owner.detailBike.sections.DetailRow
@@ -436,37 +432,10 @@ fun DetailItem(
 @Composable
 private fun DetailBikeScreenPreview() {
     LokaveloTheme {
-        val fakeBike =
-            Bike(
-                id = "1",
-                title = "Vélo gravel Origine Trail Explore",
-                description = "Vélo en super état avec fourche suspendue",
-                category = BikeCategory.GRAVEL,
-                brand = "Origine",
-                size = BikeSize.M,
-                condition = BikeCondition.LIKE_NEW,
-                accessories = listOf(
-                    BikeEquipment.HANDLEBAR_BAG, BikeEquipment.MUDGUARD, BikeEquipment.BELL,
-                    BikeEquipment.REFLECTIVE_VEST
-                ),
-                priceInCents = 2500,
-                priceTwoDaysInCents = 1250,
-                priceWeekInCents = 10000,
-                priceMonthInCents = 25000,
-                depositInCents = 50000,
-                location = BikeLocation(
-                    street = "4 bd Longchamp",
-                    postalCode = "13001",
-                    city = "Marseille"
-                )
-            )
-
-        val previewState = DetailScreenState(
-            bikeState = DetailBikeUiState.Success(fakeBike)
-        )
-
         DetailBikeContent(
-            state = previewState
+            state = DetailScreenState(
+                bikeState = DetailBikeUiState.Success(PreviewData.bike)
+            )
         )
     }
 }

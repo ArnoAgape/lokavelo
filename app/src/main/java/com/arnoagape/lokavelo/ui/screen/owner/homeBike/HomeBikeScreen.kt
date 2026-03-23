@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -53,12 +52,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
-import com.arnoagape.lokavelo.domain.model.Bike
+import com.arnoagape.lokavelo.domain.model.BikeWithRentals
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.common.SelectionState
@@ -76,7 +74,7 @@ import kotlinx.coroutines.launch
 fun HomeBikeScreen(
     viewModel: HomeBikeViewModel,
     onAddBikeClick: () -> Unit,
-    onBikeClick: (Bike) -> Unit
+    onBikeClick: (BikeWithRentals) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val rentalState by viewModel.rentalState.collectAsStateWithLifecycle()
@@ -303,7 +301,7 @@ fun HomeBikeScreen(
 fun HomeBikeContent(
     modifier: Modifier = Modifier,
     state: HomeState,
-    onBikeClick: (Bike) -> Unit,
+    onBikeClick: (BikeWithRentals) -> Unit,
     onRefresh: () -> Unit,
     onEnterSelectionMode: () -> Unit,
     onToggleSelection: (String) -> Unit
@@ -347,17 +345,7 @@ fun HomeBikeContent(
         }
 
         is HomeBikeUiState.Error.Generic -> {
-            Box(
-                modifier = modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.error_loading_bike),
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
+            ErrorOverlay(type = ErrorType.GENERIC)
         }
     }
 }
@@ -368,7 +356,7 @@ fun HomeBikeScreenPreview() {
     LokaveloTheme {
 
         val previewState = HomeState(
-            bikesState = HomeBikeUiState.Success(PreviewData.bikes),
+            bikesState = HomeBikeUiState.Success(PreviewData.bikesWithRentals),
             isRefreshing = false,
             rentalState = HomeRentalUiState.Empty,
             currentUser = null,

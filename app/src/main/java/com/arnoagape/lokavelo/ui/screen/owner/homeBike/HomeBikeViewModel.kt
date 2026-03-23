@@ -1,5 +1,6 @@
 package com.arnoagape.lokavelo.ui.screen.owner.homeBike
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arnoagape.lokavelo.R
@@ -7,6 +8,7 @@ import com.arnoagape.lokavelo.data.repository.BikeRepository
 import com.arnoagape.lokavelo.data.repository.RentalRepository
 import com.arnoagape.lokavelo.data.repository.UserRepository
 import com.arnoagape.lokavelo.domain.model.Bike
+import com.arnoagape.lokavelo.domain.model.BikeWithRentals
 import com.arnoagape.lokavelo.domain.model.Rental
 import com.arnoagape.lokavelo.domain.model.RentalStatus
 import com.arnoagape.lokavelo.domain.model.User
@@ -55,7 +57,7 @@ class HomeBikeViewModel @Inject constructor(
     private val _events = Channel<Event>(Channel.BUFFERED)
     val eventsFlow = _events.receiveAsFlow()
 
-    private val bikesFlow: Flow<List<Bike>> = bikeRepository.observeOwnerBikes()
+    private val bikesFlow: Flow<List<BikeWithRentals>> = bikeRepository.observeOwnerBikesWithRentals()
 
     val currentUser: StateFlow<User?> =
         userRepository.observeCurrentUser()
@@ -144,7 +146,7 @@ class HomeBikeViewModel @Inject constructor(
                 bikes
             } else {
                 bikes.filter {
-                    it.title.normalizeForSearch()
+                    it.bike.title.normalizeForSearch()
                         .contains(normalizedQuery)
                 }
             }
@@ -157,7 +159,8 @@ class HomeBikeViewModel @Inject constructor(
             .onStart {
                 emit(HomeBikeUiState.Loading)
             }
-            .catch {
+            .catch { e ->
+                Log.e("HOME_BIKE_ERROR", "🔥 Error loading bikes", e)
                 emit(HomeBikeUiState.Error.Generic())
             }
 

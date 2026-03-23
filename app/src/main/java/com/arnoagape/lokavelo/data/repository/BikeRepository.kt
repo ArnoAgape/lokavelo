@@ -1,17 +1,16 @@
 package com.arnoagape.lokavelo.data.repository
 
 import android.net.Uri
-import android.util.Log
 import com.arnoagape.lokavelo.data.service.bike.BikeApi
 import com.arnoagape.lokavelo.domain.model.Bike
+import com.arnoagape.lokavelo.domain.model.BikeWithRentals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,25 +23,31 @@ import javax.inject.Singleton
 @OptIn(ExperimentalCoroutinesApi::class)
 class BikeRepository @Inject constructor(
     private val bikeApi: BikeApi,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val rentalRepository: RentalRepository
 ) {
 
     fun observeBikesByIds(ids: List<String>): Flow<List<Bike>> = bikeApi.observeBikesByIds(ids)
 
-    fun observeOwnerBikes(): Flow<List<Bike>> =
+    fun observeOwnerBikesWithRentals(): Flow<List<BikeWithRentals>> =
         userRepository.observeCurrentUser()
             .filterNotNull()
             .map { it.id }
             .distinctUntilChanged()
             .flatMapLatest { ownerId ->
-                bikeApi.observeBikesForOwner(ownerId)
-            }
-            .onEach { bikes ->
-                Log.d("BikesFlow", "Received ${bikes.size} bikes")
-            }
-            .catch { e ->
-                Log.e("BikesFlow", "Error in observeBikes", e)
-                throw e
+
+                combine(
+                    bikeApi.observeBikesForOwner(ownerId),
+                    rentalRepository.observeOwnerRentals()
+                ) { bikes, rentals ->
+
+                    bikes.map { bike ->
+                        BikeWithRentals(
+                            bike = bike,
+                            rentals = rentals.filter { it.bikeId == bike.id }
+                        )
+                    }
+                }
             }
 
     fun observePublicBikes(): Flow<List<Bike>> = bikeApi.observeAllBikes()

@@ -18,7 +18,7 @@ fun RentalStatus.labelRes(): Int =
     when (this) {
         RentalStatus.PENDING -> R.string.rental_status_pending
         RentalStatus.COUNTER_OFFER -> R.string.rental_status_counter_offer
-        RentalStatus.ACCEPTED -> R.string.rental_status_accepted
+        RentalStatus.ACCEPTED -> R.string.rental_status_reserved
         RentalStatus.DECLINED -> R.string.rental_status_declined
         RentalStatus.CANCELLED -> R.string.rental_status_cancelled
         RentalStatus.ACTIVE -> R.string.rental_status_active

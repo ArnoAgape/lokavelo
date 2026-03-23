@@ -30,7 +30,7 @@
     <string name="hint_title">Ex : Gravel équipé voyage</string>
     <string name="hint_brand">Ex : Origine Trail Explore</string>
     <string name="hint_description">Décris ton vélo, ses équipements et conditions</string>
-    <string name="hint_min_days_rental">3</string>
+    <string name="hint_min_days_rental">Ex : 3</string>
 
     // MISC WORDS
     <string name="yes">Oui</string>
@@ -223,11 +223,11 @@
     // RENTAL STATUS
     <string name="rental_status_pending">En attente</string>
     <string name="rental_status_counter_offer">Nouvelle offre</string>
-    <string name="rental_status_accepted">Acceptée</string>
-    <string name="rental_status_declined">Refusée</string>
-    <string name="rental_status_cancelled">Annulée</string>
+    <string name="rental_status_reserved">Réservé</string>
+    <string name="rental_status_declined">Refusé</string>
+    <string name="rental_status_cancelled">Annulé</string>
     <string name="rental_status_active">En cours</string>
-    <string name="rental_status_completed">Terminée</string>
+    <string name="rental_status_completed">Terminé</string>
 
     // CATEGORY
     <string name="bike_category_road">Vélo de route</string>
