@@ -342,6 +342,10 @@ fun HomeBikeContent(
             ErrorOverlay(type = ErrorType.EMPTY_BIKES)
         }
 
+        is HomeBikeUiState.SearchEmpty -> {
+            ErrorOverlay(type = ErrorType.EMPTY_SEARCH)
+        }
+
         is HomeBikeUiState.Error.Generic -> {
             Box(
                 modifier = modifier.fillMaxSize(),

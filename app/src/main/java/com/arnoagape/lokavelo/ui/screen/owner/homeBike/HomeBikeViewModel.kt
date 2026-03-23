@@ -149,7 +149,7 @@ class HomeBikeViewModel @Inject constructor(
                 }
             }
             if (filtered.isEmpty()) {
-                HomeBikeUiState.Empty()
+                HomeBikeUiState.SearchEmpty
             } else {
                 HomeBikeUiState.Success(filtered)
             }

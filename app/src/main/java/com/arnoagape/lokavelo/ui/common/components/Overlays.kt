@@ -73,6 +73,12 @@ fun ErrorOverlay(
             true
         )
 
+        ErrorType.EMPTY_SEARCH -> Triple(
+            stringResource(R.string.error_no_bike_found),
+            emptyList(),
+            false
+        )
+
         ErrorType.EMPTY_MESSAGES -> Triple(
             stringResource(R.string.empty_messaging),
             listOf(R.drawable.ic_bike_no_message),
@@ -136,7 +142,8 @@ fun ErrorOverlay(
             if (
                 type != ErrorType.EMPTY_MESSAGES &&
                 type != ErrorType.EMPTY_RENTALS &&
-                type != ErrorType.EMPTY_BIKES
+                type != ErrorType.EMPTY_BIKES &&
+                type != ErrorType.EMPTY_SEARCH
             ) {
 
                 Spacer(Modifier.height(12.dp))
@@ -154,6 +161,7 @@ enum class ErrorType {
     EMPTY_BIKES,
     EMPTY_MESSAGES,
     EMPTY_RENTALS,
+    EMPTY_SEARCH,
     GENERIC
 }
 
