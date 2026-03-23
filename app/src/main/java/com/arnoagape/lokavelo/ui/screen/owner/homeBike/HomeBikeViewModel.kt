@@ -7,10 +7,9 @@ import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.data.repository.BikeRepository
 import com.arnoagape.lokavelo.data.repository.RentalRepository
 import com.arnoagape.lokavelo.data.repository.UserRepository
-import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.domain.model.BikeWithRentals
-import com.arnoagape.lokavelo.domain.model.Rental
 import com.arnoagape.lokavelo.domain.model.RentalStatus
+import com.arnoagape.lokavelo.domain.model.RentalWithBike
 import com.arnoagape.lokavelo.domain.model.User
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.SelectionState
@@ -37,6 +36,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.collections.filter
+import kotlin.collections.partition
 
 /**
  * ViewModel responsible for the owner home bike screen.
@@ -80,7 +81,7 @@ class HomeBikeViewModel @Inject constructor(
 
                         rentals.mapNotNull { rental ->
                             bikeMap[rental.bikeId]?.let { bike ->
-                                RentalWithBike(rental, bike)
+                                RentalWithBike(bike, rental)
                             }
                         }
                     }
@@ -139,6 +140,8 @@ class HomeBikeViewModel @Inject constructor(
 
     private val uiState: Flow<HomeBikeUiState> =
         combine(bikesFlow, _searchQuery) { bikes, query ->
+
+            if (bikes.isEmpty()) return@combine HomeBikeUiState.Empty
 
             val normalizedQuery = query.normalizeForSearch()
 
@@ -328,9 +331,4 @@ data class HomeState(
 data class HomeRentalScreenState(
     val uiState: HomeRentalUiState = HomeRentalUiState.Loading,
     val isRefreshing: Boolean = false
-)
-
-data class RentalWithBike(
-    val rental: Rental,
-    val bike: Bike
 )

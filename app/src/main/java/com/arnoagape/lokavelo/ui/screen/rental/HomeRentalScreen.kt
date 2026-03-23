@@ -142,11 +142,14 @@ fun OwnerRentalContent(
                         val end = mainRental?.endDate
                             ?.atZone(ZoneId.systemDefault())?.toLocalDate()
                         val rentalStatus = mainRental?.toDisplayStatus(today)
+                        val ownerPrice = mainRental?.basePriceInCents
 
                         BikeItemRow(
                             bike = item.bike,
                             startDate = start,
                             endDate = end,
+                            priceOverride = ownerPrice,
+                            showServiceFee = false,
                             badge = { StatusDotWithTooltip(rentalStatus = rentalStatus) }
                         )
                     }

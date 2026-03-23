@@ -33,19 +33,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.arnoagape.lokavelo.R
-import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.domain.model.Rental
 import com.arnoagape.lokavelo.domain.model.RentalStatus
+import com.arnoagape.lokavelo.domain.model.RentalWithBike
 import com.arnoagape.lokavelo.domain.model.priority
 import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
 import com.arnoagape.lokavelo.ui.common.components.ErrorType
 import com.arnoagape.lokavelo.ui.common.components.SelectItemRow
+import com.arnoagape.lokavelo.ui.preview.PreviewData
 import com.arnoagape.lokavelo.ui.screen.owner.homeBike.BikeItemRow
 import com.arnoagape.lokavelo.ui.screen.owner.homeBike.HomeRentalScreenState
 import com.arnoagape.lokavelo.ui.screen.owner.homeBike.RentalStatusBadge
-import com.arnoagape.lokavelo.ui.screen.owner.homeBike.RentalWithBike
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
-import java.time.Instant
 import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -187,7 +186,9 @@ fun RentalItem(
             endDate = rental.endDate
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate(),
-            showServiceFee = !isOwner,
+            priceOverride = if (isOwner) rental.basePriceInCents
+            else rental.priceTotalInCents,
+            showServiceFee = false,
             badge = {
                 RentalStatusBadge(rental.status)
             }
@@ -199,34 +200,11 @@ fun RentalItem(
 @Composable
 fun HomeRentalPreview() {
 
-    val bike = Bike(
-        id = "bike1",
-        title = "Origine Trail",
-        priceInCents = 2500,
-        photoUrls = emptyList()
-    )
-
-    val rentals = listOf(
-        RentalWithBike(
-            rental = Rental(
-                id = "1",
-                bikeId = "bike1",
-                ownerId = "owner",
-                renterId = "user1",
-                startDate = Instant.now(),
-                endDate = Instant.now().plusSeconds(86400 * 3),
-                priceTotalInCents = 7500,
-                status = RentalStatus.ACCEPTED
-            ),
-            bike = bike
-        )
-    )
-
     LokaveloTheme {
         HomeRentalContent(
             state = HomeRentalScreenState(
                 uiState = HomeRentalUiState.Success(
-                    pending = rentals,
+                    pending = PreviewData.rentalsWithBike,
                     active = emptyList(),
                     history = emptyList()
                 )

@@ -1,6 +1,6 @@
 package com.arnoagape.lokavelo.ui.screen.rental
 
-import com.arnoagape.lokavelo.ui.screen.owner.homeBike.RentalWithBike
+import com.arnoagape.lokavelo.domain.model.RentalWithBike
 
 sealed interface HomeRentalUiState {
     data object Loading : HomeRentalUiState

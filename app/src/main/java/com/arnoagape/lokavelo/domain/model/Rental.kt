@@ -16,3 +16,13 @@ data class Rental(
     val status: RentalStatus = RentalStatus.PENDING,
     val createdAt: Instant = Instant.now()
 )
+
+data class BikeWithRentals(
+    val bike: Bike,
+    val rentals: List<Rental>
+)
+
+data class RentalWithBike(
+    val bike: Bike,
+    val rental: Rental
+)

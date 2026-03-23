@@ -11,9 +11,9 @@ import com.arnoagape.lokavelo.domain.model.Conversation
 import com.arnoagape.lokavelo.domain.model.Message
 import com.arnoagape.lokavelo.domain.model.Rental
 import com.arnoagape.lokavelo.domain.model.RentalStatus
+import com.arnoagape.lokavelo.domain.model.RentalWithBike
 import com.arnoagape.lokavelo.domain.model.User
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 
 object PreviewData {
 
@@ -67,60 +67,18 @@ object PreviewData {
         ),
     )
 
-    val bikesWithRentals = listOf(
-
-        BikeWithRentals(
-            bike = Bike(
-                id = "bike1",
-                title = "Origine Trail Explore",
-                ownerId = "owner1",
-                priceInCents = 2000,
-                photoUrls = emptyList(),
-                brand = "Origine Trail Explore"
-            ),
-            rentals = listOf(
-                Rental(
-                    id = "r1",
-                    bikeId = "bike1",
-                    startDate = Instant.now().minus(1, ChronoUnit.DAYS),
-                    endDate = Instant.now().plus(2, ChronoUnit.DAYS),
-                    status = RentalStatus.ACTIVE
-                )
+    val rentalsWithBike = bikes.map { bike ->
+        RentalWithBike(
+            bike = bike,
+            rental = Rental(
+                id = "rental_${bike.id}",
+                bikeId = bike.id,
+                status = RentalStatus.PENDING
             )
-        ),
-
-        BikeWithRentals(
-            bike = Bike(
-                id = "bike2",
-                title = "Scott Sub 30",
-                ownerId = "owner1",
-                priceInCents = 1500,
-                photoUrls = emptyList(),
-                brand = "Origine Trail Explore"
-            ),
-            rentals = listOf(
-                Rental(
-                    id = "r2",
-                    bikeId = "bike2",
-                    startDate = Instant.now().plus(2, ChronoUnit.DAYS),
-                    endDate = Instant.now().plus(5, ChronoUnit.DAYS),
-                    status = RentalStatus.ACCEPTED
-                )
-            )
-        ),
-
-        BikeWithRentals(
-            bike = Bike(
-                id = "bike3",
-                title = "Riverside Touring 920",
-                ownerId = "owner1",
-                priceInCents = 2200,
-                photoUrls = emptyList(),
-                brand = "Origine Trail Explore"
-            ),
-            rentals = emptyList() // dispo
         )
-    )
+    }
+
+    val bikesWithRentals = bikes.map { BikeWithRentals(bike = it, rentals = emptyList()) }
 
     val conversation = Conversation(
         id = "conv1",

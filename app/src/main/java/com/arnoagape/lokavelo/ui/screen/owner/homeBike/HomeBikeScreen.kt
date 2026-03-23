@@ -123,7 +123,7 @@ fun HomeBikeScreen(
                     } else {
                         TopAppBar(
                             windowInsets = WindowInsets(0, 0, 0, 0),
-                            title = { Text(stringResource(R.string.rentals)) },
+                            title = { Text(stringResource(R.string.garage)) },
                             actions = {
                                 if (!state.selection.isSelectionMode) {
                                     IconButton(onClick = viewModel::toggleSearch) {

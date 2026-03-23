@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -79,6 +80,11 @@ fun BikeItem(
         ) { item ->
 
             val bike = item.bike
+
+            val isAvailable = item.rentals.none {
+                it.status == RentalStatus.ACTIVE || it.status == RentalStatus.ACCEPTED
+            }
+
             val rentals = item.rentals
 
             val mainRental = rentals.minByOrNull { it.status.priority() }
@@ -127,7 +133,9 @@ fun BikeItem(
                     bike = bike,
                     startDate = start,
                     endDate = end,
-                    badge = { StatusDotWithTooltip(rentalStatus = rentalStatus) }
+                    badge = {
+                        AvailabilityDot(available = isAvailable)
+                    }
                 )
             }
         }
@@ -236,6 +244,19 @@ fun BikeItemRow(
             }
         }
     }
+}
+
+@Composable
+fun AvailabilityDot(available: Boolean) {
+    Box(
+        modifier = Modifier
+            .size(12.dp)
+            .clip(CircleShape)
+            .background(
+                if (available) lightGreen
+                else MaterialTheme.colorScheme.error
+            )
+    )
 }
 
 @Composable
