@@ -345,7 +345,8 @@ private fun AddBikeContent(
                 onPhotoEdited = { id, newUri ->
                     onAction(AddBikeEvent.ReplacePhoto(id, newUri))
                 },
-                onMovePhoto = onMovePhoto
+                onMovePhoto = onMovePhoto,
+                isEditable = true
             )
         }
 

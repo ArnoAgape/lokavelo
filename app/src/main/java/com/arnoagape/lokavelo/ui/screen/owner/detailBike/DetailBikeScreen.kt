@@ -1,5 +1,6 @@
 package com.arnoagape.lokavelo.ui.screen.owner.detailBike
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,7 +31,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -54,6 +58,7 @@ import com.arnoagape.lokavelo.ui.common.components.ErrorType
 import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
 import com.arnoagape.lokavelo.ui.common.components.photo.PhotoItem
 import com.arnoagape.lokavelo.ui.common.components.photo.PhotosContent
+import com.arnoagape.lokavelo.ui.common.components.photo.ZoomableImageViewer
 import com.arnoagape.lokavelo.ui.screen.owner.detailBike.sections.AccessoriesRow
 import com.arnoagape.lokavelo.ui.screen.owner.detailBike.sections.DetailCard
 import com.arnoagape.lokavelo.ui.screen.owner.detailBike.sections.DetailRow
@@ -260,6 +265,9 @@ fun DetailItem(
     val spacing = LocalSpacing.current
     val context = LocalContext.current
 
+    var viewerUris by remember { mutableStateOf<List<Uri>?>(null) }
+    var viewerStartIndex by remember { mutableIntStateOf(0) }
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -286,6 +294,10 @@ fun DetailItem(
                     onRemovePhoto = {},
                     onPhotoEdited = { _, _ -> },
                     onMovePhoto = { _, _ -> },
+                    onViewerOpen = { uris, index ->
+                        viewerUris = uris
+                        viewerStartIndex = index
+                    },
                     isEditable = false
                 )
             }
@@ -409,6 +421,14 @@ fun DetailItem(
         }
 
         item { Spacer(modifier = Modifier.height(spacing.extraSmall)) }
+    }
+
+    viewerUris?.let { uris ->
+        ZoomableImageViewer(
+            uris = uris,
+            startIndex = viewerStartIndex,
+            onDismiss = { viewerUris = null }
+        )
     }
 }
 
