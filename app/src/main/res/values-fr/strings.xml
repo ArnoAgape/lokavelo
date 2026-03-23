@@ -6,7 +6,7 @@
     <string name="detail_bike">Descriptif</string>
     <string name="rent">Louer</string>
     <string name="rentals">Locations</string>
-    <string name="messaging">Messagerie</string>
+    <string name="messaging">Messages</string>
     <string name="account">Compte</string>
 
     // BOTTOM BAR
@@ -46,7 +46,7 @@
     <string name="description">Description</string>
     <string name="location">Localisation</string>
     <string name="my_rentals">Mes locations</string>
-    <string name="my_bikes">Mes vélos</string>
+    <string name="garage">Garage</string>
     <string name="service_fee_percent">Frais de service (%1$s %%)</string>
     <string name="total_price_ttc">Montant total TTC</string>
     <string name="price_details">Détail du prix</string>
@@ -122,6 +122,8 @@
     <string name="rental_new_offer">Nouvelle offre proposée</string>
     <string name="rental_price_offered">Prix proposé %1$s</string>
     <string name="rental_request_sent">Offre envoyée</string>
+    <string name="owner">Propriétaire</string>
+    <string name="tenant">Locataire</string>
 
     // SUCCESS
     <string name="success_user_updated">Infos mises à jour</string>

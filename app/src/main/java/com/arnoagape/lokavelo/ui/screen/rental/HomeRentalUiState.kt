@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.ui.screen.owner.rental
+package com.arnoagape.lokavelo.ui.screen.rental
 
 import com.arnoagape.lokavelo.ui.screen.owner.homeBike.RentalWithBike
 

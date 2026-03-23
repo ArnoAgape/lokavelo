@@ -3,6 +3,7 @@ package com.arnoagape.lokavelo.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsBike
 import androidx.compose.material.icons.automirrored.filled.Message
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Badge
@@ -37,8 +38,8 @@ fun BottomBar(
         )
 
         NavigationBarItem(
-            selected = currentScreen is Screen.Owner.HomeBike,
-            onClick = { onItemSelected(Screen.Owner.HomeBike) },
+            selected = currentScreen is Screen.Rental.HomeRental,
+            onClick = { onItemSelected(Screen.Rental.HomeRental) },
             icon = {
                 BadgedBox(
                     badge = {
@@ -49,10 +50,17 @@ fun BottomBar(
                         }
                     }
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.DirectionsBike, null)
+                    Icon(Icons.Default.CalendarMonth, null)
                 }
             },
             label = { Text(stringResource(R.string.rentals)) }
+        )
+
+        NavigationBarItem(
+            selected = currentScreen is Screen.Owner.HomeBike,
+            onClick = { onItemSelected(Screen.Owner.HomeBike) },
+            icon = { Icon(Icons.AutoMirrored.Filled.DirectionsBike, null) },
+            label = { Text(stringResource(R.string.garage)) }
         )
 
         NavigationBarItem(
@@ -86,7 +94,7 @@ fun BottomBar(
 @PreviewLightDark
 @Composable
 private fun BottomBarPreview() {
-    LokaveloTheme{
+    LokaveloTheme {
         BottomBar(
             currentScreen = Screen.Owner.HomeBike,
             unreadMessages = 3,

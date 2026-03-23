@@ -14,7 +14,7 @@ import com.arnoagape.lokavelo.domain.model.RentalStatus
 import com.arnoagape.lokavelo.domain.model.User
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.SelectionState
-import com.arnoagape.lokavelo.ui.screen.owner.rental.HomeRentalUiState
+import com.arnoagape.lokavelo.ui.screen.rental.HomeRentalUiState
 import com.arnoagape.lokavelo.ui.utils.NetworkUtils
 import com.arnoagape.lokavelo.ui.utils.normalizeForSearch
 import com.google.firebase.auth.FirebaseAuth

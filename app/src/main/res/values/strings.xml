@@ -6,7 +6,7 @@
     <string name="detail_bike">Bike info</string>
     <string name="rent">Rent</string>
     <string name="rentals">Rentals</string>
-    <string name="messaging">Messaging</string>
+    <string name="messaging">Messages</string>
     <string name="account">Account</string>
 
     // BOTTOM BAR
@@ -46,7 +46,7 @@
     <string name="description">Description</string>
     <string name="location">Location</string>
     <string name="my_rentals">My locations</string>
-    <string name="my_bikes">My bikes</string>
+    <string name="garage">Garage</string>
     <string name="service_fee_percent">Service fees (%1$s %%)</string>
     <string name="total_price_ttc">Total price incl. tax</string>
     <string name="price_details">Price details</string>
@@ -122,6 +122,8 @@
     <string name="rental_new_offer">A new offer has been proposed</string>
     <string name="rental_price_offered">Offered price %1$s</string>
     <string name="rental_request_sent">Rental request sent</string>
+    <string name="owner">Owner</string>
+    <string name="tenant">Tenant</string>
 
     // SUCCESS
     <string name="success_user_updated">Details updated successfully</string>

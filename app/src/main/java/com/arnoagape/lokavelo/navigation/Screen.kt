@@ -104,6 +104,21 @@ sealed interface Screen {
         }
     }
 
+    // ---------------- RENTAL ----------------
+    sealed interface Rental : Screen {
+
+        data object HomeRental : Rental {
+            override val route = "rental_home"
+        }
+
+        data object DetailRental : Rental {
+            override val route = "rental_detail/{bikeId}"
+
+            fun createRoute(bikeId: String): String =
+                "rental_detail/$bikeId"
+        }
+    }
+
     // ---------------- OWNER ----------------
     sealed interface Owner : Screen {
 

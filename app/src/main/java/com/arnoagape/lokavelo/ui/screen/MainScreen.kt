@@ -36,6 +36,7 @@ import com.arnoagape.lokavelo.ui.screen.messaging.home.MessagingHomeScreen
 import com.arnoagape.lokavelo.ui.screen.messaging.home.MessagingHomeViewModel
 import com.arnoagape.lokavelo.ui.screen.owner.homeBike.HomeBikeScreen
 import com.arnoagape.lokavelo.ui.screen.owner.homeBike.HomeBikeViewModel
+import com.arnoagape.lokavelo.ui.screen.rental.HomeRentalScreen
 import java.time.ZoneId
 
 @Composable
@@ -67,6 +68,7 @@ fun MainScreen(
                         val requiresAuth = screen is Screen.Owner.HomeBike
                                 || screen is Screen.Messaging.Home
                                 || screen is Screen.Account.AccountHome
+                                || screen is Screen.Rental.HomeRental
 
                         if (requiresAuth && !isSignedIn) {
 
@@ -123,6 +125,15 @@ fun MainScreen(
                             rootNavController.popBackStack()
                         }
                     }
+                )
+            }
+
+            // ---------------- RENTAL ----------------
+
+            composable(Screen.Rental.HomeRental.route) {
+
+                HomeRentalScreen(
+                    viewModel = homeBikeVm
                 )
             }
 

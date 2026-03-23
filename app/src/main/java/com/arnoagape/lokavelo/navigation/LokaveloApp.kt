@@ -306,8 +306,9 @@ fun screenFromRoute(route: String?): Screen? {
 
     return when (baseRoute) {
 
-        Screen.Owner.HomeBike.route -> Screen.Owner.HomeBike
         Screen.Main.Map.route -> Screen.Main.Map
+        Screen.Rental.HomeRental.route -> Screen.Rental.HomeRental
+        Screen.Owner.HomeBike.route -> Screen.Owner.HomeBike
         Screen.Messaging.Home.route -> Screen.Messaging.Home
         Screen.Account.AccountHome.route -> Screen.Account.AccountHome
 
