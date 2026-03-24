@@ -45,9 +45,9 @@ import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.preview.PreviewData
-import com.arnoagape.lokavelo.ui.screen.bikes.BikeItemContext
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.BikeItemContext
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.SubmitButton
-import com.arnoagape.lokavelo.ui.screen.bikes.BikeItemRow
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.BikeItemRow
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import com.arnoagape.lokavelo.ui.utils.vibrateError
 import com.arnoagape.lokavelo.ui.utils.vibrateMessageSent

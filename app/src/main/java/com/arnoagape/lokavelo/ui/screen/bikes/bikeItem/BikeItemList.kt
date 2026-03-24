@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.ui.screen.bikes
+package com.arnoagape.lokavelo.ui.screen.bikes.bikeItem
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,7 +37,6 @@ import com.arnoagape.lokavelo.domain.model.BikeWithRentals
 import com.arnoagape.lokavelo.domain.model.RentalStatus
 import com.arnoagape.lokavelo.domain.model.labelRes
 import com.arnoagape.lokavelo.ui.common.SelectionState
-import com.arnoagape.lokavelo.ui.common.components.SelectItemRow
 import com.arnoagape.lokavelo.ui.theme.lightBlue
 import com.arnoagape.lokavelo.ui.theme.lightBlueText
 import com.arnoagape.lokavelo.ui.theme.lightGreen
@@ -63,7 +62,6 @@ fun BikeItem(
             val context = contextBuilder(item)
 
             SelectItemRow(
-                id = item.bike.id,
                 isSelectionMode = selectionState.isSelectionMode,
                 isSelected = selectionState.selectedIds.contains(item.bike.id),
                 onSelectToggle = { onToggleSelection(item.bike.id) },
@@ -192,7 +190,7 @@ fun AvailabilityDotWithTooltip(
     ) {
         Box(
             modifier = Modifier
-                .size(12.dp)
+                .size(15.dp)
                 .clip(CircleShape)
                 .background(color)
                 .clickable {

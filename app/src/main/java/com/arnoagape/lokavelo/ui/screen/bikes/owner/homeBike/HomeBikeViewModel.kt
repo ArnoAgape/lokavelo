@@ -286,6 +286,16 @@ class HomeBikeViewModel @Inject constructor(
         }
     }
 
+    // Availability
+    fun setAvailability(available: Boolean) {
+        val selectedIds = _selection.value.selectedIds
+        viewModelScope.launch {
+            selectedIds.forEach { id ->
+                bikeRepository.updateAvailability(id, available)
+            }
+        }
+    }
+
     // 🗑 Selection
 
     fun requestDeleteConfirmation() {

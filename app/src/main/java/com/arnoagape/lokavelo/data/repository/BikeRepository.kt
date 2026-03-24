@@ -40,7 +40,6 @@ class BikeRepository @Inject constructor(
                     bikeApi.observeBikesForOwner(ownerId),
                     rentalRepository.observeOwnerRentals()
                 ) { bikes, rentals ->
-
                     bikes.map { bike ->
                         BikeWithRentals(
                             bike = bike,
@@ -63,7 +62,10 @@ class BikeRepository @Inject constructor(
 
     suspend fun editBike(localUris: List<Uri>, bike: Bike) = bikeApi.editBike(localUris, bike)
 
-    suspend fun deleteBikes(ids: Set<String>) = bikeApi.deleteBikes(ids)
+    suspend fun deleteBikes(ids: Set<String>): Result<Unit> = bikeApi.deleteBikes(ids)
 
     suspend fun addBike(localUris: List<Uri>, bike: Bike) = bikeApi.addBike(localUris, bike)
+
+    suspend fun updateAvailability(id: String, available: Boolean) =
+        bikeApi.updateAvailability(id, available)
 }

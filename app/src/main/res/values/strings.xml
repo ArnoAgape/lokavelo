@@ -182,6 +182,13 @@
     <string name="send_message">Send a message</string>
     <string name="show_history">Show history</string>
     <string name="hide_history">Hide history</string>
+    <string name="make_available">Make available</string>
+    <string name="make_unavailable">Make unavailable</string>
+    <string name="select_bikes">Select bikes</string>
+    <plurals name="bikes_selected">
+        <item quantity="one">%d bike selected</item>
+        <item quantity="other">%d bikes selected</item>
+    </plurals>
 
     // CONFIRM ACTIONS
     <string name="action_delete_account">Delete account</string>

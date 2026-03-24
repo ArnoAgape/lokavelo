@@ -26,11 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.RentalWithBike
-import com.arnoagape.lokavelo.ui.common.components.SelectItemRow
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.SelectItemRow
 import com.arnoagape.lokavelo.ui.preview.PreviewData
-import com.arnoagape.lokavelo.ui.screen.bikes.BikeItemContext
-import com.arnoagape.lokavelo.ui.screen.bikes.BikeItemRow
-import com.arnoagape.lokavelo.ui.screen.bikes.RentalStatusBadge
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.BikeItemContext
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.BikeItemRow
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.RentalStatusBadge
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.homeBike.HomeBikeViewModel
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.homeBike.HomeRentalScreenState
 import kotlinx.coroutines.launch
@@ -151,7 +151,6 @@ fun RentalItem(
     }
 
     SelectItemRow(
-        id = rental.id,
         isSelectionMode = false,
         isSelected = false,
         onSelectToggle = {},

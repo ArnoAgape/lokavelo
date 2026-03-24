@@ -21,7 +21,7 @@ object PreviewData {
         title = "Vélo gravel Origine Trail Explore",
         description = "Vélo en super état avec fourche suspendue",
         category = BikeCategory.GRAVEL,
-        brand = "Origine",
+        brand = "Origine Trail Explore Version II",
         size = BikeSize.M,
         condition = BikeCondition.LIKE_NEW,
         accessories = listOf(
@@ -48,6 +48,7 @@ object PreviewData {
             id = "bike1",
             title = "Origine Trail Explore",
             ownerId = "owner1",
+            brand = "Origine Trail Explore Version II",
             priceInCents = 2000,
             photoUrls = emptyList()
         ),
@@ -55,6 +56,7 @@ object PreviewData {
             id = "bike2",
             title = "Scott Sub 30",
             ownerId = "owner1",
+            brand = "Scott Sub 30",
             priceInCents = 1500,
             photoUrls = emptyList()
         ),
@@ -62,6 +64,7 @@ object PreviewData {
             id = "bike3",
             title = "Riverside Touring 920",
             ownerId = "owner1",
+            brand = "Riverside Touring 920",
             priceInCents = 2200,
             photoUrls = emptyList()
         ),
@@ -74,7 +77,7 @@ object PreviewData {
             ownerId = simpleBike.ownerId,
             title = simpleBike.title,
             priceInCents = simpleBike.priceInCents,
-            brand = "Origine Trail Explore Version II",
+            brand = simpleBike.brand,
             photoUrls = simpleBike.photoUrls
         )
 

@@ -182,6 +182,13 @@
     <string name="send_message">Envoyer un message</string>
     <string name="show_history">Voir l’historique</string>
     <string name="hide_history">Cacher l’historique</string>
+    <string name="make_available">Rendre disponible</string>
+    <string name="make_unavailable">Rendre indisponible</string>
+    <string name="select_bikes">Sélectionner des vélos</string>
+    <plurals name="bikes_selected" tools:ignore="MissingQuantity">
+        <item quantity="one">%d vélo sélectionné</item>
+        <item quantity="other">%d vélos sélectionnés</item>
+    </plurals>
 
     // CONFIRM ACTIONS
     <string name="action_delete_account">Supprimer le compte</string>

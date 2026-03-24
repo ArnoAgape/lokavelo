@@ -15,10 +15,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -33,7 +37,9 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -52,8 +58,8 @@ import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
 import com.arnoagape.lokavelo.ui.common.components.ErrorType
 import com.arnoagape.lokavelo.ui.common.components.SearchTopBar
 import com.arnoagape.lokavelo.ui.preview.PreviewData
-import com.arnoagape.lokavelo.ui.screen.bikes.BikeItem
-import com.arnoagape.lokavelo.ui.screen.bikes.BikeItemContext
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.BikeItem
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.BikeItemContext
 import com.arnoagape.lokavelo.ui.screen.bikes.rental.HomeRentalUiState
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 
@@ -126,46 +132,88 @@ fun HomeBikeScreen(
                     } else {
                         TopAppBar(
                             windowInsets = WindowInsets(0, 0, 0, 0),
-                            title = { Text(stringResource(R.string.garage)) },
-                            actions = {
-                                if (!state.selection.isSelectionMode) {
-                                    IconButton(onClick = viewModel::toggleSearch) {
-                                        Icon(Icons.Default.Search, null)
+                            navigationIcon = {
+                                if (state.selection.isSelectionMode) {
+                                    IconButton(onClick = viewModel::exitSelectionMode) {
+                                        Icon(Icons.Default.Close, contentDescription = null)
                                     }
                                 }
-
-                                if (state.selection.isSelectionMode) {
-
-                                    val hasSelection = state.selection.selectedIds.isNotEmpty()
-
-                                    IconButton(
-                                        onClick = {
-                                            if (!state.selection.isSelectionMode) {
-                                                viewModel.enterSelectionMode()
-                                            } else if (!hasSelection) {
-                                                viewModel.exitSelectionMode()
-                                            } else {
-                                                viewModel.requestDeleteConfirmation()
-                                            }
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector =
-                                                if (hasSelection)
-                                                    Icons.Default.DeleteForever
-                                                else
-                                                    Icons.Default.Delete,
-                                            contentDescription = stringResource(R.string.cd_button_delete_bike),
-                                            tint =
-                                                if (hasSelection)
-                                                    MaterialTheme.colorScheme.error
-                                                else
-                                                    MaterialTheme.colorScheme.onSurface
+                            },
+                            title = {
+                                when {
+                                    state.selection.isSelectionMode -> {
+                                        val count = state.selection.selectedIds.size
+                                        Text(
+                                            if (count == 0) stringResource(R.string.select_bikes)
+                                            else pluralStringResource(R.plurals.bikes_selected, count, count)
                                         )
                                     }
-                                } else {
-                                    IconButton(onClick = viewModel::enterSelectionMode) {
-                                        Icon(Icons.Default.Delete, null)
+                                    else -> Text(stringResource(R.string.garage))
+                                }
+                            },
+                            actions = {
+                                when {
+                                    state.selection.isSelectionMode -> {
+                                        val hasSelection = state.selection.selectedIds.isNotEmpty()
+
+                                        if (hasSelection) {
+                                            val selectedBikes = (state.bikesState as? HomeBikeUiState.Success)
+                                                ?.bikes
+                                                ?.filter { it.bike.id in state.selection.selectedIds }
+                                                ?: emptyList()
+
+                                            val allAvailable = selectedBikes.all { it.bike.available }
+                                            val allUnavailable = selectedBikes.all { !it.bike.available }
+                                            val isMixed = !allAvailable && !allUnavailable
+
+                                            var menuExpanded by remember { mutableStateOf(false) }
+
+                                            IconButton(onClick = viewModel::requestDeleteConfirmation) {
+                                                Icon(
+                                                    imageVector = Icons.Default.DeleteForever,
+                                                    contentDescription = stringResource(R.string.cd_button_delete_bike),
+                                                    tint = MaterialTheme.colorScheme.error
+                                                )
+                                            }
+                                            
+                                            Box {
+                                                IconButton(onClick = { menuExpanded = true }) {
+                                                    Icon(Icons.Default.MoreVert, null)
+                                                }
+                                                DropdownMenu(
+                                                    expanded = menuExpanded,
+                                                    onDismissRequest = { menuExpanded = false }
+                                                ) {
+                                                    if (allUnavailable || isMixed) {
+                                                        DropdownMenuItem(
+                                                            text = { Text(stringResource(R.string.make_available)) },
+                                                            onClick = {
+                                                                viewModel.setAvailability(true)
+                                                                menuExpanded = false
+                                                            }
+                                                        )
+                                                    }
+                                                    if (allAvailable || isMixed) {
+                                                        DropdownMenuItem(
+                                                            text = { Text(stringResource(R.string.make_unavailable)) },
+                                                            onClick = {
+                                                                viewModel.setAvailability(false)
+                                                                menuExpanded = false
+                                                            }
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    else -> {
+                                        IconButton(onClick = viewModel::toggleSearch) {
+                                            Icon(Icons.Default.Search, null)
+                                        }
+                                        IconButton(onClick = viewModel::enterSelectionMode) {
+                                            Icon(Icons.Default.Delete, null)
+                                        }
                                     }
                                 }
                             }

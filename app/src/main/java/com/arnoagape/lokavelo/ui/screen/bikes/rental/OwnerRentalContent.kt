@@ -17,10 +17,10 @@ import androidx.compose.ui.unit.dp
 import com.arnoagape.lokavelo.domain.model.Rental
 import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
 import com.arnoagape.lokavelo.ui.common.components.ErrorType
-import com.arnoagape.lokavelo.ui.common.components.SelectItemRow
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.SelectItemRow
 import com.arnoagape.lokavelo.ui.preview.PreviewData
-import com.arnoagape.lokavelo.ui.screen.bikes.BikeItemContext
-import com.arnoagape.lokavelo.ui.screen.bikes.BikeItemRow
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.BikeItemContext
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.BikeItemRow
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.homeBike.HomeRentalScreenState
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import java.time.ZoneId
@@ -69,7 +69,6 @@ fun OwnerRentalContent(
                         )
 
                         SelectItemRow(
-                            id = rental.id,
                             isSelectionMode = false,
                             isSelected = false,
                             onSelectToggle = {},

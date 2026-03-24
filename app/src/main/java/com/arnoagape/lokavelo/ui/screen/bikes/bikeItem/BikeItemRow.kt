@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.ui.screen.bikes
+package com.arnoagape.lokavelo.ui.screen.bikes.bikeItem
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

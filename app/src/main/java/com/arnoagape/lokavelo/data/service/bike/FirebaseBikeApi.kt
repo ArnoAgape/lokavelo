@@ -170,12 +170,25 @@ class FirebaseBikeApi @Inject constructor(
 
                 ids.forEach { id ->
                     require(id.isNotBlank()) { "Bike ID must not be blank" }
-                    bikesCollection.document(id).delete().await() // ✅ await() ajouté
+                    bikesCollection.document(id).delete().await()
                 }
 
                 ids.forEach { id -> deleteBikeFolder(ownerId, id) }
             }.onFailure { Log.e(TAG, "deleteBikes failed", it) }
         }
+
+    // ─────────────────────────────────────────────
+    // Updates availability
+    // ─────────────────────────────────────────────
+
+    override suspend fun updateAvailability(id: String, available: Boolean): Result<Unit> {
+        return try {
+            bikesCollection.document(id).update("available", available).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     // ─────────────────────────────────────────────
     // Storage helpers

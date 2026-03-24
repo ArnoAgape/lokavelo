@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,7 +40,7 @@ import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
 import com.arnoagape.lokavelo.ui.common.components.RentalDates
 import com.arnoagape.lokavelo.ui.common.components.RentalDatesLayout
 import com.arnoagape.lokavelo.ui.preview.PreviewData
-import com.arnoagape.lokavelo.ui.screen.bikes.BikeImage
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.BikeImage
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import com.arnoagape.lokavelo.ui.utils.toDayLabel
 import com.arnoagape.lokavelo.ui.utils.toLocalDateFromEpochDay
@@ -165,6 +166,7 @@ fun ConversationItem(
                 Text(
                     text = conversation.lastMessage,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     style =
                         if (isUnread)
                             MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)

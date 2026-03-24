@@ -9,6 +9,8 @@ import com.google.firebase.firestore.snapshots
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
@@ -63,19 +65,27 @@ class FirebaseRentalApi @Inject constructor(
     // Observe
     // ─────────────────────────────────────────────
 
-    override fun observeOwnerRentals(): Flow<List<Rental>> =
-        rentalsCollection
-            .whereEqualTo("ownerId", requireUserId())
-            .snapshots()
-            .map { it.documents.toRentalList() }
-            .flowOn(Dispatchers.IO)
+    override fun observeOwnerRentals(): Flow<List<Rental>> = flow {
+        val userId = requireUserId()
+        emitAll(
+            rentalsCollection
+                .whereEqualTo("ownerId", userId)
+                .snapshots()
+                .map { it.documents.toRentalList() }
+                .flowOn(Dispatchers.IO)
+        )
+    }
 
-    override fun observeUserRentals(): Flow<List<Rental>> =
-        rentalsCollection
-            .whereEqualTo("renterId", requireUserId())
-            .snapshots()
-            .map { it.documents.toRentalList() }
-            .flowOn(Dispatchers.IO)
+    override fun observeUserRentals(): Flow<List<Rental>> = flow {
+        val userId = requireUserId()
+        emitAll(
+            rentalsCollection
+                .whereEqualTo("renterId", userId)
+                .snapshots()
+                .map { it.documents.toRentalList() }
+                .flowOn(Dispatchers.IO)
+        )
+    }
 
     override fun observeRental(conversationId: String): Flow<Rental?> =
         rentalsCollection

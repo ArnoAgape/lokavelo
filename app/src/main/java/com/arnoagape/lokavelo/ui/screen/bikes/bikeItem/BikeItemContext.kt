@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.ui.screen.bikes
+package com.arnoagape.lokavelo.ui.screen.bikes.bikeItem
 
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.domain.model.Rental

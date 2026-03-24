@@ -14,5 +14,5 @@ interface BikeApi {
     suspend fun editBike(localUris: List<Uri>, bike: Bike): Result<Unit>
     fun getBikeById(bikeId: String): Flow<Bike?>
     suspend fun deleteBikes(ids: Set<String>): Result<Unit>
-    // fun getBikesByCategory(category: BikeCategory, categoryId: String): Flow<List<Bike>>
+    suspend fun updateAvailability(id: String, available: Boolean): Result<Unit>
 }

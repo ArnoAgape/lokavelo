@@ -1,4 +1,4 @@
-package com.arnoagape.lokavelo.ui.common.components
+package com.arnoagape.lokavelo.ui.screen.bikes.bikeItem
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.combinedClickable
@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.arnoagape.lokavelo.domain.model.RentalStatus
-import com.arnoagape.lokavelo.ui.screen.bikes.RentalStatusBadge
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 
 /**
@@ -31,7 +30,6 @@ import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
  */
 @Composable
 fun SelectItemRow(
-    id: String,
     isSelectionMode: Boolean,
     isSelected: Boolean,
     onSelectToggle: () -> Unit,
@@ -82,7 +80,7 @@ fun SelectItemRow(
             Box(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .padding(end = 12.dp)
+                    .padding(end = 24.dp)
             ) {
                 it()
             }
@@ -98,7 +96,6 @@ fun SelectItemRowPreview() {
 
             // Normal
             SelectItemRow(
-                id = "1",
                 isSelectionMode = false,
                 isSelected = false,
                 onSelectToggle = {},
@@ -110,7 +107,6 @@ fun SelectItemRowPreview() {
 
             // Selected
             SelectItemRow(
-                id = "2",
                 isSelectionMode = true,
                 isSelected = true,
                 onSelectToggle = {},
@@ -122,7 +118,6 @@ fun SelectItemRowPreview() {
 
             // Avec badge
             SelectItemRow(
-                id = "3",
                 isSelectionMode = false,
                 isSelected = false,
                 onSelectToggle = {},
