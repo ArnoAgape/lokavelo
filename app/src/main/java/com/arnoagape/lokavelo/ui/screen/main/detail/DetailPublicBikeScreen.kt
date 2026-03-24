@@ -336,7 +336,11 @@ fun DetailPublicBikeContent(
             // Address
             item {
                 DetailCard(title = stringResource(R.string.location)) {
-                    DetailRow(stringResource(R.string.address_line), bike.location.street)
+                    DetailRow(
+                        stringResource(R.string.address_line),
+                        bike.location.street,
+                        valueWeight = 2f
+                    )
                     DetailRow(stringResource(R.string.zip_code), bike.location.postalCode)
                     DetailRow(stringResource(R.string.city), bike.location.city)
                 }
