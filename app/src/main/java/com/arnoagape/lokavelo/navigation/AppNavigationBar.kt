@@ -120,7 +120,7 @@ fun AppNavigationBar(
                     scaleY = searchScale
                 }
                 .background(
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.primary,
                     shape = CircleShape
                 )
                 .clickable { onItemSelected(Screen.Main.Map) },
@@ -141,8 +141,7 @@ fun RowScope.AnimatedNavItem(
     selected: Boolean,
     onClick: () -> Unit,
     icon: @Composable () -> Unit,
-    label: @Composable () -> Unit,
-    colors: androidx.compose.material3.NavigationBarItemColors = NavigationBarItemDefaults.colors()
+    label: @Composable () -> Unit
 ) {
     val scale by animateFloatAsState(
         targetValue = if (selected) 1.1f else 1f,
@@ -165,7 +164,9 @@ fun RowScope.AnimatedNavItem(
             }
         },
         label = label,
-        colors = colors
+        colors = NavigationBarItemDefaults.colors(
+            selectedTextColor = MaterialTheme.colorScheme.primary
+        )
     )
 }
 

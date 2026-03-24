@@ -29,14 +29,14 @@ import com.arnoagape.lokavelo.ui.screen.account.settings.info.InfoSettingsScreen
 import com.arnoagape.lokavelo.ui.screen.account.settings.notifications.NotificationsSettingsScreen
 import com.arnoagape.lokavelo.ui.screen.account.settings.payment.PaymentSettingsScreen
 import com.arnoagape.lokavelo.ui.screen.account.settings.version.VersionSettingsScreen
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.homeBike.HomeBikeScreen
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.homeBike.HomeBikeViewModel
 import com.arnoagape.lokavelo.ui.screen.login.LoginScreen
 import com.arnoagape.lokavelo.ui.screen.main.map.MapScreen
 import com.arnoagape.lokavelo.ui.screen.main.map.MapViewModel
 import com.arnoagape.lokavelo.ui.screen.messaging.home.MessagingHomeScreen
 import com.arnoagape.lokavelo.ui.screen.messaging.home.MessagingHomeViewModel
-import com.arnoagape.lokavelo.ui.screen.owner.homeBike.HomeBikeScreen
-import com.arnoagape.lokavelo.ui.screen.owner.homeBike.HomeBikeViewModel
-import com.arnoagape.lokavelo.ui.screen.rental.HomeRentalScreen
+import com.arnoagape.lokavelo.ui.screen.bikes.rental.HomeRentalScreen
 import java.time.ZoneId
 
 @Composable

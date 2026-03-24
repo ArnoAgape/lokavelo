@@ -23,19 +23,19 @@ import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.screen.login.LoginScreen
 import com.arnoagape.lokavelo.ui.screen.login.LoginViewModel
 import com.arnoagape.lokavelo.ui.screen.MainScreen
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.AddBikeScreen
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.AddBikeViewModel
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.detailBike.DetailBikeScreen
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.detailBike.DetailBikeViewModel
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.editBike.EditBikeScreen
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.editBike.EditBikeViewModel
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.homeBike.HomeBikeViewModel
 import com.arnoagape.lokavelo.ui.screen.main.contact.ContactScreen
 import com.arnoagape.lokavelo.ui.screen.main.detail.DetailPublicBikeScreen
 import com.arnoagape.lokavelo.ui.screen.main.detail.DetailPublicBikeViewModel
 import com.arnoagape.lokavelo.ui.screen.main.map.MapViewModel
 import com.arnoagape.lokavelo.ui.screen.messaging.detail.MessagingDetailScreen
 import com.arnoagape.lokavelo.ui.screen.messaging.home.MessagingHomeViewModel
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeScreen
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.AddBikeViewModel
-import com.arnoagape.lokavelo.ui.screen.owner.detailBike.DetailBikeScreen
-import com.arnoagape.lokavelo.ui.screen.owner.detailBike.DetailBikeViewModel
-import com.arnoagape.lokavelo.ui.screen.owner.editBike.EditBikeScreen
-import com.arnoagape.lokavelo.ui.screen.owner.editBike.EditBikeViewModel
-import com.arnoagape.lokavelo.ui.screen.owner.homeBike.HomeBikeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

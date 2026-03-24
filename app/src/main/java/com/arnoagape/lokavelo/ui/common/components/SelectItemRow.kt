@@ -16,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.arnoagape.lokavelo.domain.model.RentalStatus
-import com.arnoagape.lokavelo.ui.theme.lightBlue
 
 /**
  * Row component supporting selection mode with optional checkbox.
@@ -27,7 +26,6 @@ import com.arnoagape.lokavelo.ui.theme.lightBlue
 @Composable
 fun SelectItemRow(
     id: String,
-    rentalStatus: RentalStatus? = null,
     isSelectionMode: Boolean,
     isSelected: Boolean,
     onSelectToggle: () -> Unit,
@@ -40,13 +38,6 @@ fun SelectItemRow(
         targetValue =
             when {
                 isSelected -> MaterialTheme.colorScheme.tertiary
-
-                rentalStatus == RentalStatus.ACTIVE ->
-                    lightBlue.copy(alpha = 0.2f)
-
-                rentalStatus == RentalStatus.ACCEPTED ->
-                    MaterialTheme.colorScheme.tertiaryContainer
-
                 else ->
                     MaterialTheme.colorScheme.surfaceVariant
             },

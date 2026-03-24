@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
-import com.arnoagape.lokavelo.ui.screen.owner.detailBike.sections.DetailRow
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.detailBike.sections.DetailRow
 import com.arnoagape.lokavelo.ui.utils.calculateRentalPrice
 import com.arnoagape.lokavelo.ui.utils.toEuroString
 import java.time.LocalDate

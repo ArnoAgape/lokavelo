@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.arnoagape.lokavelo.R
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.SectionCard
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.SectionCard
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -101,16 +101,19 @@ fun PhotosContent(
     Row(
         modifier = Modifier.fillMaxWidth()
     ) {
+        if (isEditable && photos.size < 3) {
+            AddPhotoButton(onClick = onAddPhotoClick)
+        }
+
+        if (isEditable && photos.isNotEmpty()) {
+            Spacer(modifier = Modifier.width(16.dp))
+        }
 
         if (isEditable) {
-
             val lazyListState = rememberLazyListState()
-
             val reorderState = rememberReorderableLazyListState(
                 lazyListState = lazyListState,
-                onMove = { from, to ->
-                    onMovePhoto(from.index, to.index)
-                }
+                onMove = { from, to -> onMovePhoto(from.index, to.index) }
             )
 
             LazyRow(
@@ -118,17 +121,8 @@ fun PhotosContent(
                 state = lazyListState,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-
-                items(
-                    items = photos,
-                    key = { it.id }
-                ) { photo ->
-
-                    ReorderableItem(
-                        state = reorderState,
-                        key = photo.id
-                    ) {
-
+                items(items = photos, key = { it.id }) { photo ->
+                    ReorderableItem(state = reorderState, key = photo.id) {
                         PhotoPreview(
                             uri = photo.toUri(),
                             onRemoveClick = { onRemovePhoto(photo.id) },
@@ -138,27 +132,12 @@ fun PhotosContent(
                     }
                 }
             }
-
         } else {
-
-            // MODE LECTURE SEULE → pas de reorder
             PhotoCarousel(
                 photos = photos,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(220.dp),
-                onPhotoClick = { index ->
-                    selectedPhotoId = photos[index].id
-                }
+                modifier = Modifier.fillMaxWidth().height(220.dp),
+                onPhotoClick = { index -> selectedPhotoId = photos[index].id }
             )
-        }
-
-        if (isEditable && photos.isNotEmpty()) {
-            Spacer(modifier = Modifier.width(16.dp))
-        }
-
-        if (isEditable && photos.size < 3) {
-            AddPhotoButton(onClick = onAddPhotoClick)
         }
     }
 

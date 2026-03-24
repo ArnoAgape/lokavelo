@@ -47,7 +47,7 @@ import com.arnoagape.lokavelo.ui.common.components.ErrorType
 import com.arnoagape.lokavelo.ui.screen.main.map.components.BikePreviewCard
 import com.arnoagape.lokavelo.ui.screen.main.map.components.OSMMap
 import com.arnoagape.lokavelo.ui.screen.main.map.components.SearchBar
-import com.arnoagape.lokavelo.ui.screen.owner.addBike.sections.AddressLineField
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.AddressLineField
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState

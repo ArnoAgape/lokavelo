@@ -39,7 +39,7 @@ import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
 import com.arnoagape.lokavelo.ui.common.components.RentalDates
 import com.arnoagape.lokavelo.ui.common.components.RentalDatesLayout
 import com.arnoagape.lokavelo.ui.preview.PreviewData
-import com.arnoagape.lokavelo.ui.screen.owner.homeBike.BikeImage
+import com.arnoagape.lokavelo.ui.screen.bikes.BikeImage
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import com.arnoagape.lokavelo.ui.utils.toDayLabel
 import com.arnoagape.lokavelo.ui.utils.toLocalDateFromEpochDay
