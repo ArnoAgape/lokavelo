@@ -174,7 +174,7 @@ fun HomeBikeScreen(
 
         floatingActionButton = {
             FloatingActionButton(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                containerColor = MaterialTheme.colorScheme.primary,
                 onClick = onAddBikeClick
             ) {
                 Icon(Icons.Default.Add, stringResource(R.string.add_bike))

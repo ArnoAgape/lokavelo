@@ -17,7 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.arnoagape.lokavelo.navigation.BottomBar
+import com.arnoagape.lokavelo.navigation.AppNavigationBar
 import com.arnoagape.lokavelo.navigation.Screen
 import com.arnoagape.lokavelo.navigation.screenFromRoute
 import com.arnoagape.lokavelo.navigation.stringArg
@@ -59,7 +59,7 @@ fun MainScreen(
     Scaffold(
         bottomBar = {
             if (!isKeyboardVisible) {
-                BottomBar(
+                AppNavigationBar(
                     currentScreen = screenFromRoute(currentRoute) ?: Screen.Main.Map,
                     unreadMessages = unreadMessages,
                     pendingLocations = pendingLocations,

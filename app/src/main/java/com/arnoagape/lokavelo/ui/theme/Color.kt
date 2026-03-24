@@ -9,6 +9,8 @@ val Blue20 = Color(0xFF78c0fb)
 val Blue = Color(0xFF184583)
 val Cyan40 = Color(0xFF1767A3)
 val DarkBlue = Color(0xFF060e17)
+val BlueContainer = Color(0xFFC8E6F7)
+val BlueDark = Color(0xFF0D2D4D)
 
 // RENT BACKGROUND AND TEXT
 val lightBlue = Color(0xFFE0F2FF) // renting

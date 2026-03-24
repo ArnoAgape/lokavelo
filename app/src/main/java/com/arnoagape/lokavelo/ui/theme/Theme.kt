@@ -19,45 +19,52 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
+// Nouvelles couleurs à ajouter
+
+
 private val DarkColorScheme = darkColorScheme(
+
     primary = Blue80,
     onPrimary = Color.White,
     primaryContainer = Color(0xFF0F3A66),
+    onPrimaryContainer = Color(0xFFD6ECFF),
 
     secondary = Blue40,
-    onSecondary = Color.White,
-    secondaryContainer = Blue40,
+    onSecondary = DarkBlue,
+    secondaryContainer = Color(0xFF0D2D4D),
+    onSecondaryContainer = Color(0xFFC8E6F7),
 
-    tertiary = Blue,
-    onTertiary = Color.White,
-    onTertiaryContainer = Color(0xFFE3F2FD),
+    tertiary = BlueGrey80,
+    onTertiary = DarkBlue,
     tertiaryContainer = Color(0xFF1E4F7A),
+    onTertiaryContainer = Color(0xFFE3F2FD),
 
     background = DarkBlue,
     onBackground = Color(0xFFEAF4FB),
-
     surface = Color(0xFF071D32),
     onSurface = Color.White,
     surfaceVariant = Color(0xFF0F2A45)
 )
 
 private val LightColorScheme = lightColorScheme(
+
     primary = Blue,
     onPrimary = Color.White,
     primaryContainer = Color(0xFFD6ECFF),
+    onPrimaryContainer = Blue,
 
-    secondary = Blue,
+    secondary = Cyan40,
     onSecondary = Color.White,
-    secondaryContainer = BlueGrey80,
+    secondaryContainer = BlueContainer,
+    onSecondaryContainer = Color(0xFF0B3C5D),
 
-    tertiary = Blue20,
-    onTertiary = Color.Black,
-    onTertiaryContainer = Color(0xFF0B3C5D),
+    tertiary = Blue80,
+    onTertiary = Color(0xFF0B3C5D),
     tertiaryContainer = Color(0xFFCFE9FF),
+    onTertiaryContainer = Color(0xFF0B3C5D),
 
     background = Color(0xFFF4F9FD),
     onBackground = DarkBlue,
-
     surface = Color(0xFFEDF9FF),
     onSurface = Color(0xFF1A1A1A),
     surfaceVariant = Color(0xFFE8F3F9)
