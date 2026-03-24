@@ -23,6 +23,7 @@ class UserRepository @Inject constructor(private val userApi: UserApi) {
     suspend fun incrementPendingRentalsUnread(ownerId: String) =
         userApi.incrementPendingRentalsUnread(ownerId)
     suspend fun getUser(userId: String): User? = userApi.getUser(userId)
+    fun getCurrentUserId(): String? = userApi.getCurrentUserId()
     fun observeCurrentUser(): Flow<User?> = userApi.observeCurrentUser()
     suspend fun updateUser(user: User) = userApi.updateUser(user)
     suspend fun ensureUserInFirestore() = userApi.ensureUserInFirestore()

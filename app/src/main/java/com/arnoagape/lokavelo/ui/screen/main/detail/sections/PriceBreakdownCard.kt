@@ -48,7 +48,7 @@ fun PriceBreakdownCard(
     val total = subtotal + serviceFee
 
     val dateFormatter =
-        DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.FRANCE)
+        DateTimeFormatter.ofPattern("d MMM yyyy", Locale.FRANCE)
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -56,7 +56,8 @@ fun PriceBreakdownCard(
 
         DetailRow(
             label = stringResource(R.string.period),
-            value = "${startDate.format(dateFormatter)} - ${endDate.format(dateFormatter)}"
+            value = "${startDate.format(dateFormatter)} - ${endDate.format(dateFormatter)}",
+            valueWeight = 2f
         )
 
         Spacer(Modifier.height(4.dp))

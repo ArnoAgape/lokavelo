@@ -99,9 +99,12 @@ private fun ContactPreviewContent(context: BikeItemContext.ContactPreview) {
         monthPrice = context.bike.priceMonthInCents
     )
 
-    val formatted = remember(price) {
+    val serviceFee = (price * SERVICE_FEE_RATE).toLong()
+    val total = price + serviceFee
+
+    val formatted = remember(total) {
         NumberFormat.getCurrencyInstance(Locale.FRANCE)
-            .format(price / 100.0)
+            .format(total / 100.0)
     }
 
     Text(text = formatted)

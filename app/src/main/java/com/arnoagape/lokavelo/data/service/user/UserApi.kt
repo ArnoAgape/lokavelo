@@ -17,6 +17,7 @@ interface UserApi {
     suspend fun markRentalsAsRead(userId: String)
     suspend fun incrementPendingRentalsUnread(ownerId: String)
     suspend fun getUser(userId: String): User?
+    fun getCurrentUserId(): String?
     suspend fun updateUser(user: User): Result<Unit>
     suspend fun ensureUserInFirestore(): Result<Unit>
     fun signOut(): Result<Unit>

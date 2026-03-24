@@ -149,6 +149,7 @@
     <string name="error_no_account_add_bike">An account is mandatory in order to add a bike</string>
     <string name="error_no_account_edit_bike">An account is mandatory in order to edit a bike</string>
     <string name="error_invalid_address">The address cannot be empty or not listed</string>
+    <string name="error_own_bike">It’s your own ad!</string>
 
     // SIGN IN
     <string name="sign_in_google">Sign in with Google</string>

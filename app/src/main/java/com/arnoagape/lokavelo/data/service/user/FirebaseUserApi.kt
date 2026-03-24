@@ -102,6 +102,10 @@ class FirebaseUserApi @Inject constructor(
             ?.let { User.fromDto(it.copy(id = userId)) }
     }
 
+    override fun getCurrentUserId(): String? {
+        return FirebaseAuth.getInstance().currentUser?.uid
+    }
+
     override fun observePendingRentalsUnread(userId: String): Flow<Int> =
         callbackFlow {
             val listener = firestore.collection(USERS_COLLECTION)

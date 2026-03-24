@@ -17,6 +17,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -27,6 +30,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -39,6 +44,8 @@ import com.arnoagape.lokavelo.domain.model.BikeEquipment
 import com.arnoagape.lokavelo.domain.model.BikeLocation
 import com.arnoagape.lokavelo.domain.model.User
 import com.arnoagape.lokavelo.domain.model.labelRes
+import com.arnoagape.lokavelo.ui.common.Event
+import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.common.components.DateRangePickerDialog
 import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
 import com.arnoagape.lokavelo.ui.common.components.ErrorType
@@ -54,6 +61,7 @@ import com.arnoagape.lokavelo.ui.screen.bikes.owner.detailBike.sections.DetailRo
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import com.arnoagape.lokavelo.ui.utils.toEuroString
+import com.arnoagape.lokavelo.ui.utils.vibrateError
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -70,12 +78,32 @@ fun DetailPublicBikeScreen(
 
     val state by viewModel.state.collectAsState()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val resources = LocalResources.current
+
+    EventsEffect(viewModel.eventsFlow) { event ->
+        when (event) {
+            is Event.ShowMessage -> {
+                context.vibrateError()
+
+                snackbarHostState.showSnackbar(
+                    message = resources.getString(event.message),
+                    duration = SnackbarDuration.Short
+                )
+            }
+
+            else -> {}
+        }
+    }
+
     LaunchedEffect(bikeId) {
         viewModel.setBikeId(bikeId)
         viewModel.setInitialDates(startDate, endDate)
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -100,6 +128,7 @@ fun DetailPublicBikeScreen(
             SubmitButton(
                 enabled = state.bike != null,
                 onClick = {
+                    if (!viewModel.onContactClicked()) return@SubmitButton
                     val bike = state.bike ?: return@SubmitButton
 
                     val start = state.startDate
