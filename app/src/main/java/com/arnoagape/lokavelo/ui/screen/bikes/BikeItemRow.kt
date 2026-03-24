@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,6 +45,7 @@ fun BikeItemRow(
                 is BikeItemContext.OwnerGarage -> context.bike
                 is BikeItemContext.RenterRental -> context.bike
                 is BikeItemContext.OwnerRental -> context.bike
+                is BikeItemContext.ContactPreview -> context.bike
             }
 
             BikeImage(bike)
@@ -65,36 +65,47 @@ fun BikeItemRow(
                     is BikeItemContext.OwnerGarage -> {
                         OwnerGarageContent(context.bike)
                     }
+
                     is BikeItemContext.RenterRental -> {
                         RenterRentalContent(context)
                     }
+
                     is BikeItemContext.OwnerRental -> {
                         OwnerRentalContent(context)
                     }
-                }
-            }
-        }
 
-        // Badge en overlay
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(8.dp)
-        ) {
-            when (context) {
-                is BikeItemContext.OwnerGarage -> {
-                    val isAvailable = context.bike.available
-                    AvailabilityDot(available = isAvailable)
-                }
-                is BikeItemContext.RenterRental -> {
-                    RentalStatusBadge(context.rental.status)
-                }
-                is BikeItemContext.OwnerRental -> {
-                    RentalStatusBadge(context.rental.status)
+                    is BikeItemContext.ContactPreview -> {
+                        ContactPreviewContent(context)
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun ContactPreviewContent(context: BikeItemContext.ContactPreview) {
+
+    val days = ChronoUnit.DAYS
+        .between(context.startDate, context.endDate)
+        .toInt()
+        .coerceAtLeast(1)
+
+    val price = calculateRentalPrice(
+        dayPrice = context.bike.priceInCents,
+        days = days,
+        twoDaysPrice = context.bike.priceTwoDaysInCents,
+        weekPrice = context.bike.priceWeekInCents,
+        monthPrice = context.bike.priceMonthInCents
+    )
+
+    val formatted = remember(price) {
+        NumberFormat.getCurrencyInstance(Locale.FRANCE)
+            .format(price / 100.0)
+    }
+
+    Text(text = formatted)
+    RentalDates(start = context.startDate, end = context.endDate)
 }
 
 @Composable

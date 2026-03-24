@@ -133,7 +133,7 @@
     <string name="success_bike_added">Bike added successfully</string>
     <string name="success_bike_edited">Bike edited successfully</string>
     <string name="success_bike_deleted">Bike deleted successfully</string>
-    <string name="success_message_sent">Message sent successfully</string>
+    <string name="success_request_sent">Request sent successfully</string>
 
     // ERROR
     <string name="error_no_network">Please connect to network</string>

@@ -67,12 +67,22 @@ object PreviewData {
         ),
     )
 
-    val rentalsWithBike = bikes.map { bike ->
+    val rentalsWithBike = bikes.map { simpleBike ->
+
+        val fullBike = bike.copy(
+            id = simpleBike.id,
+            ownerId = simpleBike.ownerId,
+            title = simpleBike.title,
+            priceInCents = simpleBike.priceInCents,
+            brand = "Origine Trail Explore Version II",
+            photoUrls = simpleBike.photoUrls
+        )
+
         RentalWithBike(
-            bike = bike,
+            bike = fullBike,
             rental = Rental(
-                id = "rental_${bike.id}",
-                bikeId = bike.id,
+                id = "rental_${simpleBike.id}",
+                bikeId = simpleBike.id,
                 status = RentalStatus.PENDING
             )
         )

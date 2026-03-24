@@ -87,13 +87,33 @@ class HomeBikeViewModel @Inject constructor(
                     }
             }
 
+    private val renterRentalsFlow: Flow<List<RentalWithBike>> =
+        rentalsFlow.map { rentals ->
+            rentals.filter { it.rental.renterId == currentUserId }
+        }
+
+    private val ownerRentalsFlow: Flow<List<RentalWithBike>> =
+        rentalsFlow.map { rentals ->
+            rentals.filter { it.rental.ownerId == currentUserId }
+        }
+
+    private val renterRentalUiState: Flow<HomeRentalUiState> =
+        renterRentalsFlow
+            .map { it.toUiState() }
+            .onStart { emit(HomeRentalUiState.Loading) }
+            .catch { emit(HomeRentalUiState.Error.Generic) }
+
+    private val ownerRentalUiState: Flow<HomeRentalUiState> =
+        ownerRentalsFlow
+            .map { it.toUiState() }
+            .onStart { emit(HomeRentalUiState.Loading) }
+            .catch { emit(HomeRentalUiState.Error.Generic) }
+
     private val _selection = MutableStateFlow(SelectionState())
     private val _isRefreshing = MutableStateFlow(false)
 
     private val _searchQuery = MutableStateFlow("")
     private val _isSearchActive = MutableStateFlow(false)
-    private val _selectedTab = MutableStateFlow(0) // 0 = Mes vélos, 1 = Mes locations
-    val selectedTab: StateFlow<Int> = _selectedTab
     private val _showDeleteDialog = MutableStateFlow(false)
     val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog
 
@@ -123,19 +143,37 @@ class HomeBikeViewModel @Inject constructor(
             .onStart { emit(HomeRentalUiState.Loading) }
             .catch { emit(HomeRentalUiState.Error.Generic) }
 
-    val rentalState: StateFlow<HomeRentalScreenState> =
-        combine(
-            rentalUiState,
-            _isRefreshing
-        ) { ui, refreshing ->
-            HomeRentalScreenState(
-                uiState = ui,
-                isRefreshing = refreshing
-            )
+    val renterRentalState: StateFlow<HomeRentalScreenState> =
+        combine(renterRentalUiState, _isRefreshing) { ui, refreshing ->
+            HomeRentalScreenState(uiState = ui, isRefreshing = refreshing)
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
             HomeRentalScreenState()
+        )
+
+    val ownerRentalState: StateFlow<HomeRentalScreenState> =
+        combine(ownerRentalUiState, _isRefreshing) { ui, refreshing ->
+            HomeRentalScreenState(uiState = ui, isRefreshing = refreshing)
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            HomeRentalScreenState()
+        )
+
+    val rentalTabsState: StateFlow<RentalTabsState> =
+        combine(
+            renterRentalState,
+            ownerRentalState
+        ) { renter, owner ->
+            RentalTabsState(
+                renter = renter,
+                owner = owner
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            RentalTabsState()
         )
 
     private val uiState: Flow<HomeBikeUiState> =
@@ -234,11 +272,6 @@ class HomeBikeViewModel @Inject constructor(
         }
     }
 
-    // Rent/Owner Tab
-    fun selectTab(index: Int) {
-        _selectedTab.value = index
-    }
-
     // 🔍 Search
 
     fun onSearchQueryChange(query: String) {
@@ -316,6 +349,26 @@ class HomeBikeViewModel @Inject constructor(
 
     fun refreshBikes() = refresh()
     fun refreshRentals() = refresh()
+
+    private fun List<RentalWithBike>.toUiState(): HomeRentalUiState {
+
+        if (isEmpty()) return HomeRentalUiState.Empty
+
+        val (pending, others) = partition {
+            it.rental.status == RentalStatus.PENDING
+        }
+
+        val (active, history) = others.partition {
+            it.rental.status == RentalStatus.ACCEPTED ||
+                    it.rental.status == RentalStatus.ACTIVE
+        }
+
+        return HomeRentalUiState.Success(
+            pending = pending,
+            active = active,
+            history = history
+        )
+    }
 }
 
 data class HomeState(
@@ -331,4 +384,9 @@ data class HomeState(
 data class HomeRentalScreenState(
     val uiState: HomeRentalUiState = HomeRentalUiState.Loading,
     val isRefreshing: Boolean = false
+)
+
+data class RentalTabsState(
+    val renter: HomeRentalScreenState = HomeRentalScreenState(),
+    val owner: HomeRentalScreenState = HomeRentalScreenState()
 )

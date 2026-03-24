@@ -1,46 +1,39 @@
 package com.arnoagape.lokavelo.ui.screen.bikes.rental
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Badge
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.arnoagape.lokavelo.R
-import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
-import com.arnoagape.lokavelo.ui.common.components.ErrorType
+import com.arnoagape.lokavelo.domain.model.RentalWithBike
+import com.arnoagape.lokavelo.ui.common.components.SelectItemRow
+import com.arnoagape.lokavelo.ui.preview.PreviewData
+import com.arnoagape.lokavelo.ui.screen.bikes.BikeItemContext
 import com.arnoagape.lokavelo.ui.screen.bikes.BikeItemRow
-import com.arnoagape.lokavelo.ui.screen.bikes.owner.homeBike.HomeBikeUiState
+import com.arnoagape.lokavelo.ui.screen.bikes.RentalStatusBadge
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.homeBike.HomeBikeViewModel
-import com.arnoagape.lokavelo.ui.screen.bikes.StatusDotWithTooltip
-import com.arnoagape.lokavelo.ui.utils.mainRental
-import com.arnoagape.lokavelo.ui.utils.toDisplayStatus
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.homeBike.HomeRentalScreenState
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +41,7 @@ import java.time.ZoneId
 fun HomeRentalScreen(
     viewModel: HomeBikeViewModel
 ) {
-    val rentalState by viewModel.rentalState.collectAsStateWithLifecycle()
+    val rentalTabsState by viewModel.rentalTabsState.collectAsStateWithLifecycle()
     val pendingCount by viewModel.pendingCount.collectAsStateWithLifecycle()
     val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
 
@@ -63,7 +56,10 @@ fun HomeRentalScreen(
                     windowInsets = WindowInsets(0, 0, 0, 0),
                     title = { Text(stringResource(R.string.rentals)) }
                 )
+
                 PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
+
+                    // OWNER
                     Tab(
                         selected = pagerState.currentPage == 0,
                         onClick = {
@@ -71,6 +67,8 @@ fun HomeRentalScreen(
                         },
                         text = { Text(stringResource(R.string.owner)) }
                     )
+
+                    // RENTER
                     Tab(
                         selected = pagerState.currentPage == 1,
                         onClick = {
@@ -83,6 +81,7 @@ fun HomeRentalScreen(
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Text(stringResource(R.string.tenant))
+
                                 if (pendingCount > 0) {
                                     Badge { Text(pendingCount.toString()) }
                                 }
@@ -93,75 +92,102 @@ fun HomeRentalScreen(
             }
         }
     ) { padding ->
+
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.padding(padding)
         ) { page ->
+
             when (page) {
+
+                // OWNER TAB
                 0 -> OwnerRentalContent(
-                    viewModel = viewModel
+                    state = rentalTabsState.owner,
+                    onRefresh = { viewModel.refreshRentals() }
                 )
-                1 -> currentUser?.id?.let { userId ->
-                    HomeRentalContent(
-                        currentUserId = userId,
-                        state = rentalState,
-                        onRefresh = { viewModel.refreshRentals() },
-                        onRentalClick = { /* TODO */ }
-                    )
+
+                // RENTER TAB
+                1 -> {
+                    currentUser?.id?.let {
+                        RenterRentalContent(
+                            state = rentalTabsState.renter,
+                            onRefresh = { viewModel.refreshRentals() },
+                            onRentalClick = { /* TODO */ }
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OwnerRentalContent(
-    viewModel: HomeBikeViewModel
+fun RentalItem(
+    rentalWithBike: RentalWithBike,
+    currentUserId: String,
+    onClick: () -> Unit
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val refreshState = rememberPullToRefreshState()
+    val rental = rentalWithBike.rental
+    val bike = rentalWithBike.bike
+    val isOwner = rental.ownerId == currentUserId
 
-    when (val ui = state.bikesState) {
-        is HomeBikeUiState.Success -> {
-            PullToRefreshBox(
-                modifier = Modifier.fillMaxSize(),
-                state = refreshState,
-                isRefreshing = state.isRefreshing,
-                onRefresh = { viewModel.refreshBikes() }
-            ) {
-                LazyColumn(contentPadding = PaddingValues(top = 10.dp)) {
-                    items(
-                        items = ui.bikes,
-                        key = { it.bike.id }
-                    ) { item ->
-                        val mainRental = item.rentals.mainRental()
-                        val today = LocalDate.now()
-                        val start = mainRental?.startDate
-                            ?.atZone(ZoneId.systemDefault())?.toLocalDate()
-                        val end = mainRental?.endDate
-                            ?.atZone(ZoneId.systemDefault())?.toLocalDate()
-                        val rentalStatus = mainRental?.toDisplayStatus(today)
-                        val ownerPrice = mainRental?.basePriceInCents
+    val startDate = rental.startDate.atZone(ZoneId.systemDefault()).toLocalDate()
+    val endDate = rental.endDate.atZone(ZoneId.systemDefault()).toLocalDate()
 
-                        BikeItemRow(
-                            bike = item.bike,
-                            startDate = start,
-                            endDate = end,
-                            priceOverride = ownerPrice,
-                            showServiceFee = false,
-                            badge = { StatusDotWithTooltip(rentalStatus = rentalStatus) }
-                        )
-                    }
+    val context = if (isOwner) {
+        BikeItemContext.OwnerRental(
+            bike = bike,
+            rental = rental,
+            startDate = startDate,
+            endDate = endDate
+        )
+    } else {
+        BikeItemContext.RenterRental(
+            bike = bike,
+            rental = rental,
+            startDate = startDate,
+            endDate = endDate
+        )
+    }
+
+    SelectItemRow(
+        id = rental.id,
+        isSelectionMode = false,
+        isSelected = false,
+        onSelectToggle = {},
+        onClick = onClick,
+        onLongClick = {},
+        badge = {
+            when (context) {
+
+                is BikeItemContext.OwnerRental -> {
+                    RentalStatusBadge(context.rental.status)
                 }
+
+                is BikeItemContext.RenterRental -> {
+                    RentalStatusBadge(context.rental.status)
+                }
+
+                else -> Unit
             }
         }
-        is HomeBikeUiState.Loading -> {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        }
-        is HomeBikeUiState.Empty -> ErrorOverlay(type = ErrorType.EMPTY_BIKES)
-        else -> ErrorOverlay(type = ErrorType.GENERIC)
+    ) {
+        BikeItemRow(context = context)
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun RenterRentalPreview() {
+    LokaveloTheme {
+        RenterRentalContent(
+            state = HomeRentalScreenState(
+                uiState = HomeRentalUiState.Success(
+                    pending = PreviewData.rentalsWithBike,
+                    active = emptyList(),
+                    history = emptyList()
+                )
+            )
+        )
     }
 }

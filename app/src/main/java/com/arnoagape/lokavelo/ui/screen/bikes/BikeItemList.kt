@@ -3,12 +3,8 @@ package com.arnoagape.lokavelo.ui.screen.bikes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,17 +21,13 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -44,25 +36,13 @@ import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.domain.model.BikeWithRentals
 import com.arnoagape.lokavelo.domain.model.RentalStatus
 import com.arnoagape.lokavelo.domain.model.labelRes
-import com.arnoagape.lokavelo.domain.model.priority
 import com.arnoagape.lokavelo.ui.common.SelectionState
-import com.arnoagape.lokavelo.ui.common.components.RentalDates
 import com.arnoagape.lokavelo.ui.common.components.SelectItemRow
-import com.arnoagape.lokavelo.ui.preview.PreviewData
-import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import com.arnoagape.lokavelo.ui.theme.lightBlue
 import com.arnoagape.lokavelo.ui.theme.lightBlueText
 import com.arnoagape.lokavelo.ui.theme.lightGreen
 import com.arnoagape.lokavelo.ui.theme.lightGreenText
-import com.arnoagape.lokavelo.ui.utils.AppConstants.SERVICE_FEE_RATE
-import com.arnoagape.lokavelo.ui.utils.calculateRentalPrice
 import kotlinx.coroutines.launch
-import java.text.NumberFormat
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.temporal.ChronoUnit
-import java.util.Locale
-import kotlin.math.roundToLong
 
 @Composable
 fun BikeItem(
@@ -71,13 +51,17 @@ fun BikeItem(
     selectionState: SelectionState,
     onToggleSelection: (String) -> Unit,
     onEnterSelectionMode: () -> Unit,
-    contextBuilder: (BikeWithRentals) -> BikeItemContext  // ← nouveau
+    contextBuilder: (BikeWithRentals) -> BikeItemContext
 ) {
+
     LazyColumn(contentPadding = PaddingValues(top = 10.dp)) {
         items(
             items = bikes,
             key = { it.bike.id }
         ) { item ->
+
+            val context = contextBuilder(item)
+
             SelectItemRow(
                 id = item.bike.id,
                 isSelectionMode = selectionState.isSelectionMode,
@@ -87,129 +71,30 @@ fun BikeItem(
                 onLongClick = {
                     if (!selectionState.isSelectionMode) onEnterSelectionMode()
                     onToggleSelection(item.bike.id)
-                }
-            ) {
-                BikeItemRow(context = contextBuilder(item))
-            }
-        }
-    }
-}
+                },
+                badge = {
+                    when (context) {
 
-@Composable
-fun BikeItemRow(
-    bike: Bike,
-    modifier: Modifier = Modifier,
-    priceOverride: Long? = null,
-    startDate: LocalDate? = null,
-    endDate: LocalDate? = null,
-    showServiceFee: Boolean = true,
-    badge: (@Composable () -> Unit)? = null
-) {
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.Top
-        ) {
-
-            BikeImage(bike)
-
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-
-                Text(
-                    text = bike.brand,
-                    style = MaterialTheme.typography.titleMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                val priceToDisplay = when {
-                    priceOverride != null -> priceOverride
-
-                    startDate != null && endDate != null -> {
-                        val days = ChronoUnit.DAYS
-                            .between(startDate, endDate)
-                            .toInt()
-                            .coerceAtLeast(1)
-
-                        val basePrice = calculateRentalPrice(
-                            dayPrice = bike.priceInCents,
-                            days = days,
-                            twoDaysPrice = bike.priceTwoDaysInCents,
-                            weekPrice = bike.priceWeekInCents,
-                            monthPrice = bike.priceMonthInCents
-                        )
-
-                        if (showServiceFee) {
-                            val serviceFee = (basePrice * SERVICE_FEE_RATE).roundToLong()
-                            basePrice + serviceFee
-                        } else {
-                            basePrice
+                        is BikeItemContext.OwnerGarage -> {
+                            AvailabilityDotWithTooltip(context.bike.available)
                         }
+
+                        is BikeItemContext.RenterRental -> {
+                            RentalStatusBadge(context.rental.status)
+                        }
+
+                        is BikeItemContext.OwnerRental -> {
+                            RentalStatusBadge(context.rental.status)
+                        }
+
+                        is BikeItemContext.ContactPreview -> Unit
                     }
-
-                    else -> bike.priceInCents
                 }
-
-                val formattedPrice = remember(priceToDisplay) {
-                    NumberFormat
-                        .getCurrencyInstance(Locale.FRANCE)
-                        .format(priceToDisplay / 100.0)
-                }
-
-                Text(
-                    text = if (startDate != null && endDate != null || priceOverride != null) {
-                        formattedPrice
-                    } else {
-                        stringResource(
-                            R.string.price_per_day,
-                            formattedPrice
-                        )
-                    },
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                if (startDate != null && endDate != null) {
-                    RentalDates(
-                        start = startDate,
-                        end = endDate
-                    )
-                }
-            }
-        }
-
-        badge?.let {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp)
             ) {
-                it()
+                BikeItemRow(context = context)
             }
         }
     }
-}
-
-@Composable
-fun AvailabilityDot(available: Boolean) {
-    Box(
-        modifier = Modifier
-            .size(12.dp)
-            .clip(CircleShape)
-            .background(
-                if (available) lightGreenText
-                else MaterialTheme.colorScheme.error
-            )
-    )
 }
 
 @Composable
@@ -278,49 +163,21 @@ fun BikeImage(bike: Bike, size: Dp = 90.dp) {
     }
 }
 
-@Composable
-fun StatusDot(
-    rentalStatus: RentalStatus?,
-    onClick: (() -> Unit)? = null
-) {
-
-    val color = when (rentalStatus) {
-        RentalStatus.ACTIVE -> lightBlue
-        RentalStatus.ACCEPTED -> MaterialTheme.colorScheme.tertiary
-        RentalStatus.PENDING,
-        RentalStatus.COUNTER_OFFER -> MaterialTheme.colorScheme.secondary
-
-        RentalStatus.DECLINED,
-        RentalStatus.CANCELLED -> MaterialTheme.colorScheme.error
-
-        RentalStatus.COMPLETED -> lightGreen
-        null -> lightGreen
-    }
-
-    Box(
-        modifier = Modifier
-            .size(12.dp)
-            .clip(RoundedCornerShape(50))
-            .background(color)
-            .then(
-                if (onClick != null) {
-                    Modifier.clickable { onClick() }
-                } else Modifier
-            )
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StatusDotWithTooltip(
-    rentalStatus: RentalStatus?
+fun AvailabilityDotWithTooltip(
+    available: Boolean
 ) {
     val tooltipState = rememberTooltipState()
     val scope = rememberCoroutineScope()
 
-    val text = rentalStatus?.let {
-        stringResource(it.labelRes())
-    } ?: stringResource(R.string.bike_availability_yes)
+    val text = if (available) {
+        stringResource(R.string.bike_availability_yes)
+    } else {
+        stringResource(R.string.bike_availability_no)
+    }
+
+    val color = if (available) lightGreenText else MaterialTheme.colorScheme.error
 
     TooltipBox(
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
@@ -333,26 +190,14 @@ fun StatusDotWithTooltip(
         },
         state = tooltipState
     ) {
-        StatusDot(
-            rentalStatus = rentalStatus,
-            onClick = {
-                scope.launch {
-                    tooltipState.show()
+        Box(
+            modifier = Modifier
+                .size(12.dp)
+                .clip(CircleShape)
+                .background(color)
+                .clickable {
+                    scope.launch { tooltipState.show() }
                 }
-            }
-        )
-    }
-}
-
-@PreviewLightDark
-@Composable
-fun BikeItemRowPreview() {
-    LokaveloTheme {
-        BikeItemRow(
-            bike = PreviewData.bike,
-            badge = {},
-            startDate = LocalDate.of(2026, 2, 21),
-            endDate = LocalDate.of(2026, 2, 28)
         )
     }
 }

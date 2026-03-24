@@ -45,6 +45,7 @@ import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.ui.common.Event
 import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.preview.PreviewData
+import com.arnoagape.lokavelo.ui.screen.bikes.BikeItemContext
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.SubmitButton
 import com.arnoagape.lokavelo.ui.screen.bikes.BikeItemRow
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
@@ -191,11 +192,12 @@ fun ContactContent(
                 Column(Modifier.padding(16.dp)) {
 
                     bike?.let {
-
                         BikeItemRow(
-                            bike = it,
-                            startDate = startDate,
-                            endDate = endDate
+                            context = BikeItemContext.ContactPreview(
+                                bike = it,
+                                startDate = startDate,
+                                endDate = endDate
+                            )
                         )
                     }
                 }

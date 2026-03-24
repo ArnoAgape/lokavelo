@@ -1,6 +1,5 @@
 package com.arnoagape.lokavelo.ui.screen.main.contact
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arnoagape.lokavelo.R
@@ -157,7 +156,7 @@ class ContactViewModel @Inject constructor(
             )
 
             _events.trySend(
-                Event.ShowSuccessMessage(R.string.success_message_sent)
+                Event.ShowSuccessMessage(R.string.success_request_sent)
             )
 
             _openConversation.emit(conversation.id)

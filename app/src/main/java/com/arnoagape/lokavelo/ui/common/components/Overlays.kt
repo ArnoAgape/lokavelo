@@ -1,7 +1,6 @@
 package com.arnoagape.lokavelo.ui.common.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,8 +24,7 @@ import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 fun LoadingOverlay() {
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -41,8 +39,7 @@ fun LoadingOverlay() {
 fun DeletingOverlay() {
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -100,8 +97,7 @@ fun ErrorOverlay(
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(
