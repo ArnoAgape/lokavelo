@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -41,6 +42,12 @@ fun BikePreviewCard(
 ) {
 
     val hasDates = filters.startDate != null && filters.endDate != null
+
+    val selectedDays = if (hasDates) {
+        ChronoUnit.DAYS.between(filters.startDate, filters.endDate).toInt().coerceAtLeast(1)
+    } else 0
+
+    val isBelowMinDays = hasDates && selectedDays < bike.minDaysRental
 
     val priceText = if (!hasDates) {
 
@@ -118,6 +125,18 @@ fun BikePreviewCard(
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
+
+                if (isBelowMinDays) {
+                    Text(
+                        text = pluralStringResource(
+                            R.plurals.min_days_rental_warning,
+                            bike.minDaysRental,
+                            bike.minDaysRental
+                        ),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }
