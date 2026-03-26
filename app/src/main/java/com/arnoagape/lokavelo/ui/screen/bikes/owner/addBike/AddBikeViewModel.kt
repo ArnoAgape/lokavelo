@@ -312,7 +312,8 @@ class AddBikeViewModel @Inject constructor(
         val descriptionError = current.description.isBlank()
         val categoryError = current.category == null
         val conditionError = current.condition == null
-        val minDaysRentalError = current.minDaysRentalText.toIntOrNull()?.let { it < 1 } ?: true
+        val minDaysRentalError =
+            current.minDaysRentalText.toIntOrNull()?.let { it !in 1..90 } ?: true
 
         val price = current.priceText.toCentsOrNull()
         val priceError = price == null || price <= 0

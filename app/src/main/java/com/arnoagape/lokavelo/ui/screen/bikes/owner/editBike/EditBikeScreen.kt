@@ -59,7 +59,7 @@ import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.common.components.AlertDialogNonSaved
 import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
 import com.arnoagape.lokavelo.ui.common.components.photo.PhotosSection
-import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.BikeHelpBottomSheet
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.BikeHelpBottomSheet
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.AdditionalSection
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.CharacteristicsSection
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.DepositSection

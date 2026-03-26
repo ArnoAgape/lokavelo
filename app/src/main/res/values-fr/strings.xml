@@ -29,7 +29,7 @@
     <string name="hint_messaging_conversation">Écris ton message ici</string>
     <string name="hint_title">Ex : Gravel équipé voyage</string>
     <string name="hint_brand">Ex : Origine Trail Explore</string>
-    <string name="hint_description">Décris ton vélo, ses équipements et conditions</string>
+    <string name="hint_description">Décris ton vélo, ses équipements et détaille tes conditions</string>
     <string name="hint_min_days_rental">Ex : 3</string>
 
     // MISC WORDS
@@ -102,7 +102,6 @@
     <string name="no_deposit">Aucune caution</string>
     <string name="no_brand">Aucune marque</string>
     <string name="required">Obligatoire</string>
-    <string name="number_only">Nombre uniquement, 1 minimum</string>
     <string name="current_position">Position actuelle</string>
     <string name="city_address">Ville ou adresse</string>
     <string name="period">Période</string>
@@ -154,7 +153,8 @@
     <string name="error_no_account_add_bike">Tu dois te connecter pour publier une annonce</string>
     <string name="error_no_account_edit_bike">Tu dois te connecter pour modifier une annonce</string>
     <string name="error_invalid_address">L’adresse est incorrecte</string>
-    <string name="error_own_bike">C’est ton annonce !</string>
+    <string name="error_own_bike">C’est ta propre annonce !</string>
+    <string name="error_min_days_rental">Entre 1 et 90 jours</string>
 
     // SIGN IN
     <string name="sign_in_google">Continue avec Google</string>
@@ -287,74 +287,56 @@
 
     // COMING SOON…
 
-    // AIDE
+    <!-- AIDE -->
     <string name="help_guide_title">Guide de remplissage</string>
 
-    // Aide - Photos
+    <!-- Photos -->
     <string name="help_photos_title">Photos</string>
-    <string name="help_photos_item_1">Ajoute 1 à 3 photos de ton vélo</string>
-    <string name="help_photos_item_2">Privilégie une photo de face montrant ton vélo dans son ensemble</string>
-    <string name="help_photos_item_3">Utilise un bon éclairage naturel</string>
-    <string name="help_photos_item_4">Évite les arrière-plans trop chargés</string>
-    <string name="help_photos_item_5">Les photos nettes et de bonne qualité augmentent les locations</string>
+    <string name="help_photos_paragraph">
+Ajoute quelques photos de ton vélo pour le présenter clairement. Une vue d’ensemble bien éclairée permet de mieux comprendre son état et ses caractéristiques. Des images simples et nettes rendent l’annonce plus attractive.
+</string>
 
-    // Aide - Titre et description
+    <!-- Titre et description -->
     <string name="help_title_desc_title">Titre et description</string>
-    <string name="help_title_desc_item_1">Sois précis (ex : « Gravel Origine Trail Explore » plutôt que « vélo gravel »)</string>
-    <string name="help_title_desc_item_2">Précise la taille recommandée pour ce vélo</string>
-    <string name="help_title_desc_item_3">Mentionne les composants si ceux-ci sont spécifiques (ex : fourche suspendue)</string>
-    <string name="help_title_desc_item_4">Décris les réparations ou entretiens récents</string>
-    <string name="help_title_desc_item_5">Une bonne description augmente la confiance des locataires</string>
+    <string name="help_title_desc_paragraph">
+Un titre précis et une description claire permettent de mieux présenter ton vélo. Tu peux indiquer la taille recommandée, les équipements spécifiques ainsi que les entretiens récents. Ces informations aident les locataires à se projeter.
+</string>
 
-    // Aide - Caractéristiques
+    <!-- Caractéristiques -->
     <string name="help_characteristics_title">Caractéristiques</string>
-    <string name="help_characteristics_item_1">Catégorie : sélectionne le type de vélo (route, VTT, ville, gravel, etc.)</string>
-    <string name="help_characteristics_item_2">Type : indique si ton vélo a une assistance électrique ou pas</string>
-    <string name="help_characteristics_item_3">Modèle : le nom du fabricant du vélo ainsi que son modèle</string>
-    <string name="help_characteristics_item_4">Taille : la taille du cadre (XS, S, M, L, XL ou taille unique)</string>
-    <string name="help_characteristics_item_5">État : sois honnête sur l’état général de ton vélo</string>
-    <string name="help_characteristics_item_6">Accessoires : porte-bidon, casque, lumières, béquille, etc.</string>
+    <string name="help_characteristics_paragraph">
+Les caractéristiques permettent de situer ton vélo rapidement. Catégorie, type, taille, modèle, état et accessoires donnent une vue d’ensemble utile pour les locataires. Des informations cohérentes facilitent le choix.
+</string>
 
-    // Aide - Adresse
-    <string name="help_address_title">Adresse</string>
-    <string name="help_address_item_1">Ton adresse exacte ne sera pas visible publiquement</string>
-    <string name="help_address_item_2">Elle permet de localiser ton vélo sur la carte et de faciliter la recherche des locataires </string>
-    <string name="help_address_item_3">Indique une adresse précise pour organiser facilement la remise du vélo</string>
-    <string name="help_address_item_4">Un emplacement bien situé peut augmenter la visibilité de ton annonce</string>
+    <!-- Adresse -->
+    <string name="help_address_title">Localisation</string>
+    <string name="help_address_paragraph">
+L’adresse sert à positionner ton vélo sur la carte sans être affichée publiquement. Une localisation précise facilite la prise de contact et l’organisation de la remise.
+</string>
 
-    // Aide - Tarification
-    <string name="help_pricing_title">Tarification</string>
-    <string name="help_pricing_item_1">Prix par jour : le tarif de base</string>
-    <string name="help_pricing_item_2">Tu peux proposer des tarifs réduits pour les longues durées</string>
-    <string name="help_pricing_item_3">Prix 2 jours : réduction pour les locations de 2 jours</string>
-    <string name="help_pricing_item_4">Prix semaine : réduction pour les locations d’une semaine</string>
-    <string name="help_pricing_item_5">Prix mois : réduction pour les locations d’un mois</string>
-    <string name="help_pricing_item_6">Compare les tarifs de vélos similaires en utilisant la recherche de LokaVélo</string>
+    <!-- Tarification -->
+    <string name="help_pricing_title">Tarif</string>
+    <string name="help_pricing_paragraph">
+Le prix par jour correspond au tarif de base. Tu peux proposer des tarifs dégressifs pour encourager les locations plus longues. Comparer avec des vélos similaires peut aider à ajuster ton prix.
+</string>
 
-    // Aide - Dépôt
+    <!-- Caution -->
     <string name="help_deposit_title">Caution</string>
-    <string name="help_deposit_item_1">Montant bloqué sur la carte du locataire pendant la location</string>
-    <string name="help_deposit_item_2">Recommandé pour protéger ton vélo en cas de dégâts</string>
-    <string name="help_deposit_item_3">Généralement entre 50 € et 2000 € selon la valeur de ton vélo</string>
-    <string name="help_deposit_item_4">Sera remboursé au locataire si ton vélo est retourné en bon état</string>
-    <string name="help_deposit_item_5">Les dégâts constatés peuvent réduire le remboursement</string>
+    <string name="help_deposit_paragraph">
+La caution est un montant temporairement bloqué pendant la location. Elle permet de couvrir d’éventuels dommages. Elle est restituée si le vélo est rendu en bon état.
+</string>
 
-    // Aide - Durée minimale
+    <!-- Durée minimale -->
     <string name="help_min_rental_title">Durée minimale de location</string>
-    <string name="help_min_rental_item_1">Définis le nombre minimum de jours pour louer ton vélo</string>
-    <string name="help_min_rental_item_2">Par défaut : 1 jour</string>
-    <string name="help_min_rental_item_3">Si tu préfères les longues locations : 3, 7 ou 30 jours</string>
-    <string name="help_min_rental_item_4">Les locataires voient cette information avant de te contacter</string>
-    <string name="help_min_rental_item_5">Une durée courte permet plus de demandes</string>
+    <string name="help_min_rental_paragraph">
+La durée minimale permet de définir le nombre de jours requis pour louer ton vélo. Une durée courte favorise plus de demandes, tandis qu’une durée plus longue peut mieux correspondre à certains usages.
+</string>
 
-    // Aide - Avant de publier
+    <!-- Avant de publier -->
     <string name="help_before_publish_title">Avant de publier</string>
-    <string name="help_before_publish_item_1">Vérifie que ton vélo est en bon état de fonctionnement</string>
-    <string name="help_before_publish_item_2">Teste les freins, les changements de vitesse, la suspension</string>
-    <string name="help_before_publish_item_3">Nettoie ton vélo avant de prendre des photos</string>
-    <string name="help_before_publish_item_4">Assure-toi que tous les champs obligatoires sont remplis</string>
-    <string name="help_before_publish_item_5">Relis les informations pour éviter les erreurs</string>
-    <string name="help_before_publish_item_6">Une bonne annonce = plus de locations = plus de revenus</string>
+    <string name="help_before_publish_paragraph">
+Avant de publier, assure-toi que ton vélo est en bon état et que les informations sont complètes. Une annonce claire et cohérente facilite la mise en relation avec les locataires.
+</string>
 
 
 </resources>

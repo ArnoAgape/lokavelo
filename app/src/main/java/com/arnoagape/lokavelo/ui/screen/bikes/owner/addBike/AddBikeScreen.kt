@@ -64,6 +64,7 @@ import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.DepositSect
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.LocationSection
 import com.arnoagape.lokavelo.ui.common.components.photo.PhotosSection
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.AdditionalSection
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.BikeHelpBottomSheet
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.PricingSection
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.SubmitButton
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.TitleDescriptionSection

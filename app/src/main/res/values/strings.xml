@@ -102,7 +102,6 @@
     <string name="no_deposit">No deposit</string>
     <string name="no_brand">No brand</string>
     <string name="required">Required</string>
-    <string name="number_only">Number only, 1 minimum</string>
     <string name="current_position">Current position</string>
     <string name="city_address">City or address</string>
     <string name="period">Period</string>
@@ -155,6 +154,7 @@
     <string name="error_no_account_edit_bike">An account is mandatory in order to edit a bike</string>
     <string name="error_invalid_address">The address cannot be empty or not listed</string>
     <string name="error_own_bike">It’s your own ad!</string>
+    <string name="error_min_days_rental">Between 1 and 90 days</string>
 
     // SIGN IN
     <string name="sign_in_google">Sign in with Google</string>
@@ -287,76 +287,55 @@
     <string name="bike_state_good">Good</string>
     <string name="bike_state_used">Used</string>
 
-    // COMING SOON…
+    <!-- HELP -->
+    <string name="help_guide_title">Listing guide</string>
 
-    // HELP GUIDE
-    <string name="help_guide_title">Listing Guide</string>
-
-    // Help - Photos
+    <!-- Photos -->
     <string name="help_photos_title">Photos</string>
-    <string name="help_photos_item_1">Add 1 to 3 photos of your bike</string>
-    <string name="help_photos_item_2">Prioritize a front photo showing the entire bike</string>
-    <string name="help_photos_item_3">Use good natural lighting</string>
-    <string name="help_photos_item_4">Avoid cluttered backgrounds</string>
-    <string name="help_photos_item_5">Sharp, high-quality photos increase rentals</string>
+    <string name="help_photos_paragraph">
+Add a few photos to clearly present your bike. A well-lit overall view helps show its condition and features. Clean, simple images make the listing more appealing.
+</string>
 
-    // Help - Title and Description
-    <string name="help_title_desc_title">Title &amp; Description</string>
-    <string name="help_title_desc_item_1">Be specific (e.g., “Gravel Origine Trail Explore” not “gravel bike”)</string>
-    <string name="help_title_desc_item_2">Specify the recommended rider height for this bike</string>
-    <string name="help_title_desc_item_3">Mention components (e.g., suspension fork)</string>
-    <string name="help_title_desc_item_4">Describe recent repairs or maintenance</string>
-    <string name="help_title_desc_item_5">Good descriptions increase renter confidence</string>
+    <!-- Title & description -->
+    <string name="help_title_desc_title">Title and description</string>
+    <string name="help_title_desc_paragraph">
+A precise title and a clear description help present your bike effectively. You can include the recommended rider height, specific components, and recent maintenance. These details help renters understand what to expect.
+</string>
 
-    // Help - Characteristics
+    <!-- Characteristics -->
     <string name="help_characteristics_title">Characteristics</string>
-    <string name="help_characteristics_item_1">Category: select bike type (road, MTB, city, gravel, etc.)</string>
-    <string name="help_characteristics_item_2">Electric: indicate if bike has electric assistance</string>
-    <string name="help_characteristics_item_3">Brand: the bike manufacturer name</string>
-    <string name="help_characteristics_item_4">Size: frame size (XS, S, M, L, XL or one size)</string>
-    <string name="help_characteristics_item_5">Condition: be honest about overall bike condition</string>
-    <string name="help_characteristics_item_6">Accessories: bottle-cage, helmet, lights, kickstand, etc.</string>
+    <string name="help_characteristics_paragraph">
+The details section helps position your bike quickly. Category, type, brand, size, condition, and accessories provide a useful overview. Consistent information makes it easier to choose.
+</string>
 
-    // Help - Address
-    <string name="help_address_title">Address</string>
-    <string name="help_address_item_1">Exact address won’t be visible publicly</string>
-    <string name="help_address_item_2">It helps locate your bike on the map and makes it easier for renters to find it</string>
-    <string name="help_address_item_3">Enter a precise address to easily arrange the handover of the bike</string>
-    <string name="help_address_item_4">A well-located address can increase your listing’s visibility</string>
+    <!-- Address -->
+    <string name="help_address_title">Location</string>
+    <string name="help_address_paragraph">
+The address is used to place your bike on the map without being publicly visible. A precise location makes meeting and handover easier.
+</string>
 
-    // Help - Pricing
+    <!-- Pricing -->
     <string name="help_pricing_title">Pricing</string>
-    <string name="help_pricing_item_1">Daily rate: base price</string>
-    <string name="help_pricing_item_2">Offer discounts for longer rental durations</string>
-    <string name="help_pricing_item_3">2-day price: discount for 2-day rentals</string>
-    <string name="help_pricing_item_4">Weekly price: discount for week-long rentals</string>
-    <string name="help_pricing_item_5">Monthly price: discount for month-long rentals</string>
-    <string name="help_pricing_item_6">Compare similar bikes in your region for pricing</string>
+    <string name="help_pricing_paragraph">
+The daily price is your base rate. You can offer lower prices for longer rentals. Comparing with similar bikes can help you set the right price.
+</string>
 
-    // Help - Deposit
+    <!-- Deposit -->
     <string name="help_deposit_title">Deposit</string>
-    <string name="help_deposit_item_1">Amount blocked on renter’s card during rental</string>
-    <string name="help_deposit_item_2">Recommended to protect your bike from damage</string>
-    <string name="help_deposit_item_3">Typically €50–2000 depending on bike value</string>
-    <string name="help_deposit_item_4">Refunded to renter if bike returned in good condition</string>
-    <string name="help_deposit_item_5">Damages found can reduce refund amount</string>
+    <string name="help_deposit_paragraph">
+The deposit is temporarily held during the rental. It helps cover potential damage. It is refunded if the bike is returned in good condition.
+</string>
 
-    // Help - Minimum Rental
-    <string name="help_min_rental_title">Minimum Rental Duration</string>
-    <string name="help_min_rental_item_1">Set minimum days required to rent your bike</string>
-    <string name="help_min_rental_item_2">Default: 1 day</string>
-    <string name="help_min_rental_item_3">For longer rentals preferred: 3, 7 or 30 days</string>
-    <string name="help_min_rental_item_4">Renters see this before contacting you</string>
-    <string name="help_min_rental_item_5">Shorter duration allows more rental requests</string>
+    <!-- Minimum rental -->
+    <string name="help_min_rental_title">Minimum rental duration</string>
+    <string name="help_min_rental_paragraph">
+The minimum rental duration sets the number of days required to rent your bike. Shorter durations may attract more requests, while longer ones can better suit certain needs.
+</string>
 
-    // Help - Before Publishing
-    <string name="help_before_publish_title">Before Publishing</string>
-    <string name="help_before_publish_item_1">Verify bike works properly</string>
-    <string name="help_before_publish_item_2">Test brakes, gears, suspension</string>
-    <string name="help_before_publish_item_3">Clean your bike before taking pictures</string>
-    <string name="help_before_publish_item_4">Ensure all required fields are filled</string>
-    <string name="help_before_publish_item_5">Proofread to avoid errors</string>
-    <string name="help_before_publish_item_6">Good listing = more rentals = more income</string>
-
+    <!-- Before publishing -->
+    <string name="help_before_publish_title">Before publishing</string>
+    <string name="help_before_publish_paragraph">
+Before publishing, make sure your bike is in good condition and that all information is complete. A clear and consistent listing makes it easier to connect with renters.
+</string>
 
 </resources>

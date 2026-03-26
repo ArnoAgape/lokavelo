@@ -84,6 +84,8 @@ fun CharacteristicsSection(
                 itemLabel = { stringResource(it.labelRes()) }
             )
 
+            Spacer(Modifier.height(spacing.medium))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -94,12 +96,14 @@ fun CharacteristicsSection(
                 )
             }
 
+            Spacer(Modifier.height(spacing.medium))
+
             OutlinedTextField(
                 value = brand,
                 onValueChange = { onBrandChange(it) },
                 label = { Text(stringResource(R.string.brand)) },
                 keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
+                    capitalization = KeyboardCapitalization.Words,
                     imeAction = ImeAction.Next
                 ),
                 modifier = Modifier.fillMaxWidth(),

@@ -56,7 +56,7 @@ fun AdditionalSection(
                 isError = minDaysRentalError,
                 supportingText = {
                     if (minDaysRentalError) {
-                        Text(stringResource(R.string.number_only))
+                        Text(stringResource(R.string.error_min_days_rental))
                     }
                 },
                 label = { Text(stringResource(R.string.min_duration_rental)) },
