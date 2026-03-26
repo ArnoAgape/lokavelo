@@ -237,8 +237,8 @@ fun OSMMap(
                             )?.mutate()
 
                             if (isBelowMinDays && iconDrawable != null) {
-                                // Clone le drawable pour éviter les artifacts
-                                val clonedDrawable = iconDrawable.constantState?.newDrawable()?.mutate()
+                                val clonedDrawable =
+                                    iconDrawable.constantState?.newDrawable()?.mutate()
                                 clonedDrawable?.colorFilter = PorterDuffColorFilter(
                                     "#808080".toColorInt(),
                                     PorterDuff.Mode.MULTIPLY
