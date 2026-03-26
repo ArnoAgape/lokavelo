@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material3.BottomSheetDefaults
@@ -85,6 +86,7 @@ fun EditBikeScreen(
     val resources = LocalResources.current
     val snackbarHostState = remember { SnackbarHostState() }
     var showExitDialog by remember { mutableStateOf(false) }
+    var showHelpSheet by remember { mutableStateOf(false) }
 
     BackHandler {
         if (hasUnsavedChanges) {
@@ -154,6 +156,14 @@ fun EditBikeScreen(
                             stringResource(R.string.cd_go_back)
                         )
                     }
+                },
+                actions = {
+                    IconButton(onClick = { showHelpSheet = true }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Help,
+                            stringResource(R.string.help)
+                        )
+                    }
                 }
             )
         },
@@ -202,6 +212,12 @@ fun EditBikeScreen(
 
                 else -> Unit
             }
+        }
+
+        if (showHelpSheet) {
+            BikeHelpBottomSheet(
+                onDismiss = { showHelpSheet = false }
+            )
         }
 
         if (showExitDialog) {

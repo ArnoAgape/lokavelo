@@ -128,6 +128,7 @@
     <string name="rental_request_sent">Rental request sent</string>
     <string name="owner">Owner</string>
     <string name="tenant">Tenant</string>
+    <string name="help">Help</string>
 
     // SUCCESS
     <string name="success_user_updated">Details updated successfully</string>

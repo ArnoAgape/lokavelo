@@ -20,8 +20,10 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -85,6 +87,7 @@ fun AddBikeScreen(
     val resources = LocalResources.current
     val snackbarHostState = remember { SnackbarHostState() }
     var showExitDialog by remember { mutableStateOf(false) }
+    var showHelpSheet by remember { mutableStateOf(false) }
 
     BackHandler {
         if (hasUnsavedChanges) {
@@ -147,6 +150,14 @@ fun AddBikeScreen(
                     ) {
                         Icon(Icons.Default.Close, null)
                     }
+                },
+                actions = {
+                    IconButton(onClick = { showHelpSheet = true }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Help,
+                            stringResource(R.string.help)
+                        )
+                    }
                 }
             )
         },
@@ -198,6 +209,12 @@ fun AddBikeScreen(
                         onSuggestionSelected = viewModel::onSuggestionSelected
                     )
             }
+        }
+
+        if (showHelpSheet) {
+            BikeHelpBottomSheet(
+                onDismiss = { showHelpSheet = false }
+            )
         }
 
         if (showExitDialog) {
