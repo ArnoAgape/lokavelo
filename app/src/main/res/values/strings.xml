@@ -68,6 +68,10 @@
         <item quantity="one">%d day</item>
         <item quantity="other">%d days</item>
     </plurals>
+    <plurals name="min_days_rental_warning">
+        <item quantity="one">Minimum rental: %d day</item>
+        <item quantity="other">Minimum rental: %d days</item>
+    </plurals>
     <string name="price_total_with_daily">%1$s / day · Total %2$s</string>
     <string name="discount_pricing">Discount</string>
     <string name="discount">Discount: %1$d%%</string>

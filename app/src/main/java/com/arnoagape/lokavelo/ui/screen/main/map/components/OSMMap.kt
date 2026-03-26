@@ -1,6 +1,7 @@
 package com.arnoagape.lokavelo.ui.screen.main.map.components
 
 import android.graphics.Paint
+import android.graphics.PorterDuff
 import androidx.preference.PreferenceManager
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.MapEventsOverlay
+import java.time.temporal.ChronoUnit
 
 @Composable
 fun OSMMap(
@@ -47,6 +49,7 @@ fun OSMMap(
 
     var lastCentered by remember { mutableStateOf<GeoPoint?>(null) }
     var lastBikes by remember { mutableStateOf<List<Bike>>(emptyList()) }
+    var lastSelectedDays by remember { mutableStateOf(0L) }
 
     var bikeMarkers by remember { mutableStateOf<List<Marker>>(emptyList()) }
     var userCircle by remember { mutableStateOf<Polygon?>(null) }
@@ -201,7 +204,13 @@ fun OSMMap(
                 // 🚲 Markers vélos
                 // ===============================
 
-                if (lastBikes != bikes) {
+                val selectedDays = if (filters.startDate != null && filters.endDate != null) {
+                    ChronoUnit.DAYS.between(filters.startDate, filters.endDate).coerceAtLeast(1)
+                } else {
+                    0L
+                }
+
+                if (lastBikes != bikes || lastSelectedDays != selectedDays) {
 
                     // Supprimer anciens markers
                     bikeMarkers.forEach {
@@ -216,9 +225,17 @@ fun OSMMap(
                                 position = GeoPoint(bike.location.latitude, bike.location.longitude)
                             }
 
-                            icon = mapView.context.getDrawable(
+                            val isBelowMinDays = selectedDays > 0 && selectedDays < bike.minDaysRental
+                            val iconDrawable = mapView.context.getDrawable(
                                 R.drawable.ic_bike_marker_light
-                            )
+                            )?.mutate()
+                            if (isBelowMinDays) {
+                                iconDrawable?.setColorFilter(
+                                    android.graphics.Color.GRAY,
+                                    PorterDuff.Mode.SRC_IN
+                                )
+                            }
+                            icon = iconDrawable
 
                             setAnchor(
                                 Marker.ANCHOR_CENTER,
@@ -238,6 +255,7 @@ fun OSMMap(
 
                     bikeMarkers = newMarkers
                     lastBikes = bikes
+                    lastSelectedDays = selectedDays
 
                     mapView.invalidate()
                 }
