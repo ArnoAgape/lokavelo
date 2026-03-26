@@ -23,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -372,7 +371,7 @@ private fun AddBikeContent(
                 category = state.form.category,
                 brand = state.form.brand,
                 condition = state.form.condition,
-                electric = state.form.electric,
+                type = state.form.type,
                 size = state.form.size,
                 accessories = state.form.accessories,
                 categoryError = state.form.categoryError,
@@ -381,7 +380,7 @@ private fun AddBikeContent(
                 onCategoryChange = { onAction(AddBikeEvent.CategoryChanged(it)) },
                 onBrandChange = { onAction(AddBikeEvent.BrandChanged(it)) },
                 onStateChange = { onAction(AddBikeEvent.StateChanged(it)) },
-                onElectricChange = { onAction(AddBikeEvent.ElectricChanged(it)) },
+                onTypeChange = { onAction(AddBikeEvent.TypeChanged(it)) },
                 onAccessoriesChange = { onAction(AddBikeEvent.AccessoriesChanged(it)) },
                 onSizeChange = { onAction(AddBikeEvent.SizeChanged(it)) }
             )

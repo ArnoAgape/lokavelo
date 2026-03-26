@@ -11,6 +11,7 @@ import com.arnoagape.lokavelo.domain.model.AddressSuggestion
 import com.arnoagape.lokavelo.domain.model.Bike
 import com.arnoagape.lokavelo.domain.model.BikeCategory
 import com.arnoagape.lokavelo.domain.model.BikeEquipment
+import com.arnoagape.lokavelo.domain.model.BikeMotor
 import com.arnoagape.lokavelo.domain.model.BikeSize
 import com.arnoagape.lokavelo.ui.utils.NetworkUtils
 import com.arnoagape.lokavelo.ui.utils.isBikeMatchingFilters
@@ -209,9 +210,9 @@ class MapViewModel @Inject constructor(
         )
     }
 
-    fun updateElectricFilter(isElectric: Boolean?) {
+    fun updateElectricFilter(motor: Set<BikeMotor>) {
         _filters.value = _filters.value.copy(
-            electricOnly = isElectric
+            bikeMotor = motor
         )
     }
 
@@ -244,7 +245,7 @@ data class SearchFilters(
     val startDate: LocalDate? = null,
     val endDate: LocalDate? = null,
     val bikeCategories: Set<BikeCategory> = emptySet(),
-    val electricOnly: Boolean? = null,
+    val bikeMotor: Set<BikeMotor> = emptySet(),
     val bikeSizes: Set<BikeSize> = emptySet(),
     val accessories: Set<BikeEquipment> = emptySet(),
     val minPrice: Float = 0f,

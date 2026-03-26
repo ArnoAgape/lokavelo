@@ -255,7 +255,7 @@ private fun Bike.toUpdateMap(ownerName: String, photoUrls: List<String>): Map<St
         "priceWeekInCents" to priceWeekInCents,
         "priceMonthInCents" to priceMonthInCents,
         "depositInCents" to depositInCents,
-        "electric" to electric,
+        "motorType" to motorType,
         "category" to category,
         "brand" to brand,
         "size" to size,

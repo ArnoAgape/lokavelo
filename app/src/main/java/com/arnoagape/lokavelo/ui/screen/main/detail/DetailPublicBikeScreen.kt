@@ -57,6 +57,7 @@ import com.arnoagape.lokavelo.ui.screen.main.detail.sections.OwnerCard
 import com.arnoagape.lokavelo.ui.screen.main.detail.sections.PriceBreakdownCard
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.SubmitButton
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.detailBike.sections.AccessoriesRow
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.detailBike.sections.BikeMotorRow
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.detailBike.sections.DetailCard
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.detailBike.sections.DetailRow
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
@@ -309,13 +310,10 @@ fun DetailPublicBikeContent(
                         value = bike.category?.let { stringResource(it.labelRes()) } ?: ""
                     )
 
-                    // Electric
-                    DetailRow(
-                        label = stringResource(R.string.electric_bike),
-                        value = if (bike.electric)
-                            stringResource(R.string.yes)
-                        else
-                            stringResource(R.string.no)
+                    // Type (electric or regular)
+                    BikeMotorRow(
+                        label = stringResource(R.string.bike_type),
+                        motorType = bike.motorType
                     )
 
                     // Brand

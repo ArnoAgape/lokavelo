@@ -4,6 +4,7 @@ import android.net.Uri
 import com.arnoagape.lokavelo.domain.model.BikeCategory
 import com.arnoagape.lokavelo.domain.model.BikeEquipment
 import com.arnoagape.lokavelo.domain.model.BikeCondition
+import com.arnoagape.lokavelo.domain.model.BikeMotor
 import com.arnoagape.lokavelo.domain.model.BikeSize
 
 /**
@@ -21,8 +22,8 @@ sealed interface EditBikeEvent {
     data class WeekPriceChanged(val value: String) : EditBikeEvent
     data class MonthPriceChanged(val value: String) : EditBikeEvent
     data class DepositChanged(val depositText: String) : EditBikeEvent
-    data class ElectricChanged(val electric: Boolean) : EditBikeEvent
 
+    data class TypeChanged(val type: BikeMotor) : EditBikeEvent
     data class SizeChanged(val size: BikeSize) : EditBikeEvent
     data class CategoryChanged(val category: BikeCategory) : EditBikeEvent
     data class BrandChanged(val brand: String) : EditBikeEvent

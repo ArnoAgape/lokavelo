@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.sp
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.BikeCategory
 import com.arnoagape.lokavelo.domain.model.BikeEquipment
+import com.arnoagape.lokavelo.domain.model.BikeMotor
 import com.arnoagape.lokavelo.domain.model.BikeSize
 import com.arnoagape.lokavelo.domain.model.labelRes
 import com.arnoagape.lokavelo.ui.common.components.DateRangePickerDialog
@@ -60,17 +61,18 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar(
+fun MapSearchBar(
     filters: SearchFilters,
     maxBikePrice: Float,
     onAddressClick: () -> Unit,
     onCategorySelected: (Set<BikeCategory>) -> Unit,
-    onElectricSelected: (Boolean?) -> Unit,
+    onMotorTypeChanged: (Set<BikeMotor>) -> Unit,
     onDatesSelected: (LocalDate, LocalDate) -> Unit,
     onFiltersSelected: (Set<BikeSize>, Set<BikeEquipment>, Float, Float) -> Unit
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
 
+    // Top Search Bar
     Surface(
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 12.dp)
@@ -84,7 +86,6 @@ fun SearchBar(
                 .fillMaxWidth()
                 .height(64.dp)
         ) {
-
             // 📍 Adresse
             Row(
                 modifier = Modifier
@@ -99,9 +100,7 @@ fun SearchBar(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
-
                 Spacer(Modifier.width(12.dp))
-
                 Text(
                     text = filters.addressQuery ?: stringResource(R.string.search),
                     style = MaterialTheme.typography.bodyLarge,
@@ -111,9 +110,7 @@ fun SearchBar(
                 )
             }
 
-            VerticalDivider(
-                modifier = Modifier.padding(vertical = 12.dp)
-            )
+            VerticalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
             // 📅 Dates
             Row(
@@ -129,21 +126,13 @@ fun SearchBar(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
-
                 Spacer(Modifier.width(12.dp))
-
                 if (filters.startDate != null && filters.endDate != null) {
-
-                    val startDate = filters.startDate
-                    val endDate = filters.endDate
-
                     RentalDates(
-                        start = startDate,
-                        end = endDate
+                        start = filters.startDate,
+                        end = filters.endDate
                     )
-
                 } else {
-
                     Text(
                         text = stringResource(R.string.period),
                         style = MaterialTheme.typography.bodyLarge
@@ -153,354 +142,44 @@ fun SearchBar(
         }
     }
 
+    // Filter Chips
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
+            // 🚲 Catégorie
             item {
-
-                var showCategorySheet by remember { mutableStateOf(false) }
-
-                Box {
-
-                    FilterChip(
-                        selected = filters.bikeCategories.isNotEmpty(),
-                        onClick = { showCategorySheet = true },
-                        label = {
-                            Text(
-                                text = when {
-                                    filters.bikeCategories.size == 1 -> stringResource(
-                                        filters.bikeCategories.first().labelRes()
-                                    )
-
-                                    filters.bikeCategories.size > 1 -> stringResource(
-                                        R.string.categories,
-                                        filters.bikeCategories.size
-                                    )
-
-                                    else -> stringResource(R.string.category)
-                                }
-                            )
-                        },
-                        border = null,
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            labelColor = MaterialTheme.colorScheme.onSurface
-                        ),
-                        leadingIcon = {
-                            Text("🚴")
-                        }
-                    )
-
-                    if (showCategorySheet) {
-
-                        ModalBottomSheet(
-                            onDismissRequest = { showCategorySheet = false }
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            ) {
-                                // Titre + Reset sur la même ligne
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.category),
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                    TextButton(onClick = { onCategorySelected(emptySet()) }) {
-                                        Text(stringResource(R.string.reset))
-                                    }
-                                }
-
-                                Spacer(Modifier.height(16.dp))
-
-                                FlowRow(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    BikeCategory.entries.forEach { category ->
-                                        FilterChip(
-                                            selected = category in filters.bikeCategories,
-                                            onClick = {
-                                                val updated =
-                                                    if (category in filters.bikeCategories)
-                                                        filters.bikeCategories - category
-                                                    else
-                                                        filters.bikeCategories + category
-                                                onCategorySelected(updated)
-                                            },
-                                            label = { Text(stringResource(category.labelRes())) }
-                                        )
-                                    }
-                                }
-
-                                Spacer(Modifier.height(24.dp))
-                            }
-                        }
-                    }
-                }
-            }
-
-            item {
-                FilterChip(
-                    selected = filters.electricOnly == true,
-                    onClick = {
-                        onElectricSelected(if (filters.electricOnly == true) null else true)
-                    },
-                    label = { Text(stringResource(R.string.electric)) },
-                    border = null,
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        labelColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    leadingIcon = {
-                        Text("⚡")
-                    }
+                CategoryFilterChip(
+                    filters = filters,
+                    onCategorySelected = onCategorySelected
                 )
             }
 
+            // ⚡ Type de moteur
             item {
-                var showFiltersSheet by remember { mutableStateOf(false) }
-                val sheetState = rememberModalBottomSheetState()
+                MotorTypeFilterChip(
+                    filters = filters,
+                    onMotorTypeChanged = onMotorTypeChanged
+                )
+            }
 
-                val hasActiveFilters =
-                    filters.bikeSizes.isNotEmpty() ||
-                            filters.bikeCategories.isNotEmpty() ||
-                            filters.accessories.isNotEmpty() ||
-                            filters.minPrice > 0f ||
-                            filters.maxPrice < maxBikePrice
-
-                Box {
-
-                    FilterChip(
-                        selected = hasActiveFilters,
-                        onClick = { showFiltersSheet = true },
-                        label = {
-                            Icon(
-                                imageVector = Icons.Default.Tune,
-                                contentDescription = stringResource(R.string.filters)
-                            )
-                        },
-                        border = null,
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            labelColor = MaterialTheme.colorScheme.onSurface,
-                            iconColor = MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-
-                    if (showFiltersSheet) {
-                        ModalBottomSheet(
-                            onDismissRequest = { showFiltersSheet = false },
-                            sheetState = sheetState
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .navigationBarsPadding()
-                                    .padding(bottom = 16.dp)
-                            ) {
-
-                                // ── Titre + Réinitialiser ──────────────────────
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .weight(1f, fill = false)
-                                        .verticalScroll(rememberScrollState())
-                                        .padding(horizontal = 16.dp)
-                                ) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.filters),
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
-                                        TextButton(
-                                            onClick = {
-                                                onFiltersSelected(
-                                                    emptySet(),
-                                                    emptySet(),
-                                                    0f,
-                                                    maxBikePrice
-                                                )
-                                            }
-                                        ) {
-                                            Text(stringResource(R.string.reset))
-                                        }
-                                    }
-
-                                    Spacer(Modifier.height(16.dp))
-
-                                    // ── Prix ───────────────────────────────────────
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp)
-                                            .padding(top = 8.dp)
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween
-                                        ) {
-                                            Text(
-                                                text = stringResource(R.string.pricing_day_amount),
-                                                style = MaterialTheme.typography.labelLarge,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                            Text(
-                                                text = "${filters.minPrice.toInt()} € – ${filters.maxPrice.toInt()} €",
-                                                style = MaterialTheme.typography.labelLarge,
-                                                color = MaterialTheme.colorScheme.primary
-                                            )
-                                        }
-
-                                        Spacer(Modifier.height(8.dp))
-
-                                        RangeSlider(
-                                            value = filters.minPrice..filters.maxPrice,
-                                            onValueChange = { range ->
-                                                onFiltersSelected(
-                                                    filters.bikeSizes,
-                                                    filters.accessories,
-                                                    range.start,
-                                                    range.endInclusive
-                                                )
-                                            },
-                                            valueRange = 0f..maxBikePrice,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 16.dp),
-                                            colors = SliderDefaults.colors(
-                                                activeTrackColor = MaterialTheme.colorScheme.primary,
-                                                inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant.copy(
-                                                    alpha = 0.6f
-                                                ),
-                                                thumbColor = MaterialTheme.colorScheme.primary
-                                            )
-                                        )
-                                    }
-
-                                    Spacer(Modifier.height(24.dp))
-
-                                    // ── Taille ─────────────────────────────────────
-                                    Text(
-                                        text = stringResource(R.string.size),
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-
-                                    Spacer(Modifier.height(8.dp))
-
-                                    FlowRow(
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        BikeSize.entries.forEach { size ->
-
-                                            val isSelected = size in filters.bikeSizes
-
-                                            FilterChip(
-                                                selected = isSelected,
-                                                onClick = {
-                                                    val newSizes =
-                                                        if (filters.bikeSizes.isEmpty()) {
-                                                            setOf(size)
-                                                        } else {
-                                                            if (size in filters.bikeSizes) {
-                                                                filters.bikeSizes - size
-                                                            } else {
-                                                                filters.bikeSizes + size
-                                                            }
-                                                        }
-
-                                                    onFiltersSelected(
-                                                        newSizes,
-                                                        filters.accessories,
-                                                        filters.minPrice,
-                                                        filters.maxPrice
-                                                    )
-                                                },
-                                                label = { Text(size.name) },
-                                                colors = FilterChipDefaults.filterChipColors(
-                                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                                                )
-                                            )
-                                        }
-                                    }
-
-                                    Spacer(Modifier.height(24.dp))
-
-                                    // ── Accessoires ────────────────────────────────
-                                    Text(
-                                        text = stringResource(R.string.accessories),
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-
-                                    Spacer(Modifier.height(8.dp))
-
-                                    FlowRow(
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        BikeEquipment.entries.forEach { accessory ->
-                                            val isSelected = accessory in filters.accessories
-                                            FilterChip(
-                                                selected = isSelected,
-                                                onClick = {
-                                                    val updated = if (isSelected)
-                                                        filters.accessories - accessory
-                                                    else
-                                                        filters.accessories + accessory
-                                                    onFiltersSelected(
-                                                        filters.bikeSizes,
-                                                        updated,
-                                                        filters.minPrice,
-                                                        filters.maxPrice
-                                                    )
-                                                },
-                                                label = { Text(stringResource(accessory.labelRes())) },
-                                                colors = FilterChipDefaults.filterChipColors(
-                                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                                                )
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            // 🎛️ Filtres avancés
+            item {
+                AdvancedFiltersChip(
+                    filters = filters,
+                    maxBikePrice = maxBikePrice,
+                    onFiltersSelected = onFiltersSelected
+                )
             }
         }
     }
 
-    // ---- Date Picker ----
-
+    // Date Picker Dialog
     if (showDatePicker) {
-
         DateRangePickerDialog(
             onDismiss = { showDatePicker = false },
             onDatesSelected = { start, end ->
@@ -511,23 +190,355 @@ fun SearchBar(
     }
 }
 
+// ==================== CHIP COMPONENTS ====================
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CategoryFilterChip(
+    filters: SearchFilters,
+    onCategorySelected: (Set<BikeCategory>) -> Unit
+) {
+    var showSheet by remember { mutableStateOf(false) }
+
+    Box {
+        FilterChip(
+            selected = filters.bikeCategories.isNotEmpty(),
+            onClick = { showSheet = true },
+            label = {
+                Text(
+                    text = when {
+                        filters.bikeCategories.size == 1 -> stringResource(
+                            filters.bikeCategories.first().labelRes()
+                        )
+                        filters.bikeCategories.size > 1 -> stringResource(
+                            R.string.categories,
+                            filters.bikeCategories.size
+                        )
+                        else -> stringResource(R.string.category)
+                    }
+                )
+            },
+            border = null,
+            colors = FilterChipDefaults.filterChipColors(
+                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                labelColor = MaterialTheme.colorScheme.onSurface
+            ),
+            leadingIcon = { Text("🚴") }
+        )
+
+        if (showSheet) {
+            ModalBottomSheet(onDismissRequest = { showSheet = false }) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.category),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        TextButton(onClick = { onCategorySelected(emptySet()) }) {
+                            Text(stringResource(R.string.reset))
+                        }
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        BikeCategory.entries.forEach { category ->
+                            FilterChip(
+                                selected = category in filters.bikeCategories,
+                                onClick = {
+                                    val updated =
+                                        if (category in filters.bikeCategories)
+                                            filters.bikeCategories - category
+                                        else
+                                            filters.bikeCategories + category
+                                    onCategorySelected(updated)
+                                },
+                                label = { Text(stringResource(category.labelRes())) }
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.height(24.dp))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MotorTypeFilterChip(
+    filters: SearchFilters,
+    onMotorTypeChanged: (Set<BikeMotor>) -> Unit
+) {
+    FilterChip(
+        selected = BikeMotor.ELECTRIC in filters.bikeMotor,
+        onClick = {
+            val newMotorTypes = filters.bikeMotor.toMutableSet()
+            if (BikeMotor.ELECTRIC in newMotorTypes) {
+                newMotorTypes.remove(BikeMotor.ELECTRIC)
+            } else {
+                newMotorTypes.add(BikeMotor.ELECTRIC)
+            }
+            onMotorTypeChanged(newMotorTypes)
+        },
+        label = { Text(stringResource(R.string.electric)) },
+        border = null,
+        colors = FilterChipDefaults.filterChipColors(
+            selectedContainerColor = MaterialTheme.colorScheme.primary,
+            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            labelColor = MaterialTheme.colorScheme.onSurface
+        ),
+        leadingIcon = { Text("⚡") }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AdvancedFiltersChip(
+    filters: SearchFilters,
+    maxBikePrice: Float,
+    onFiltersSelected: (Set<BikeSize>, Set<BikeEquipment>, Float, Float) -> Unit
+) {
+    var showSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+
+    val hasActiveFilters =
+        filters.bikeSizes.isNotEmpty() ||
+                filters.accessories.isNotEmpty() ||
+                filters.minPrice > 0f ||
+                filters.maxPrice < maxBikePrice
+
+    Box {
+        FilterChip(
+            selected = hasActiveFilters,
+            onClick = { showSheet = true },
+            label = {
+                Icon(
+                    imageVector = Icons.Default.Tune,
+                    contentDescription = stringResource(R.string.filters)
+                )
+            },
+            border = null,
+            colors = FilterChipDefaults.filterChipColors(
+                selectedContainerColor = MaterialTheme.colorScheme.primary,
+                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                labelColor = MaterialTheme.colorScheme.onSurface,
+                iconColor = MaterialTheme.colorScheme.onSurface
+            )
+        )
+
+        if (showSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showSheet = false },
+                sheetState = sheetState
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(bottom = 16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f, fill = false)
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        // Titre + Réinitialiser
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.filters),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            TextButton(
+                                onClick = {
+                                    onFiltersSelected(
+                                        emptySet(),
+                                        emptySet(),
+                                        0f,
+                                        maxBikePrice
+                                    )
+                                }
+                            ) {
+                                Text(stringResource(R.string.reset))
+                            }
+                        }
+
+                        Spacer(Modifier.height(16.dp))
+
+                        // Prix
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.pricing_day_amount),
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    text = "${filters.minPrice.toInt()} € – ${filters.maxPrice.toInt()} €",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+
+                            Spacer(Modifier.height(8.dp))
+
+                            RangeSlider(
+                                value = filters.minPrice..filters.maxPrice,
+                                onValueChange = { range ->
+                                    onFiltersSelected(
+                                        filters.bikeSizes,
+                                        filters.accessories,
+                                        range.start,
+                                        range.endInclusive
+                                    )
+                                },
+                                valueRange = 0f..maxBikePrice,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                colors = SliderDefaults.colors(
+                                    activeTrackColor = MaterialTheme.colorScheme.primary,
+                                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant.copy(
+                                        alpha = 0.6f
+                                    ),
+                                    thumbColor = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                        }
+
+                        Spacer(Modifier.height(24.dp))
+
+                        // Taille
+                        Text(
+                            text = stringResource(R.string.size),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        Spacer(Modifier.height(8.dp))
+
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            BikeSize.entries.forEach { size ->
+                                FilterChip(
+                                    selected = size in filters.bikeSizes,
+                                    onClick = {
+                                        val newSizes =
+                                            if (size in filters.bikeSizes)
+                                                filters.bikeSizes - size
+                                            else
+                                                filters.bikeSizes + size
+
+                                        onFiltersSelected(
+                                            newSizes,
+                                            filters.accessories,
+                                            filters.minPrice,
+                                            filters.maxPrice
+                                        )
+                                    },
+                                    label = { Text(size.name) },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                )
+                            }
+                        }
+
+                        Spacer(Modifier.height(24.dp))
+
+                        // Accessoires
+                        Text(
+                            text = stringResource(R.string.accessories),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        Spacer(Modifier.height(8.dp))
+
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            BikeEquipment.entries.forEach { accessory ->
+                                FilterChip(
+                                    selected = accessory in filters.accessories,
+                                    onClick = {
+                                        val updated =
+                                            if (accessory in filters.accessories)
+                                                filters.accessories - accessory
+                                            else
+                                                filters.accessories + accessory
+
+                                        onFiltersSelected(
+                                            filters.bikeSizes,
+                                            updated,
+                                            filters.minPrice,
+                                            filters.maxPrice
+                                        )
+                                    },
+                                    label = { Text(stringResource(accessory.labelRes())) },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @PreviewLightDark
 @Composable
-private fun MapSearchBarPreview() {
+private fun MapMapSearchBarPreview() {
     LokaveloTheme {
         val filters = SearchFilters(
             addressQuery = "Marseille",
             startDate = LocalDate.now(),
             endDate = LocalDate.now().plusDays(3),
             bikeCategories = emptySet(),
-            electricOnly = true
+            bikeMotor = emptySet()
         )
-        SearchBar(
+        MapSearchBar(
             filters = filters,
             maxBikePrice = 150f,
             onAddressClick = {},
             onCategorySelected = {},
-            onElectricSelected = {},
+            onMotorTypeChanged = {},
             onDatesSelected = { _, _ -> },
             onFiltersSelected = { _, _, _, _ -> }
         )

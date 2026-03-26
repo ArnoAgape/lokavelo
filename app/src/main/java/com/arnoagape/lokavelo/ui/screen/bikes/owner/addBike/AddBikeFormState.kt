@@ -5,6 +5,7 @@ import com.arnoagape.lokavelo.domain.model.BikeCategory
 import com.arnoagape.lokavelo.domain.model.BikeCondition
 import com.arnoagape.lokavelo.domain.model.BikeEquipment
 import com.arnoagape.lokavelo.domain.model.BikeLocation
+import com.arnoagape.lokavelo.domain.model.BikeMotor
 import com.arnoagape.lokavelo.domain.model.BikeSize
 import com.arnoagape.lokavelo.ui.utils.clean
 import com.arnoagape.lokavelo.ui.utils.toCentsOrNull
@@ -18,7 +19,7 @@ data class AddBikeFormState(
     val weekPriceText: String = "",
     val monthPriceText: String = "",
     val depositText: String = "",
-    val electric: Boolean = false,
+    val type: BikeMotor = BikeMotor.REGULAR,
     val size: BikeSize? = null,
     val category: BikeCategory? = null,
     val brand: String = "",
@@ -77,7 +78,7 @@ data class AddBikeFormState(
             priceWeekInCents = week,
             priceMonthInCents = month,
             depositInCents = deposit,
-            electric = electric,
+            motorType = type,
             size = size,
             category = category,
             brand = cleanBrand,

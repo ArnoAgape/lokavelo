@@ -20,8 +20,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.arnoagape.lokavelo.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,13 +70,13 @@ fun BikeHelpBottomSheet(
                 item {
                     HelpSection(
                         emoji = "📸",
-                        title = "Photos",
+                        title = stringResource(R.string.help_photos_title),
                         items = listOf(
-                            "Ajoutez 1 à 3 photos de votre vélo",
-                            "Privilégiez une photo de face montrant le vélo dans son ensemble",
-                            "Utilisez un bon éclairage naturel",
-                            "Évitez les arrière-plans trop chargés",
-                            "Les photos nettes et de bonne qualité augmentent les locations"
+                            stringResource(R.string.help_photos_item_1),
+                            stringResource(R.string.help_photos_item_2),
+                            stringResource(R.string.help_photos_item_3),
+                            stringResource(R.string.help_photos_item_4),
+                            stringResource(R.string.help_photos_item_5)
                         )
                     )
                 }
@@ -82,13 +84,13 @@ fun BikeHelpBottomSheet(
                 item {
                     HelpSection(
                         emoji = "📝",
-                        title = "Titre et description",
+                        title = stringResource(R.string.help_title_desc_title),
                         items = listOf(
-                            "Titre : soyez spécifique (ex: 'VTT Trek hardtail 2022' plutôt que 'vélo')",
-                            "Décrivez l'état du vélo (excellent, bon, acceptable, à restaurer)",
-                            "Mentionnez les équipements (dérailleur, frein, suspension, etc.)",
-                            "Décrivez les réparations ou entretiens récents",
-                            "Une bonne description augmente la confiance des locataires"
+                            stringResource(R.string.help_title_desc_item_1),
+                            stringResource(R.string.help_title_desc_item_2),
+                            stringResource(R.string.help_title_desc_item_3),
+                            stringResource(R.string.help_title_desc_item_4),
+                            stringResource(R.string.help_title_desc_item_5)
                         )
                     )
                 }
@@ -96,14 +98,14 @@ fun BikeHelpBottomSheet(
                 item {
                     HelpSection(
                         emoji = "🏷️",
-                        title = "Caractéristiques",
+                        title = stringResource(R.string.help_characteristics_title),
                         items = listOf(
-                            "Catégorie : sélectionnez le type de vélo (route, VTT, ville, gravel, etc.)",
-                            "Électrique : indiquez si le vélo a une assistance électrique",
-                            "Marque : le nom du fabricant du vélo",
-                            "Taille : la taille du cadre (S, M, L, XL) ou en cm",
-                            "État : soyez honnête sur l'état général du vélo",
-                            "Accessoires : freins, dérailleur, lumières, béquille, etc."
+                            stringResource(R.string.help_characteristics_item_1),
+                            stringResource(R.string.help_characteristics_item_2),
+                            stringResource(R.string.help_characteristics_item_3),
+                            stringResource(R.string.help_characteristics_item_4),
+                            stringResource(R.string.help_characteristics_item_5),
+                            stringResource(R.string.help_characteristics_item_6)
                         )
                     )
                 }
@@ -111,12 +113,12 @@ fun BikeHelpBottomSheet(
                 item {
                     HelpSection(
                         emoji = "📍",
-                        title = "Adresse",
+                        title = stringResource(R.string.help_address_title),
                         items = listOf(
-                            "L'adresse exacte ne sera pas visible publiquement",
-                            "Elle servira à définir la zone de recherche et vérifier les contacts",
-                            "Entrez votre adresse précise pour éviter les problèmes de livraison",
-                            "Conseil : être centralement situé peut augmenter les demandes"
+                            stringResource(R.string.help_address_item_1),
+                            stringResource(R.string.help_address_item_2),
+                            stringResource(R.string.help_address_item_3),
+                            stringResource(R.string.help_address_item_4)
                         )
                     )
                 }
@@ -124,14 +126,14 @@ fun BikeHelpBottomSheet(
                 item {
                     HelpSection(
                         emoji = "💰",
-                        title = "Tarification",
+                        title = stringResource(R.string.help_pricing_title),
                         items = listOf(
-                            "Prix par jour : le tarif de base (obligatoire)",
-                            "Vous pouvez proposer des tarifs réduits pour les longues durées",
-                            "Prix 2 jours : réduction pour les locations de 2 jours",
-                            "Prix semaine : réduction pour les locations d'une semaine",
-                            "Prix mois : réduction pour les locations d'un mois",
-                            "Conseil : comparez les tarifs de vélos similaires dans votre région"
+                            stringResource(R.string.help_pricing_item_1),
+                            stringResource(R.string.help_pricing_item_2),
+                            stringResource(R.string.help_pricing_item_3),
+                            stringResource(R.string.help_pricing_item_4),
+                            stringResource(R.string.help_pricing_item_5),
+                            stringResource(R.string.help_pricing_item_6)
                         )
                     )
                 }
@@ -139,13 +141,13 @@ fun BikeHelpBottomSheet(
                 item {
                     HelpSection(
                         emoji = "🔐",
-                        title = "Dépôt de garantie",
+                        title = stringResource(R.string.help_deposit_title),
                         items = listOf(
-                            "Montant bloqué sur la carte du locataire pendant la location",
-                            "Recommandé pour protéger votre vélo en cas de dégâts",
-                            "Généralement entre 30€ et 100€ selon la valeur du vélo",
-                            "Sera remboursé au locataire si le vélo est retourné en bon état",
-                            "Les dégâts constatés peuvent réduire le remboursement"
+                            stringResource(R.string.help_deposit_item_1),
+                            stringResource(R.string.help_deposit_item_2),
+                            stringResource(R.string.help_deposit_item_3),
+                            stringResource(R.string.help_deposit_item_4),
+                            stringResource(R.string.help_deposit_item_5)
                         )
                     )
                 }
@@ -153,13 +155,13 @@ fun BikeHelpBottomSheet(
                 item {
                     HelpSection(
                         emoji = "📅",
-                        title = "Durée minimale de location",
+                        title = stringResource(R.string.help_min_rental_title),
                         items = listOf(
-                            "Définissez le nombre minimum de jours pour louer votre vélo",
-                            "Par défaut : 1 jour",
-                            "Si vous préférez les longues locations : 3, 7 ou 30 jours",
-                            "Les locataires voient cette information avant de vous contacter",
-                            "Conseil : une durée courte permet plus de demandes"
+                            stringResource(R.string.help_min_rental_item_1),
+                            stringResource(R.string.help_min_rental_item_2),
+                            stringResource(R.string.help_min_rental_item_3),
+                            stringResource(R.string.help_min_rental_item_4),
+                            stringResource(R.string.help_min_rental_item_5)
                         )
                     )
                 }
@@ -167,19 +169,20 @@ fun BikeHelpBottomSheet(
                 item {
                     HelpSection(
                         emoji = "✅",
-                        title = "Avant de publier",
+                        title = stringResource(R.string.help_before_publish_title),
                         items = listOf(
-                            "Vérifiez que votre vélo est en bon état de fonctionnement",
-                            "Testez les freins, les changements de vitesse, la suspension",
-                            "Nettoyez votre vélo avant les photos",
-                            "Assurez-vous que tous les champs obligatoires sont remplis",
-                            "Relisez les informations pour éviter les erreurs",
-                            "Une bonne annonce = plus de locations = plus de revenus"
+                            stringResource(R.string.help_before_publish_item_1),
+                            stringResource(R.string.help_before_publish_item_2),
+                            stringResource(R.string.help_before_publish_item_3),
+                            stringResource(R.string.help_before_publish_item_4),
+                            stringResource(R.string.help_before_publish_item_5),
+                            stringResource(R.string.help_before_publish_item_6)
                         )
                     )
                 }
 
                 item { Spacer(modifier = Modifier.height(8.dp)) }
+
             }
         }
     }

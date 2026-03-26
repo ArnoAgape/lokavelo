@@ -13,6 +13,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -23,7 +25,6 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,10 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.dp
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.BikeCategory
 import com.arnoagape.lokavelo.domain.model.BikeEquipment
 import com.arnoagape.lokavelo.domain.model.BikeCondition
+import com.arnoagape.lokavelo.domain.model.BikeMotor
 import com.arnoagape.lokavelo.domain.model.BikeSize
 import com.arnoagape.lokavelo.domain.model.labelRes
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
@@ -51,7 +54,7 @@ fun CharacteristicsSection(
     category: BikeCategory?,
     brand: String,
     condition: BikeCondition?,
-    electric: Boolean,
+    type: BikeMotor,
     size: BikeSize?,
     accessories: List<BikeEquipment>,
     categoryError: Boolean,
@@ -60,7 +63,7 @@ fun CharacteristicsSection(
     onCategoryChange: (BikeCategory) -> Unit,
     onBrandChange: (String) -> Unit,
     onStateChange: (BikeCondition) -> Unit,
-    onElectricChange: (Boolean) -> Unit,
+    onTypeChange: (BikeMotor) -> Unit,
     onSizeChange: (BikeSize) -> Unit,
     onAccessoriesChange: (List<BikeEquipment>) -> Unit
 ) {
@@ -85,13 +88,9 @@ fun CharacteristicsSection(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(stringResource(R.string.electric_bike))
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Switch(
-                    checked = electric,
-                    onCheckedChange = onElectricChange
+                BikeMotorSelector(
+                    motorType = type,
+                    onMotorTypeChanged = onTypeChange
                 )
             }
 
@@ -267,6 +266,59 @@ fun AccessoriesChips(
                         selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                     )
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun BikeMotorSelector(
+    motorType: BikeMotor,
+    onMotorTypeChanged: (BikeMotor) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Button(
+                onClick = { onMotorTypeChanged(BikeMotor.REGULAR) },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (motorType == BikeMotor.REGULAR) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    },
+                    contentColor = if (motorType == BikeMotor.REGULAR) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                )
+            ) {
+                Text(stringResource(R.string.muscular))
+            }
+
+            Button(
+                onClick = { onMotorTypeChanged(BikeMotor.ELECTRIC) },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (motorType == BikeMotor.ELECTRIC) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    },
+                    contentColor = if (motorType == BikeMotor.ELECTRIC) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                )
+            ) {
+                Text(stringResource(R.string.electric))
             }
         }
     }

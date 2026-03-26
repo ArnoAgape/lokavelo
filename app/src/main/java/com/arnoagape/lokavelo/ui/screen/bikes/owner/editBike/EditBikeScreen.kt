@@ -59,6 +59,7 @@ import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.common.components.AlertDialogNonSaved
 import com.arnoagape.lokavelo.ui.common.components.LoadingOverlay
 import com.arnoagape.lokavelo.ui.common.components.photo.PhotosSection
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.BikeHelpBottomSheet
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.AdditionalSection
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.CharacteristicsSection
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.DepositSection
@@ -375,7 +376,7 @@ private fun EditBikeContent(
                 category = state.form.category,
                 brand = state.form.brand,
                 condition = state.form.condition,
-                electric = state.form.electric,
+                type = state.form.type,
                 size = state.form.size,
                 accessories = state.form.accessories,
                 categoryError = state.form.categoryError,
@@ -384,7 +385,7 @@ private fun EditBikeContent(
                 onCategoryChange = { onAction(EditBikeEvent.CategoryChanged(it)) },
                 onBrandChange = { onAction(EditBikeEvent.BrandChanged(it)) },
                 onStateChange = { onAction(EditBikeEvent.StateChanged(it)) },
-                onElectricChange = { onAction(EditBikeEvent.ElectricChanged(it)) },
+                onTypeChange = { onAction(EditBikeEvent.TypeChanged(it)) },
                 onAccessoriesChange = { onAction(EditBikeEvent.AccessoriesChanged(it)) },
                 onSizeChange = { onAction(EditBikeEvent.SizeChanged(it)) }
             )

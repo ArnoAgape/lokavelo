@@ -34,8 +34,8 @@ fun isBikeMatchingFilters(
     }
 
     // ⚡ Électrique
-    if (filters.electricOnly != null) {
-        if (bike.electric != filters.electricOnly) return false
+    if (filters.bikeMotor.isNotEmpty()) {
+        if (bike.motorType !in filters.bikeMotor) return false
     }
 
     // 📐 Taille

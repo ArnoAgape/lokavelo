@@ -51,6 +51,7 @@ import com.arnoagape.lokavelo.ui.common.components.photo.PhotoItem
 import com.arnoagape.lokavelo.ui.common.components.photo.PhotosContent
 import com.arnoagape.lokavelo.ui.preview.PreviewData
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.detailBike.sections.AccessoriesRow
+import com.arnoagape.lokavelo.ui.screen.bikes.owner.detailBike.sections.BikeMotorRow
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.detailBike.sections.DetailCard
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.detailBike.sections.DetailRow
 import com.arnoagape.lokavelo.ui.theme.LocalSpacing
@@ -299,12 +300,10 @@ fun DetailItem(
                     } ?: ""
                 )
 
-                // Electric?
-                val isBikeElectric =
-                    if (bike.electric) stringResource(R.string.yes) else stringResource(R.string.no)
-                DetailRow(
-                    stringResource(R.string.electric_bike),
-                    isBikeElectric
+                // BikeType
+                BikeMotorRow(
+                    label = stringResource(R.string.bike_type),
+                    motorType = bike.motorType
                 )
                 // Brand
                 DetailRow(stringResource(R.string.brand), bike.brand)

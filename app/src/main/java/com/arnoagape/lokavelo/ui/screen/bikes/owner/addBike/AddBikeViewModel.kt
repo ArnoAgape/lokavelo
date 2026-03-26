@@ -224,9 +224,9 @@ class AddBikeViewModel @Inject constructor(
             is AddBikeEvent.CityChanged ->
                 updateLocation { copy(city = event.city) }
 
-            is AddBikeEvent.ElectricChanged ->
+            is AddBikeEvent.TypeChanged ->
                 _state.update {
-                    it.copy(form = it.form.copy(electric = event.electric))
+                    it.copy(form = it.form.copy(type = event.type))
                 }
 
             is AddBikeEvent.SizeChanged ->

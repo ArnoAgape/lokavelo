@@ -282,9 +282,9 @@ class EditBikeViewModel @Inject constructor(
             is EditBikeEvent.CityChanged ->
                 updateLocation { copy(city = event.city) }
 
-            is EditBikeEvent.ElectricChanged ->
+            is EditBikeEvent.TypeChanged ->
                 _state.update {
-                    it.copy(form = it.form.copy(electric = event.electric))
+                    it.copy(form = it.form.copy(type = event.type))
                 }
 
             is EditBikeEvent.SizeChanged ->
