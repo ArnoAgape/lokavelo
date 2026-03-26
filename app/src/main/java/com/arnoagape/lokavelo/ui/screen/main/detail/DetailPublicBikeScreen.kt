@@ -32,7 +32,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -64,6 +66,7 @@ import com.arnoagape.lokavelo.ui.utils.toEuroString
 import com.arnoagape.lokavelo.ui.utils.vibrateError
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +80,9 @@ fun DetailPublicBikeScreen(
 ) {
 
     val state by viewModel.state.collectAsState()
+
+    val selectedDays = ChronoUnit.DAYS.between(state.startDate, state.endDate).coerceAtLeast(1)
+    val isBelowMinDays = state.bike?.let { selectedDays < it.minDaysRental } ?: false
 
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
@@ -126,7 +132,7 @@ fun DetailPublicBikeScreen(
 
         bottomBar = {
             SubmitButton(
-                enabled = state.bike != null,
+                enabled = state.bike != null && !isBelowMinDays,
                 onClick = {
                     if (!viewModel.onContactClicked()) return@SubmitButton
                     val bike = state.bike ?: return@SubmitButton
@@ -148,7 +154,15 @@ fun DetailPublicBikeScreen(
                     )
                 },
                 isLoading = state.bike == null,
-                submitText = stringResource(R.string.button_contact)
+                submitText = if (isBelowMinDays) {
+                    pluralStringResource(
+                        R.plurals.min_days_rental_warning,
+                        state.bike?.minDaysRental ?: 1,
+                        state.bike?.minDaysRental ?: 1
+                    )
+                } else {
+                    stringResource(R.string.button_contact)
+                }
             )
         }
 
