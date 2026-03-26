@@ -3,9 +3,11 @@ package com.arnoagape.lokavelo.ui.screen.main.map.components
 import android.graphics.Paint
 import androidx.preference.PreferenceManager
 import android.view.ViewGroup
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,6 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -27,8 +31,6 @@ import org.osmdroid.views.overlay.Polygon
 import androidx.core.graphics.toColorInt
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.ui.screen.main.map.SearchFilters
-import com.google.android.datatransport.runtime.scheduling.persistence.EventStoreModule_PackageNameFactory.packageName
-import com.google.firebase.auth.FirebaseAuth
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.views.CustomZoomButtonsController
@@ -55,12 +57,13 @@ fun OSMMap(
 
     val primaryColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f).toArgb()
 
+    // val isDarkTheme = isSystemInDarkTheme()
+    // val tileUrl = if (isDarkTheme) "voyager_dark_matter " else "voyager"
+    // val name = if (isDarkTheme) "CartoDarkMatter" else "CartoVoyager"
+
     val tileSource = XYTileSource(
         "CartoVoyager",
-        0,
-        19,
-        256,
-        ".png",
+        0, 19, 256, ".png",
         arrayOf(
             "https://a.basemaps.cartocdn.com/rastertiles/voyager/",
             "https://b.basemaps.cartocdn.com/rastertiles/voyager/",
@@ -244,14 +247,15 @@ fun OSMMap(
             }
         )
 
-        // Attribution discrète
         Text(
-            text = "© OSM © CARTO",
+            text = "© OpenStreetMap contributors",
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+            color = Color.White,
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(8.dp)
+                .padding(bottom = 16.dp, start = 8.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(Color.Black.copy(alpha = 0.3f))
         )
     }
 }
