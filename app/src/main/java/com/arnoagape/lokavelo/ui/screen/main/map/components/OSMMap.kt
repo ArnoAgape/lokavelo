@@ -2,6 +2,7 @@ package com.arnoagape.lokavelo.ui.screen.main.map.components
 
 import android.graphics.Paint
 import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import androidx.preference.PreferenceManager
 import android.view.ViewGroup
 import androidx.compose.foundation.background
@@ -13,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,7 +53,7 @@ fun OSMMap(
 
     var lastCentered by remember { mutableStateOf<GeoPoint?>(null) }
     var lastBikes by remember { mutableStateOf<List<Bike>>(emptyList()) }
-    var lastSelectedDays by remember { mutableStateOf(0L) }
+    var lastSelectedDays by remember { mutableLongStateOf(0L) }
 
     var bikeMarkers by remember { mutableStateOf<List<Marker>>(emptyList()) }
     var userCircle by remember { mutableStateOf<Polygon?>(null) }
@@ -228,17 +230,20 @@ fun OSMMap(
                                 position = GeoPoint(bike.location.latitude, bike.location.longitude)
                             }
 
-                            val isBelowMinDays = selectedDays > 0 && selectedDays < bike.minDaysRental
+                            val isBelowMinDays =
+                                selectedDays > 0 && selectedDays < bike.minDaysRental
                             val iconDrawable = mapView.context.getDrawable(
                                 R.drawable.ic_bike_marker_light
                             )?.mutate()
                             if (isBelowMinDays) {
-                                iconDrawable?.setColorFilter(
-                                    android.graphics.Color.GRAY,
-                                    PorterDuff.Mode.SRC_IN
+                                iconDrawable?.colorFilter = PorterDuffColorFilter(
+                                    "#808080".toColorInt(),
+                                    PorterDuff.Mode.MULTIPLY
                                 )
                             }
+
                             icon = iconDrawable
+
 
                             setAnchor(
                                 Marker.ANCHOR_CENTER,

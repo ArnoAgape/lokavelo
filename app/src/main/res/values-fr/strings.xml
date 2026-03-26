@@ -68,6 +68,10 @@
         <item quantity="one">%d jour</item>
         <item quantity="other">%d jours</item>
     </plurals>
+    <plurals name="min_days_rental_warning" tools:ignore="MissingQuantity">
+        <item quantity="one">Location minimum : %d jour</item>
+        <item quantity="other">Location minimum : %d jours</item>
+    </plurals>
     <string name="price_total_with_daily">%1$s / jour · Total %2$s</string>
     <string name="discount_pricing">Réduction</string>
     <string name="discount">Réduction : %1$d %%</string>
