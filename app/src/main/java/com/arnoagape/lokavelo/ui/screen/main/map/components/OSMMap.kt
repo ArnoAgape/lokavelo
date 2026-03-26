@@ -235,14 +235,18 @@ fun OSMMap(
                             val iconDrawable = mapView.context.getDrawable(
                                 R.drawable.ic_bike_marker_light
                             )?.mutate()
-                            if (isBelowMinDays) {
-                                iconDrawable?.colorFilter = PorterDuffColorFilter(
+
+                            if (isBelowMinDays && iconDrawable != null) {
+                                // Clone le drawable pour éviter les artifacts
+                                val clonedDrawable = iconDrawable.constantState?.newDrawable()?.mutate()
+                                clonedDrawable?.colorFilter = PorterDuffColorFilter(
                                     "#808080".toColorInt(),
                                     PorterDuff.Mode.MULTIPLY
                                 )
+                                icon = clonedDrawable
+                            } else {
+                                icon = iconDrawable
                             }
-
-                            icon = iconDrawable
 
 
                             setAnchor(
