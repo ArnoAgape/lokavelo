@@ -54,6 +54,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.auth.FirebaseAuth
 import org.osmdroid.util.GeoPoint
 import java.time.LocalDate
+import com.arnoagape.lokavelo.ui.screen.main.map.components.BikeHorizontalList
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -77,6 +79,7 @@ fun MapScreen(
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
     var recenterTrigger by rememberSaveable { mutableStateOf(false) }
     var selectedBikeId by rememberSaveable { mutableStateOf<String?>(null) }
+    var showListView by rememberSaveable { mutableStateOf(false) }
 
     // Filters bikes
     val auth = FirebaseAuth.getInstance()
@@ -222,6 +225,8 @@ fun MapScreen(
             MapSearchBar(
                 filters = state.filters,
                 maxBikePrice = state.maxBikePrice,
+                showListView = showListView,
+                onToggleView = { showListView = !showListView },
                 onAddressClick = { showAddressSheet = true },
                 onDatesSelected = { start, end ->
                     viewModel.updateDates(start, end)
@@ -239,7 +244,7 @@ fun MapScreen(
 
             Spacer(Modifier.weight(1f))
 
-            // Ma position
+            // Boutons flottants
             SmallFloatingActionButton(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 onClick = {
@@ -247,10 +252,7 @@ fun MapScreen(
                     recenterTrigger = true
                 },
                 modifier = Modifier
-                    .padding(
-                        end = 16.dp,
-                        bottom = 150.dp
-                    )
+                    .padding(end = 16.dp, bottom = 150.dp)
                     .align(Alignment.End)
             ) {
                 Icon(
@@ -260,12 +262,12 @@ fun MapScreen(
             }
         }
 
-        // Cadre velo
-        selectedBike?.let { bike ->
-            BikePreviewCard(
-                bike = bike,
+        // Vue liste ou cadre vélo
+        if (showListView) {
+            BikeHorizontalList(
+                bikes = visibleBikes,
                 filters = state.filters,
-                onBikeClick = {
+                onBikeClick = { bike ->
                     if (viewModel.onBikeCardClicked()) {
                         if (state.filters.startDate == null || state.filters.endDate == null) {
                             pendingBikeId = bike.id
@@ -277,9 +279,30 @@ fun MapScreen(
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(16.dp)
+                    .padding(bottom = 16.dp)
             )
+        } else {
+            selectedBike?.let { bike ->
+                BikePreviewCard(
+                    bike = bike,
+                    filters = state.filters,
+                    onBikeClick = {
+                        if (viewModel.onBikeCardClicked()) {
+                            if (state.filters.startDate == null || state.filters.endDate == null) {
+                                pendingBikeId = bike.id
+                                showDatePicker = true
+                            } else {
+                                onBikeClick(bike.id, state.filters.startDate, state.filters.endDate)
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(16.dp)
+                )
+            }
         }
+
 
         // Erreur réseau
         if (state.networkError) {

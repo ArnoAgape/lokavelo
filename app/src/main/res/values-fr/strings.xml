@@ -128,6 +128,8 @@
     <string name="owner">Propriétaire</string>
     <string name="tenant">Locataire</string>
     <string name="help">Aide</string>
+    <string name="list">Liste</string>
+    <string name="map">Carte</string>
 
     // SUCCESS
     <string name="success_user_updated">Infos mises à jour</string>
