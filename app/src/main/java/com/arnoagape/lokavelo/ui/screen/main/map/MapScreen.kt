@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,17 +47,17 @@ import com.arnoagape.lokavelo.ui.common.EventsEffect
 import com.arnoagape.lokavelo.ui.common.components.DateRangePickerDialog
 import com.arnoagape.lokavelo.ui.common.components.ErrorOverlay
 import com.arnoagape.lokavelo.ui.common.components.ErrorType
-import com.arnoagape.lokavelo.ui.screen.main.map.components.BikePreviewCard
 import com.arnoagape.lokavelo.ui.screen.main.map.components.OSMMap
 import com.arnoagape.lokavelo.ui.screen.main.map.components.MapSearchBar
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.addBike.sections.AddressLineField
+import com.arnoagape.lokavelo.ui.screen.main.map.components.BikeHorizontalList
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.firebase.auth.FirebaseAuth
 import org.osmdroid.util.GeoPoint
 import java.time.LocalDate
-import com.arnoagape.lokavelo.ui.screen.main.map.components.BikeHorizontalList
+import com.arnoagape.lokavelo.ui.screen.main.map.components.BikeListScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -221,12 +224,9 @@ fun MapScreen(
 
         // Barre + Dates
         Column {
-
             MapSearchBar(
                 filters = state.filters,
                 maxBikePrice = state.maxBikePrice,
-                showListView = showListView,
-                onToggleView = { showListView = !showListView },
                 onAddressClick = { showAddressSheet = true },
                 onDatesSelected = { start, end ->
                     viewModel.updateDates(start, end)
@@ -234,8 +234,8 @@ fun MapScreen(
                 onCategorySelected = { category ->
                     viewModel.updateBikeCategory(category)
                 },
-                onMotorTypeChanged = { isElectric ->
-                    viewModel.updateElectricFilter(isElectric)
+                onMotorTypeChanged = { motorTypes ->
+                    viewModel.updateMotorTypeFilter(motorTypes)
                 },
                 onFiltersSelected = { size, accessories, minPrice, maxPrice ->
                     viewModel.updateFilters(size, accessories, minPrice, maxPrice)
@@ -264,7 +264,7 @@ fun MapScreen(
 
         // Vue liste ou cadre vélo
         if (showListView) {
-            BikeHorizontalList(
+            BikeListScreen(
                 bikes = visibleBikes,
                 filters = state.filters,
                 onBikeClick = { bike ->
@@ -277,14 +277,31 @@ fun MapScreen(
                         }
                     }
                 },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 16.dp)
+                onBack = { showListView = false }
             )
         } else {
+            // Bouton Liste — visible seulement si aucune card sélectionnée
+            if (selectedBikeId == null) {
+                Button(
+                    onClick = { showListView = true },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 24.dp),
+                    shape = RoundedCornerShape(50)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.List,
+                        contentDescription = null
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.list))
+                }
+            }
+
+            // Card vélo
             selectedBike?.let { bike ->
-                BikePreviewCard(
-                    bike = bike,
+                BikeHorizontalList(
+                    bikes = visibleBikes,
                     filters = state.filters,
                     onBikeClick = {
                         if (viewModel.onBikeCardClicked()) {
@@ -298,7 +315,7 @@ fun MapScreen(
                     },
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(16.dp)
+                        .padding(bottom = 16.dp)
                 )
             }
         }

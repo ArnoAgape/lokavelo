@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -36,10 +38,18 @@ import com.arnoagape.lokavelo.ui.screen.main.detail.DetailPublicBikeViewModel
 import com.arnoagape.lokavelo.ui.screen.main.map.MapViewModel
 import com.arnoagape.lokavelo.ui.screen.messaging.detail.MessagingDetailScreen
 import com.arnoagape.lokavelo.ui.screen.messaging.home.MessagingHomeViewModel
+import com.arnoagape.lokavelo.ui.screen.splash.LokaveloSplashScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LokaveloApp() {
+
+    var splashFinished by rememberSaveable { mutableStateOf(false) }
+
+    if (!splashFinished) {
+        LokaveloSplashScreen(onFinished = { splashFinished = true })
+        return
+    }
 
     val navController = rememberNavController()
 
@@ -284,7 +294,9 @@ fun LokaveloApp() {
                 conversationId = conversationId,
                 onBack = {
                     navController.popBackStack()
-                }
+                },
+                onNavigateToPayment = { TODO() },
+                onNavigateToBikeSearch = { TODO() }
             )
         }
 

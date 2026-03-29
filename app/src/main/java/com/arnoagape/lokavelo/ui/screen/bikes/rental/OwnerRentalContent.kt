@@ -21,6 +21,7 @@ import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.SelectItemRow
 import com.arnoagape.lokavelo.ui.preview.PreviewData
 import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.BikeItemContext
 import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.BikeItemRow
+import com.arnoagape.lokavelo.ui.screen.bikes.bikeItem.RentalStatusBadge
 import com.arnoagape.lokavelo.ui.screen.bikes.owner.homeBike.HomeRentalScreenState
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import java.time.ZoneId
@@ -73,7 +74,8 @@ fun OwnerRentalContent(
                             isSelected = false,
                             onSelectToggle = {},
                             onClick = { onRentalClick(rental) },
-                            onLongClick = {}
+                            onLongClick = {},
+                            badge = { RentalStatusBadge(rental.status) }
                         ) {
                             BikeItemRow(context = context)
                         }

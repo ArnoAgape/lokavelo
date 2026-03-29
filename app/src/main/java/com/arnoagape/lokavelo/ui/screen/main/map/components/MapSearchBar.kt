@@ -19,10 +19,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -65,8 +63,6 @@ import java.time.LocalDate
 @Composable
 fun MapSearchBar(
     filters: SearchFilters,
-    showListView: Boolean,
-    onToggleView: () -> Unit,
     maxBikePrice: Float,
     onAddressClick: () -> Unit,
     onCategorySelected: (Set<BikeCategory>) -> Unit,
@@ -181,34 +177,6 @@ fun MapSearchBar(
             }
         }
     }
-
-    // 🗺️ Bouton Liste / Carte
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        FilterChip(
-            selected = showListView,
-            onClick = onToggleView,
-            label = {
-                Text(if (showListView) stringResource(R.string.map) else stringResource(R.string.list))
-            },
-            border = null,
-            colors = FilterChipDefaults.filterChipColors(
-                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                labelColor = MaterialTheme.colorScheme.onSurface
-            ),
-            leadingIcon = {
-                Icon(
-                    imageVector = if (showListView) Icons.Default.Map else Icons.AutoMirrored.Filled.List,
-                    contentDescription = null
-                )
-            }
-        )
-    }
-
 
     // Date Picker Dialog
     if (showDatePicker) {
@@ -570,8 +538,6 @@ private fun MapMapSearchBarPreview() {
         MapSearchBar(
             filters = filters,
             maxBikePrice = 150f,
-            showListView = false,
-            onToggleView = {},
             onAddressClick = {},
             onCategorySelected = {},
             onMotorTypeChanged = {},

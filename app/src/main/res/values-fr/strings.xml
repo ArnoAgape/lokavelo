@@ -114,6 +114,8 @@
     <string name="apply">Appliquer</string>
     <string name="accept">Accepter</string>
     <string name="decline">Refuser</string>
+    <string name="request_accepted">Demande acceptée</string>
+    <string name="request_declined">Demande refusée</string>
     <string name="make_offer">Offre</string>
     <string name="offer_amount">Montant proposé (€)</string>
     <string name="rental_request">Demande de location</string>
@@ -125,11 +127,13 @@
     <string name="rental_new_offer">Nouvelle offre proposée</string>
     <string name="rental_price_offered">Prix proposé %1$s</string>
     <string name="rental_request_sent">Offre envoyée</string>
+    <string name="rental_offer_sent_pending">Offre de %1$s envoyée, paiement en attente…</string>
     <string name="owner">Propriétaire</string>
     <string name="tenant">Locataire</string>
     <string name="help">Aide</string>
     <string name="list">Liste</string>
     <string name="map">Carte</string>
+    <string name="available_bikes">Vélos disponibles</string>
 
     // SUCCESS
     <string name="success_user_updated">Infos mises à jour</string>
@@ -217,6 +221,8 @@
     <string name="confirm_accept_rental_message">Veux-tu accepter cette demande de location ?</string>
     <string name="confirm_decline_rental">Refuser la location ?</string>
     <string name="confirm_decline_rental_message">Veux-tu refuser cette demande de location ?</string>
+    <string name="click_here_make_payment">Clique ici pour effectuer le paiement</string>
+    <string name="click_here_new_search">Clique ici pour louer un autre vélo</string>
 
     // CONTENT_DESCRIPTION
     <string name="cd_remove">Clique ici pour effacer</string>

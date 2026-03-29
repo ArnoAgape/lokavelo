@@ -1,14 +1,13 @@
 package com.arnoagape.lokavelo.ui.screen.bikes.rental
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import com.arnoagape.lokavelo.ui.theme.LokaveloTheme
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
@@ -18,7 +17,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -59,34 +57,36 @@ fun HomeRentalScreen(
 
                 PrimaryTabRow(selectedTabIndex = pagerState.currentPage) {
 
-                    // OWNER
+                    // PROPRIÉTAIRE
                     Tab(
                         selected = pagerState.currentPage == 0,
                         onClick = {
                             coroutineScope.launch { pagerState.animateScrollToPage(0) }
+                            viewModel.markRentalsAsRead()
                         },
-                        text = { Text(stringResource(R.string.owner)) }
+                        text = {
+                            BadgedBox(
+                                badge = {
+                                    if (pendingCount > 0) {
+                                        Badge { Text(pendingCount.toString()) }
+                                    }
+                                }
+                            ) {
+                                Text(
+                                    stringResource(R.string.owner),
+                                    modifier = Modifier.padding(end = 20.dp)
+                                )
+                            }
+                        }
                     )
 
-                    // RENTER
+                    // LOCATAIRE
                     Tab(
                         selected = pagerState.currentPage == 1,
                         onClick = {
                             coroutineScope.launch { pagerState.animateScrollToPage(1) }
-                            viewModel.markRentalsAsRead()
                         },
-                        text = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                Text(stringResource(R.string.tenant))
-
-                                if (pendingCount > 0) {
-                                    Badge { Text(pendingCount.toString()) }
-                                }
-                            }
-                        }
+                        text = { Text(stringResource(R.string.tenant)) }
                     )
                 }
             }

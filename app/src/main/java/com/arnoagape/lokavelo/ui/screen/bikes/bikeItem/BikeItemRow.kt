@@ -14,10 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arnoagape.lokavelo.R
 import com.arnoagape.lokavelo.domain.model.Bike
+import com.arnoagape.lokavelo.domain.model.RentalStatus
 import com.arnoagape.lokavelo.ui.common.components.RentalDates
 import com.arnoagape.lokavelo.ui.utils.AppConstants.SERVICE_FEE_RATE
 import com.arnoagape.lokavelo.ui.utils.calculateRentalPrice
@@ -125,26 +128,36 @@ private fun OwnerGarageContent(bike: Bike) {
 
 @Composable
 private fun RenterRentalContent(context: BikeItemContext.RenterRental) {
+
+    val rental = context.rental
+
     val days = ChronoUnit.DAYS
         .between(context.startDate, context.endDate)
         .toInt()
         .coerceAtLeast(1)
 
-    val basePrice = calculateRentalPrice(
-        dayPrice = context.bike.priceInCents,
-        days = days,
-        twoDaysPrice = context.bike.priceTwoDaysInCents,
-        weekPrice = context.bike.priceWeekInCents,
-        monthPrice = context.bike.priceMonthInCents
-    )
-    val totalPrice = remember(basePrice) {
-        val serviceFee = (basePrice * SERVICE_FEE_RATE).roundToLong()
-        NumberFormat.getCurrencyInstance(Locale.FRANCE)
-            .format((basePrice + serviceFee) / 100.0)
+    val displayPrice = remember(rental.status, rental.priceTotalInCents, days) {
+
+        if (rental.status == RentalStatus.COUNTER_OFFER) {
+            // Prix de l'offre déjà calculé avec frais dans Firestore
+            NumberFormat.getCurrencyInstance(Locale.FRANCE)
+                .format(rental.priceTotalInCents / 100.0)
+        } else {
+            val basePrice = calculateRentalPrice(
+                dayPrice = context.bike.priceInCents,
+                days = days,
+                twoDaysPrice = context.bike.priceTwoDaysInCents,
+                weekPrice = context.bike.priceWeekInCents,
+                monthPrice = context.bike.priceMonthInCents
+            )
+            val serviceFee = (basePrice * SERVICE_FEE_RATE).roundToLong()
+            NumberFormat.getCurrencyInstance(Locale.FRANCE)
+                .format((basePrice + serviceFee) / 100.0)
+        }
     }
 
     Text(
-        text = totalPrice,
+        text = displayPrice,
         style = MaterialTheme.typography.bodyMedium
     )
     RentalDates(start = context.startDate, end = context.endDate)
@@ -152,12 +165,15 @@ private fun RenterRentalContent(context: BikeItemContext.RenterRental) {
 
 @Composable
 private fun OwnerRentalContent(context: BikeItemContext.OwnerRental) {
+
+    val rental = context.rental
+
     val days = ChronoUnit.DAYS
         .between(context.startDate, context.endDate)
         .toInt()
         .coerceAtLeast(1)
 
-    val netPrice = remember(days) {
+    val originalPrice = remember(days) {
         val basePrice = calculateRentalPrice(
             dayPrice = context.bike.priceInCents,
             days = days,
@@ -165,13 +181,37 @@ private fun OwnerRentalContent(context: BikeItemContext.OwnerRental) {
             weekPrice = context.bike.priceWeekInCents,
             monthPrice = context.bike.priceMonthInCents
         )
-        NumberFormat.getCurrencyInstance(Locale.FRANCE)
-            .format(basePrice / 100.0)
+        NumberFormat.getCurrencyInstance(Locale.FRANCE).format(basePrice / 100.0)
     }
 
-    Text(
-        text = netPrice,
-        style = MaterialTheme.typography.bodyMedium
-    )
+    val offerPrice = remember(rental.basePriceInCents) {
+        NumberFormat.getCurrencyInstance(Locale.FRANCE).format(rental.basePriceInCents / 100.0)
+    }
+
+    if (rental.status == RentalStatus.COUNTER_OFFER) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = originalPrice,
+                style = MaterialTheme.typography.bodyMedium,
+                textDecoration = TextDecoration.LineThrough,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            )
+            Text(
+                text = offerPrice,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    } else {
+        Text(
+            text = originalPrice,
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
+
     RentalDates(start = context.startDate, end = context.endDate)
 }

@@ -210,7 +210,7 @@ class MapViewModel @Inject constructor(
         )
     }
 
-    fun updateElectricFilter(motor: Set<BikeMotor>) {
+    fun updateMotorTypeFilter(motor: Set<BikeMotor>) {
         _filters.value = _filters.value.copy(
             bikeMotor = motor
         )

@@ -1,11 +1,9 @@
 package com.arnoagape.lokavelo.ui.screen.main.map.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -19,19 +17,20 @@ fun BikeHorizontalList(
     onBikeClick: (Bike) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(bikes, key = { it.id }) { bike ->
-            BikePreviewCard(
-                bike = bike,
-                filters = filters,
-                onBikeClick = onBikeClick,
-                modifier = Modifier
-                    .fillParentMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-        }
+    val pagerState = rememberPagerState(pageCount = { bikes.size })
+
+    HorizontalPager(
+        state = pagerState,
+        modifier = modifier
+            .fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 26.dp),
+        pageSpacing = 12.dp
+    ) { page ->
+        BikePreviewCard(
+            bike = bikes[page],
+            filters = filters,
+            onBikeClick = onBikeClick,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

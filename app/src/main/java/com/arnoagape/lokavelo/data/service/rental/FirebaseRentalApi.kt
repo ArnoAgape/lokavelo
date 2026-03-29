@@ -2,6 +2,7 @@ package com.arnoagape.lokavelo.data.service.rental
 
 import com.arnoagape.lokavelo.domain.model.Rental
 import com.arnoagape.lokavelo.domain.model.RentalStatus
+import com.arnoagape.lokavelo.ui.utils.AppConstants.SERVICE_FEE_RATE
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.DocumentSnapshot
@@ -51,11 +52,15 @@ class FirebaseRentalApi @Inject constructor(
     }
 
     override suspend fun makeOffer(rentalId: String, newPrice: Long) {
+        val serviceFee = (newPrice * SERVICE_FEE_RATE).toLong()
+        val totalPrice = newPrice + serviceFee
         rentalsCollection.document(rentalId)
             .update(
                 mapOf(
-                    "priceTotalInCents" to newPrice,
-                    "status" to RentalStatus.COUNTER_OFFER.name
+                    "basePriceInCents"   to newPrice,
+                    "serviceFeeInCents"  to serviceFee,
+                    "priceTotalInCents"  to totalPrice,
+                    "status"             to RentalStatus.COUNTER_OFFER.name
                 )
             )
             .await()

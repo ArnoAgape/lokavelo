@@ -114,6 +114,8 @@
     <string name="apply">Apply</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
+    <string name="request_accepted">Request accepted</string>
+    <string name="request_declined">Request declined</string>
     <string name="make_offer">Offer</string>
     <string name="offer_amount">Montant proposé (€)</string>
     <string name="rental_request">Rental request</string>
@@ -125,11 +127,13 @@
     <string name="rental_new_offer">A new offer has been proposed</string>
     <string name="rental_price_offered">Offered price %1$s</string>
     <string name="rental_request_sent">Rental request sent</string>
+    <string name="rental_offer_sent_pending">Offer of %1$s sent, payment pending…</string>
     <string name="owner">Owner</string>
     <string name="tenant">Tenant</string>
     <string name="help">Help</string>
     <string name="list">List</string>
     <string name="map">Map</string>
+    <string name="available_bikes">Available bikes</string>
 
     // SUCCESS
     <string name="success_user_updated">Details updated successfully</string>
@@ -203,12 +207,8 @@
     <string name="confirm_delete_bike">Delete this bike?</string>
     <string name="bike_deleted">Bike deleted</string>
     <plurals name="confirm_delete_bikes">
-    <item quantity="one">
-        Delete this bike?
-    </item>
-        <item quantity="other">
-        Delete %d bikes?
-    </item>
+    <item quantity="one">Delete this bike?</item>
+        <item quantity="other">Delete %d bikes?</item>
     </plurals>
     <string name="delete_irreversible">This action cannot be undone.</string>
     <string name="confirm_delete_account_message">
@@ -219,6 +219,8 @@
     <string name="confirm_accept_rental_message">Do you want to accept this rental request?</string>
     <string name="confirm_decline_rental">Decline this rental?</string>
     <string name="confirm_decline_rental_message">Do you want to decline this rental request?</string>
+    <string name="click_here_make_payment">Click here to pay</string>
+    <string name="click_here_new_search">Click here to rent a new bike</string>
 
     // CONTENT_DESCRIPTION
     <string name="cd_remove">Click here to erase</string>
