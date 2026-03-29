@@ -113,8 +113,23 @@ class MessagingDetailViewModel @Inject constructor(
                     rental.status == RentalStatus.PENDING && !isOwner ->
                         RentalStateUi.RenterWaiting(rental)
 
+                    rental.status == RentalStatus.COUNTER_OFFER && isOwner ->
+                        RentalStateUi.OwnerOfferSent(rental)
+
                     rental.status == RentalStatus.COUNTER_OFFER && !isOwner ->
-                        RentalStateUi.RenterCounterOffer(rental)
+                        RentalStateUi.RenterOfferPending(rental)
+
+                    rental.status == RentalStatus.ACCEPTED && isOwner ->
+                        RentalStateUi.OwnerAccepted(rental)
+
+                    rental.status == RentalStatus.ACCEPTED && !isOwner ->
+                        RentalStateUi.RenterAccepted(rental)
+
+                    rental.status == RentalStatus.DECLINED && isOwner ->
+                        RentalStateUi.OwnerDeclined(rental)
+
+                    rental.status == RentalStatus.DECLINED && !isOwner ->
+                        RentalStateUi.RenterDeclined(rental)
 
                     else -> RentalStateUi.None
                 }

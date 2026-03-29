@@ -7,6 +7,7 @@ data class Rental(
     val bikeId: String = "",
     val ownerId: String = "",
     val renterId: String = "",
+    val renterName: String = "",
     val startDate: Instant = Instant.now(),
     val endDate: Instant = Instant.now(),
     val priceTotalInCents: Long = 0,

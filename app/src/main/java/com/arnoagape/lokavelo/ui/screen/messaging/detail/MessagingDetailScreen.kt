@@ -78,7 +78,9 @@ import com.arnoagape.lokavelo.ui.utils.toHourMinute
 @Composable
 fun MessagingDetailScreen(
     conversationId: String,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToPayment: (String) -> Unit = {},
+    onNavigateToBikeSearch: () -> Unit = {}
 ) {
 
     val viewModel: MessagingDetailViewModel = hiltViewModel()
@@ -116,7 +118,9 @@ fun MessagingDetailScreen(
         onOffer = { viewModel.makeOffer(it) },
         listState = listState,
         onSend = { viewModel.sendMessage(it) },
-        onBack = onBack
+        onBack = onBack,
+        onNavigateToPayment = onNavigateToPayment,
+        onNavigateToBikeSearch = onNavigateToBikeSearch
     )
 }
 
@@ -132,7 +136,9 @@ fun MessagingDetailContent(
     onOffer: (Long) -> Unit,
     listState: LazyListState,
     onSend: (String) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToPayment: (String) -> Unit = {},
+    onNavigateToBikeSearch: () -> Unit = {}
 ) {
 
     val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
@@ -222,6 +228,15 @@ fun MessagingDetailContent(
                             )
                         }
 
+                    is RentalStateUi.OwnerOfferSent ->
+                        OwnerOfferSentBanner(rental = rentalState.rental)
+
+                    is RentalStateUi.RenterOfferPending ->
+                        RenterOfferPendingBanner(
+                            rental = rentalState.rental,
+                            onPaymentClick = { onNavigateToPayment(rentalState.rental.id) }
+                        )
+
                     is RentalStateUi.RenterWaiting ->
                         if (!keyboardVisible) {
                             RenterWaitingBanner(
@@ -229,19 +244,19 @@ fun MessagingDetailContent(
                             )
                         }
 
-                    is RentalStateUi.RenterCounterOffer ->
-                        if (keyboardVisible) {
-                            RenterCounterOfferCompactBanner(
-                                onAcceptClick = onAccept,
-                                onDeclineClick = onDecline
-                            )
-                        } else {
-                            RenterCounterOfferBanner(
-                                rental = rentalState.rental,
-                                onAcceptClick = onAccept,
-                                onDeclineClick = onDecline
-                            )
-                        }
+                    is RentalStateUi.OwnerAccepted -> OwnerAcceptedBanner()
+
+                    is RentalStateUi.OwnerDeclined -> OwnerDeclinedBanner()
+
+                    is RentalStateUi.RenterAccepted ->
+                        RenterAcceptedBanner(
+                            onPaymentClick = { onNavigateToPayment(rentalState.rental.id) }
+                        )
+
+                    is RentalStateUi.RenterDeclined ->
+                        RenterDeclinedBanner(
+                            onSearchBikeClick = onNavigateToBikeSearch
+                        )
 
                     RentalStateUi.None -> Unit
                 }
@@ -342,6 +357,7 @@ fun MessagingDetailContent(
 
                         if (offer != null) {
                             onOffer((offer * 100).toLong())
+                            showOfferDialog = false
                         }
                     }
                 ) {

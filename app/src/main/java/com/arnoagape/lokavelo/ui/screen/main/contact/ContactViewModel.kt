@@ -133,6 +133,7 @@ class ContactViewModel @Inject constructor(
                     bikeId = bike.id,
                     ownerId = bike.ownerId,
                     renterId = renter.id,
+                    renterName = renter.displayName ?: "Utilisateur",
                     startDate = startDate.atStartOfDay().toInstant(ZoneOffset.UTC),
                     endDate = endDate.atStartOfDay().toInstant(ZoneOffset.UTC),
                     basePriceInCents = basePrice,
