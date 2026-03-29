@@ -139,7 +139,6 @@ private fun RenterRentalContent(context: BikeItemContext.RenterRental) {
     val displayPrice = remember(rental.status, rental.priceTotalInCents, days) {
 
         if (rental.status == RentalStatus.COUNTER_OFFER) {
-            // Prix de l'offre déjà calculé avec frais dans Firestore
             NumberFormat.getCurrencyInstance(Locale.FRANCE)
                 .format(rental.priceTotalInCents / 100.0)
         } else {

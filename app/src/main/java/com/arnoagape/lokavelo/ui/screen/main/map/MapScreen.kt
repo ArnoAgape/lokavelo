@@ -2,6 +2,12 @@ package com.arnoagape.lokavelo.ui.screen.main.map
 
 import android.Manifest
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -264,21 +272,42 @@ fun MapScreen(
 
         // Vue liste ou cadre vélo
         if (showListView) {
-            BikeListScreen(
-                bikes = visibleBikes,
-                filters = state.filters,
-                onBikeClick = { bike ->
-                    if (viewModel.onBikeCardClicked()) {
-                        if (state.filters.startDate == null || state.filters.endDate == null) {
-                            pendingBikeId = bike.id
-                            showDatePicker = true
-                        } else {
-                            onBikeClick(bike.id, state.filters.startDate, state.filters.endDate)
+            // Fond sombre animé
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f))
+                )
+            }
+
+            // Liste animée qui monte du bas
+            AnimatedVisibility(
+                visible = showListView,
+                enter = slideInVertically(initialOffsetY = { it }),
+                exit = slideOutVertically(targetOffsetY = { it }),
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                BikeListScreen(
+                    bikes = visibleBikes,
+                    filters = state.filters,
+                    onBikeClick = { bike ->
+                        if (viewModel.onBikeCardClicked()) {
+                            if (state.filters.startDate == null || state.filters.endDate == null) {
+                                pendingBikeId = bike.id
+                                showDatePicker = true
+                            } else {
+                                onBikeClick(bike.id, state.filters.startDate, state.filters.endDate)
+                            }
                         }
-                    }
-                },
-                onBack = { showListView = false }
-            )
+                    },
+                    onBack = { showListView = false }
+                )
+            }
         } else {
             // Bouton Liste — visible seulement si aucune card sélectionnée
             if (selectedBikeId == null) {
@@ -287,7 +316,11 @@ fun MapScreen(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 24.dp),
-                    shape = RoundedCornerShape(50)
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.List,
@@ -309,7 +342,11 @@ fun MapScreen(
                                 pendingBikeId = bike.id
                                 showDatePicker = true
                             } else {
-                                onBikeClick(bike.id, state.filters.startDate, state.filters.endDate)
+                                onBikeClick(
+                                    bike.id,
+                                    state.filters.startDate,
+                                    state.filters.endDate
+                                )
                             }
                         }
                     },

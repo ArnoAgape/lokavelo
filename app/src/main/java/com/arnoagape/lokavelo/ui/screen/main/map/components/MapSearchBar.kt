@@ -268,7 +268,11 @@ fun CategoryFilterChip(
                                             filters.bikeCategories + category
                                     onCategorySelected(updated)
                                 },
-                                label = { Text(stringResource(category.labelRes())) }
+                                label = { Text(stringResource(category.labelRes())) },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                )
                             )
                         }
                     }
