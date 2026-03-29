@@ -332,18 +332,18 @@ fun MapScreen(
             }
 
             // Card vélo
-            selectedBike?.let { bike ->
+            selectedBike?.let {
                 BikeHorizontalList(
                     bikes = visibleBikes,
                     filters = state.filters,
-                    onBikeClick = {
+                    onBikeClick = { clickedBike ->
                         if (viewModel.onBikeCardClicked()) {
                             if (state.filters.startDate == null || state.filters.endDate == null) {
-                                pendingBikeId = bike.id
+                                pendingBikeId = clickedBike.id
                                 showDatePicker = true
                             } else {
                                 onBikeClick(
-                                    bike.id,
+                                    clickedBike.id,
                                     state.filters.startDate,
                                     state.filters.endDate
                                 )

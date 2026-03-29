@@ -139,7 +139,7 @@ fun RentalStatusBadge(status: RentalStatus) {
 }
 
 @Composable
-fun BikeImage(bike: Bike, size: Dp = 90.dp) {
+fun BikeImage(bike: Bike, size: Dp = 70.dp) {
     if (LocalInspectionMode.current) {
         Image(
             painter = painterResource(R.drawable.pic_bike),

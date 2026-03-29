@@ -80,7 +80,7 @@ fun SelectItemRow(
             Box(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .padding(end = 4.dp)
+                    .padding(end = 10.dp)
             ) {
                 it()
             }

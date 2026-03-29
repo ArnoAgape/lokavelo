@@ -275,12 +275,12 @@ fun OSMMap(
         )
 
         Text(
-            text = "© OpenStreetMap contributors",
+            text = "© OpenStreetMap",
             style = MaterialTheme.typography.labelSmall,
             color = Color.White,
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(bottom = 16.dp, start = 8.dp)
+                .padding(bottom = 12.dp, start = 8.dp)
                 .clip(RoundedCornerShape(4.dp))
                 .background(Color.Black.copy(alpha = 0.3f))
         )
