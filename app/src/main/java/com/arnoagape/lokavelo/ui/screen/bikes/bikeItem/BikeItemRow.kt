@@ -57,8 +57,13 @@ fun BikeItemRow(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+                val displayName = when (context) {
+                    is BikeItemContext.OwnerRental -> context.rental.renterName
+                    is BikeItemContext.RenterRental -> bike.ownerName
+                    else -> bike.title
+                }
                 Text(
-                    text = bike.brand,
+                    text = displayName,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
