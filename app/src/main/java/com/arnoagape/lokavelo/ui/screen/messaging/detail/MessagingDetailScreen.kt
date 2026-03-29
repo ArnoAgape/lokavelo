@@ -12,12 +12,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -141,15 +141,16 @@ fun MessagingDetailContent(
     onNavigateToBikeSearch: () -> Unit
 ) {
 
-    val imeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    val imeBottom = WindowInsets.ime.getBottom(LocalDensity.current)
+    val imeVisible = imeBottom > 0
 
     var showAcceptDialog by remember { mutableStateOf(false) }
     var showDeclineDialog by remember { mutableStateOf(false) }
     var showOfferDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(imeVisible, messages.size) {
-        if (imeVisible && messages.isNotEmpty()) {
-            listState.animateScrollToItem(messages.lastIndex)
+    LaunchedEffect(imeBottom, messages.size) {
+        if (messages.isNotEmpty()) {
+            listState.scrollToItem(messages.lastIndex)
         }
     }
 
@@ -159,9 +160,6 @@ fun MessagingDetailContent(
                 displayName = otherUserName,
                 onBack = onBack
             )
-        },
-        bottomBar = {
-            MessageInputBar(onSend = onSend)
         }
     ) { padding ->
 
@@ -169,6 +167,8 @@ fun MessagingDetailContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .consumeWindowInsets(padding)
+                .imePadding()
         ) {
 
             LazyColumn(
@@ -258,6 +258,7 @@ fun MessagingDetailContent(
                 }
             }
 
+            MessageInputBar(onSend = onSend)
         }
     }
 
@@ -446,8 +447,6 @@ fun MessageInputBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
-            .imePadding()
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
